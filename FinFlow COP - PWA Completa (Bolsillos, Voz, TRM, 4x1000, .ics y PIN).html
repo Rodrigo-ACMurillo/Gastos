@@ -1,0 +1,2518 @@
+<!DOCTYPE html>
+<html lang="es" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#090d16">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>FinFlow COP — Control Financiero Ciclo 25</title>
+    
+    <!-- Google Fonts: Plus Jakarta Sans & Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- PWA Manifest dinámico vía Data URI para soporte GitHub Pages -->
+    <link rel="manifest" id="pwa-manifest">
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Plus Jakarta Sans', 'sans-serif'],
+                    },
+                    colors: {
+                        dark: {
+                            950: '#060911',
+                            900: '#0b101d',
+                            800: '#131b2e',
+                            700: '#1c2742',
+                        },
+                        emerald: {
+                            450: '#10b981',
+                        }
+                    },
+                    boxShadow: {
+                        'glow-emerald': '0 0 25px -5px rgba(16, 185, 129, 0.35)',
+                        'glow-indigo': '0 0 25px -5px rgba(99, 102, 241, 0.35)',
+                        'glow-amber': '0 0 25px -5px rgba(245, 158, 11, 0.35)',
+                        'iphone': '0 25px 70px -15px rgba(0, 0, 0, 0.85), 0 0 0 1px rgba(255,255,255,0.12)',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Estilos base y scrollbar personalizada */
+        body {
+            background-color: #05070c;
+            background-image: 
+                radial-gradient(circle at 15% 20%, rgba(16, 185, 129, 0.08) 0%, transparent 40%),
+                radial-gradient(circle at 85% 80%, rgba(99, 102, 241, 0.08) 0%, transparent 40%);
+            font-family: 'Inter', sans-serif;
+            color: #f8fafc;
+            overflow-x: hidden;
+        }
+
+        h1, h2, h3, .font-display {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        /* Scrollbar oculta / elegante dentro de la app */
+        .app-scroll::-webkit-scrollbar {
+            width: 4px;
+        }
+        .app-scroll::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .app-scroll::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.12);
+            border-radius: 9999px;
+        }
+
+        /* Glassmorphism */
+        .glass-card {
+            background: rgba(19, 27, 46, 0.65);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .glass-card-strong {
+            background: linear-gradient(145deg, rgba(24, 34, 58, 0.9) 0%, rgba(12, 18, 32, 0.95) 100%);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+        }
+
+        /* Marco realista de iPhone en Desktop */
+        @media (min-width: 640px) {
+            .iphone-chassis {
+                width: 393px;
+                height: 830px;
+                border-radius: 54px;
+                padding: 12px;
+                background: linear-gradient(145deg, #2b3240 0%, #151922 50%, #242a37 100%);
+                box-shadow: 
+                    0 30px 80px -10px rgba(0, 0, 0, 0.9),
+                    inset 0 0 2px 1px rgba(255, 255, 255, 0.25),
+                    0 0 0 1px rgba(255, 255, 255, 0.08);
+                position: relative;
+            }
+            .iphone-screen {
+                border-radius: 42px;
+                height: 100%;
+                width: 100%;
+                overflow: hidden;
+                position: relative;
+                background-color: #090d16;
+            }
+        }
+
+        /* En móviles reales ocupa toda la pantalla sin marco falso */
+        @media (max-width: 639px) {
+            .iphone-chassis {
+                width: 100vw;
+                height: 100dvh;
+                padding: 0;
+                background: #090d16;
+            }
+            .iphone-screen {
+                width: 100%;
+                height: 100%;
+                position: relative;
+                background-color: #090d16;
+            }
+            .desktop-only-controls {
+                display: none !important;
+            }
+        }
+
+        /* Animaciones suaves */
+        @keyframes slideUp {
+            from { transform: translateY(100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        .animate-slide-up {
+            animation: slideUp 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.98); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        .animate-fade-in {
+            animation: fadeIn 0.22s ease-out forwards;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-6px); }
+            75% { transform: translateX(6px); }
+        }
+        .animate-shake {
+            animation: shake 0.25s ease-in-out;
+        }
+
+        /* Eliminar flechas de input number */
+        input[type=number]::-webkit-inner-spin-button, 
+        input[type=number]::-webkit-outer-spin-button { 
+            -webkit-appearance: none; 
+            margin: 0; 
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col lg:flex-row items-center justify-center p-0 sm:p-6 gap-8">
+
+    <!-- PANEL LATERAL IZQUIERDO: Controles del Simulador & Guía GitHub Pages (Solo Desktop) -->
+    <div class="desktop-only-controls hidden lg:flex flex-col max-w-sm space-y-4 text-slate-300">
+        <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-semibold w-fit">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+            PWA Pro • GitHub Pages • COP
+        </div>
+        
+        <div>
+            <h1 class="text-3xl font-extrabold text-white tracking-tight leading-tight">
+                FinFlow <span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-indigo-400">COP</span>
+            </h1>
+            <p class="text-xs text-slate-400 mt-1.5 leading-relaxed">
+                Suite financiera móvil con ciclo de pago del <strong class="text-white">día 25</strong>, bolsillos inteligentes, entrada por voz, TRM en vivo, control 4x1000 y sincronización <code class="text-emerald-400">.ics</code>.
+            </p>
+        </div>
+
+        <!-- Accesos Rápidos de Vista -->
+        <div class="glass-card rounded-2xl p-3.5 space-y-2.5">
+            <p class="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Vistas Principales</p>
+            <div class="grid grid-cols-2 gap-2">
+                <button onclick="switchTab('home')" class="flex items-center gap-2 px-3 py-2 rounded-xl bg-white/5 hover:bg-emerald-500/20 hover:text-emerald-300 border border-white/5 text-xs font-medium transition-all text-left">
+                    <i data-lucide="wallet" class="w-4 h-4 text-emerald-400"></i> Inicio & Bolsillos
+                </button>
+                <button onclick="switchTab('analytics')" class="flex items-center gap-2 px-3 py-2 rounded-xl bg-white/5 hover:bg-cyan-500/20 hover:text-cyan-300 border border-white/5 text-xs font-medium transition-all text-left">
+                    <i data-lucide="pie-chart" class="w-4 h-4 text-cyan-400"></i> Analítica & 4x1000
+                </button>
+                <button onclick="switchTab('calendar')" class="flex items-center gap-2 px-3 py-2 rounded-xl bg-white/5 hover:bg-indigo-500/20 hover:text-indigo-300 border border-white/5 text-xs font-medium transition-all text-left">
+                    <i data-lucide="calendar-days" class="w-4 h-4 text-indigo-400"></i> Calendario & .ics
+                </button>
+                <button onclick="switchTab('alerts')" class="flex items-center gap-2 px-3 py-2 rounded-xl bg-white/5 hover:bg-rose-500/20 hover:text-rose-300 border border-white/5 text-xs font-medium transition-all text-left">
+                    <i data-lucide="bell-ring" class="w-4 h-4 text-rose-400"></i> Deudas & Alertas
+                </button>
+            </div>
+        </div>
+
+        <!-- Acciones de Prueba Rápida -->
+        <div class="glass-card rounded-2xl p-3.5 space-y-2">
+            <p class="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Pruebas Interactivas</p>
+            <button onclick="simulateQuickVoiceInput()" class="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500/20 to-teal-500/10 hover:from-emerald-500/30 border border-emerald-500/30 text-emerald-300 text-xs font-semibold transition-all">
+                <span class="flex items-center gap-2"><i data-lucide="mic" class="w-4 h-4"></i> Probar Entrada Rápida ("Almuerzo 24 mil")</span>
+                <i data-lucide="chevron-right" class="w-4 h-4"></i>
+            </button>
+            <button onclick="fetchLiveTRM(true)" class="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-white text-xs font-semibold transition-all">
+                <span class="flex items-center gap-2"><i data-lucide="refresh-cw" class="w-4 h-4 text-cyan-400"></i> Actualizar TRM USD/EUR en Vivo</span>
+                <i data-lucide="chevron-right" class="w-4 h-4 text-slate-400"></i>
+            </button>
+            <button onclick="lockAppWithPin()" class="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-white text-xs font-semibold transition-all">
+                <span class="flex items-center gap-2"><i data-lucide="lock" class="w-4 h-4 text-amber-400"></i> Probar Bloqueo PIN (1234)</span>
+                <i data-lucide="chevron-right" class="w-4 h-4 text-slate-400"></i>
+            </button>
+        </div>
+
+        <!-- Despliegue GitHub Pages -->
+        <div class="p-3.5 rounded-2xl bg-slate-900/70 border border-white/5 text-[11px] text-slate-400 space-y-1">
+            <div class="flex items-center gap-2 text-slate-200 font-semibold">
+                <i data-lucide="github" class="w-4 h-4"></i> Listo para GitHub Pages
+            </div>
+            <p>Archivo único autocontenido (<code class="text-emerald-400">index.html</code>) con <code class="text-emerald-400">manifest.json</code> y <code class="text-emerald-400">sw.js</code> embebidos. También puedes descargar el paquete separado desde <strong>Ajustes</strong>.</p>
+        </div>
+    </div>
+
+    <!-- SIMULADOR DE TELÉFONO MÓVIL (iPhone 15 Pro Frame) -->
+    <div class="iphone-chassis flex-shrink-0">
+        <!-- Botones físicos laterales decorativos en desktop -->
+        <div class="hidden sm:block absolute -left-[3px] top-28 w-[3px] h-8 bg-slate-700 rounded-l"></div>
+        <div class="hidden sm:block absolute -left-[3px] top-40 w-[3px] h-14 bg-slate-700 rounded-l"></div>
+        <div class="hidden sm:block absolute -left-[3px] top-56 w-[3px] h-14 bg-slate-700 rounded-l"></div>
+        <div class="hidden sm:block absolute -right-[3px] top-44 w-[3px] h-20 bg-slate-700 rounded-r"></div>
+
+        <!-- PANTALLA TÁCTIL FUNCIONAL -->
+        <div class="iphone-screen flex flex-col justify-between select-none">
+            
+            <!-- Status Bar & Dynamic Island (Desktop) -->
+            <div class="hidden sm:flex items-center justify-between px-7 pt-3 pb-1 text-[11px] font-semibold text-white z-30 bg-[#090d16]/80 backdrop-blur-md">
+                <span id="status-clock">16:12</span>
+                <div class="w-28 h-7 bg-black rounded-full flex items-center justify-between px-3 border border-white/5 shadow-inner">
+                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                    <span class="text-[10px] text-slate-400 font-medium">Ciclo 25</span>
+                </div>
+                <div class="flex items-center gap-1.5">
+                    <i data-lucide="signal" class="w-3.5 h-3.5"></i>
+                    <i data-lucide="wifi" class="w-3.5 h-3.5"></i>
+                    <div class="w-5 h-2.5 border border-white/60 rounded-[3px] p-[1px] flex items-center">
+                        <div class="w-full h-full bg-emerald-400 rounded-[1px]"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PANTALLA DE BLOQUEO CON PIN DE 4 DÍGITOS -->
+            <div id="pin-lock-screen" class="hidden absolute inset-0 z-50 bg-[#070b14]/98 backdrop-blur-2xl flex flex-col items-center justify-between py-12 px-6">
+                <div class="text-center space-y-2 mt-4">
+                    <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center mx-auto shadow-glow-emerald">
+                        <i data-lucide="shield-check" class="w-7 h-7 text-slate-950"></i>
+                    </div>
+                    <h3 class="text-lg font-extrabold text-white font-display">FinFlow COP Protegido</h3>
+                    <p id="pin-prompt-text" class="text-xs text-slate-400">Ingresa tu PIN de 4 dígitos</p>
+                </div>
+
+                <!-- Indicadores de 4 dígitos -->
+                <div id="pin-dots" class="flex items-center gap-4 my-4">
+                    <span class="w-3.5 h-3.5 rounded-full border-2 border-emerald-400 transition-all"></span>
+                    <span class="w-3.5 h-3.5 rounded-full border-2 border-emerald-400 transition-all"></span>
+                    <span class="w-3.5 h-3.5 rounded-full border-2 border-emerald-400 transition-all"></span>
+                    <span class="w-3.5 h-3.5 rounded-full border-2 border-emerald-400 transition-all"></span>
+                </div>
+
+                <!-- Teclado Numérico -->
+                <div class="grid grid-cols-3 gap-3.5 w-full max-w-[260px]">
+                    <button onclick="enterPinDigit('1')" class="h-14 rounded-2xl bg-white/5 hover:bg-white/10 active:scale-95 text-xl font-bold text-white transition-all">1</button>
+                    <button onclick="enterPinDigit('2')" class="h-14 rounded-2xl bg-white/5 hover:bg-white/10 active:scale-95 text-xl font-bold text-white transition-all">2</button>
+                    <button onclick="enterPinDigit('3')" class="h-14 rounded-2xl bg-white/5 hover:bg-white/10 active:scale-95 text-xl font-bold text-white transition-all">3</button>
+                    <button onclick="enterPinDigit('4')" class="h-14 rounded-2xl bg-white/5 hover:bg-white/10 active:scale-95 text-xl font-bold text-white transition-all">4</button>
+                    <button onclick="enterPinDigit('5')" class="h-14 rounded-2xl bg-white/5 hover:bg-white/10 active:scale-95 text-xl font-bold text-white transition-all">5</button>
+                    <button onclick="enterPinDigit('6')" class="h-14 rounded-2xl bg-white/5 hover:bg-white/10 active:scale-95 text-xl font-bold text-white transition-all">6</button>
+                    <button onclick="enterPinDigit('7')" class="h-14 rounded-2xl bg-white/5 hover:bg-white/10 active:scale-95 text-xl font-bold text-white transition-all">7</button>
+                    <button onclick="enterPinDigit('8')" class="h-14 rounded-2xl bg-white/5 hover:bg-white/10 active:scale-95 text-xl font-bold text-white transition-all">8</button>
+                    <button onclick="enterPinDigit('9')" class="h-14 rounded-2xl bg-white/5 hover:bg-white/10 active:scale-95 text-xl font-bold text-white transition-all">9</button>
+                    <div class="h-14"></div>
+                    <button onclick="enterPinDigit('0')" class="h-14 rounded-2xl bg-white/5 hover:bg-white/10 active:scale-95 text-xl font-bold text-white transition-all">0</button>
+                    <button onclick="backspacePinDigit()" class="h-14 rounded-2xl bg-white/5 hover:bg-rose-500/20 active:scale-95 flex items-center justify-center text-slate-300 transition-all">
+                        <i data-lucide="delete" class="w-5 h-5"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- NOTIFICACIÓN PUSH FLOTANTE (Banner estilo iOS) -->
+            <div id="push-banner" class="hidden absolute top-11 left-3 right-3 z-50 glass-card-strong rounded-2xl p-3.5 shadow-2xl border border-emerald-500/30 animate-slide-up cursor-pointer" onclick="hideNotification()">
+                <div class="flex items-start gap-3">
+                    <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center flex-shrink-0 shadow-glow-emerald">
+                        <i data-lucide="sparkles" class="w-5 h-5 text-white"></i>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <div class="flex items-center justify-between">
+                            <p class="text-xs font-bold text-white">FinFlow COP</p>
+                            <span class="text-[10px] text-slate-400">Ahora</span>
+                        </div>
+                        <p id="push-banner-text" class="text-xs text-slate-300 mt-0.5 leading-snug"></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CONTENIDO PRINCIPAL SCROLLEABLE DE LA APP -->
+            <main id="app-content" class="flex-1 overflow-y-auto app-scroll px-4 pt-2.5 pb-24 space-y-4">
+                
+                <!-- ==================== VISTA 1: INICIO (DASHBOARD + BOLSILLOS + VOZ) ==================== -->
+                <section id="view-home" class="space-y-4 animate-fade-in">
+                    
+                    <!-- Header Superior -->
+                    <div class="flex items-center justify-between pt-1">
+                        <div>
+                            <p class="text-[11px] text-slate-400 font-medium flex items-center gap-1.5">
+                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                                <span id="cycle-date-range">25 Oct – 25 Nov</span>
+                            </p>
+                            <h2 class="text-base font-bold text-white tracking-tight">FinFlow COP 👋</h2>
+                        </div>
+                        
+                        <div class="flex items-center gap-1.5">
+                            <!-- Botón candado rápido si hay PIN -->
+                            <button id="header-lock-btn" onclick="lockAppWithPin()" title="Bloquear con PIN" class="hidden p-1.5 rounded-full bg-white/5 border border-white/10 text-slate-300 hover:text-amber-400">
+                                <i data-lucide="lock" class="w-3.5 h-3.5"></i>
+                            </button>
+                            <!-- Selector Rápido de Moneda -->
+                            <div class="flex items-center bg-slate-900/90 border border-white/10 rounded-full p-0.5 text-[10px] font-bold">
+                                <button onclick="setDisplayCurrency('COP')" id="curr-btn-COP" class="px-2 py-1 rounded-full bg-emerald-500 text-slate-950 transition-all">COP</button>
+                                <button onclick="setDisplayCurrency('USD')" id="curr-btn-USD" class="px-2 py-1 rounded-full text-slate-400 hover:text-white transition-all">USD</button>
+                                <button onclick="setDisplayCurrency('EUR')" id="curr-btn-EUR" class="px-2 py-1 rounded-full text-slate-400 hover:text-white transition-all">EUR</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- BANNER INSTALACIÓN PWA (Si el navegador lo soporta) -->
+                    <div id="pwa-install-banner" class="hidden rounded-2xl p-3 bg-gradient-to-r from-emerald-500/20 to-teal-500/15 border border-emerald-400/30 flex items-center justify-between gap-2">
+                        <div class="flex items-center gap-2.5">
+                            <i data-lucide="smartphone" class="w-4 h-4 text-emerald-400 flex-shrink-0"></i>
+                            <p class="text-[11px] text-slate-200 font-medium">Instala FinFlow en tu pantalla de inicio</p>
+                        </div>
+                        <button onclick="installPWA()" class="px-2.5 py-1 rounded-lg bg-emerald-500 text-slate-950 text-[11px] font-extrabold flex-shrink-0">
+                            Instalar
+                        </button>
+                    </div>
+
+                    <!-- BARRA DE ENTRADA ULTRARRÁPIDA POR TEXTO NATURAL O VOZ -->
+                    <div class="glass-card rounded-2xl p-2 border border-white/10 focus-within:border-emerald-400/50 transition-all">
+                        <div class="flex items-center gap-2">
+                            <button id="voice-mic-btn" onclick="startVoiceRecognition()" title="Dictar gasto por voz (ej: Almuerzo 22 mil)" class="w-9 h-9 rounded-xl bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-400 flex items-center justify-center flex-shrink-0 transition-all">
+                                <i data-lucide="mic" class="w-4 h-4"></i>
+                            </button>
+                            <input type="text" id="quick-nlp-input" oninput="previewNaturalInput()" onkeydown="if(event.key==='Enter') commitNaturalInput()" placeholder='Ej: "Almuerzo 22 mil" o "Uber 15.500"' class="w-full bg-transparent text-xs text-white placeholder-slate-500 outline-none">
+                            <button onclick="commitNaturalInput()" class="px-3 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-[11px] font-extrabold flex-shrink-0 transition-all">
+                                Añadir
+                            </button>
+                        </div>
+                        <!-- Vista previa inteligente en tiempo real -->
+                        <div id="nlp-preview-bar" class="hidden mt-2 pt-2 border-t border-white/5 flex items-center justify-between text-[11px] px-1">
+                            <span id="nlp-preview-text" class="text-emerald-300 font-medium"></span>
+                            <span id="nlp-preview-cat" class="px-2 py-0.5 rounded-full bg-white/10 text-slate-200 text-[10px]"></span>
+                        </div>
+                    </div>
+
+                    <!-- TARJETA PRINCIPAL DE SALDO LIBRE REAL Y CICLO 25 -->
+                    <div class="relative overflow-hidden rounded-3xl p-4 bg-gradient-to-br from-[#132a2e] via-[#0f172a] to-[#1e1b4b] border border-white/15 shadow-xl">
+                        <div class="absolute -top-12 -right-12 w-36 h-36 bg-emerald-500/20 rounded-full blur-2xl pointer-events-none"></div>
+                        <div class="absolute -bottom-12 -left-12 w-36 h-36 bg-indigo-500/25 rounded-full blur-2xl pointer-events-none"></div>
+
+                        <div class="relative z-10">
+                            <div class="flex items-center justify-between">
+                                <span class="text-[11px] font-medium text-slate-300">Saldo Libre Real (Sin Bolsillos)</span>
+                                <div class="flex items-center gap-1.5">
+                                    <button onclick="openTransactionModal('income')" class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-400/30 text-emerald-300 text-[11px] font-semibold transition-all active:scale-95">
+                                        <i data-lucide="plus" class="w-3 h-3"></i> Saldo
+                                    </button>
+                                    <button onclick="openTransactionModal('expense')" class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-rose-500/20 hover:bg-rose-500/30 border border-rose-400/30 text-rose-300 text-[11px] font-semibold transition-all active:scale-95">
+                                        <i data-lucide="minus" class="w-3 h-3"></i> Gasto
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Monto Principal -->
+                            <div class="mt-1.5 flex items-baseline gap-2">
+                                <h1 id="main-balance-display" class="text-3xl font-extrabold text-white tracking-tight font-display">
+                                    $ 1.350.000
+                                </h1>
+                                <span id="main-currency-label" class="text-xs font-bold text-emerald-400">COP</span>
+                            </div>
+                            <div class="flex items-center justify-between mt-0.5">
+                                <p id="secondary-balance-display" class="text-[11px] text-slate-400">
+                                    ≈ $ 310.34 USD
+                                </p>
+                                <p id="total-patrimony-label" class="text-[10px] text-indigo-300 font-medium">
+                                    Total + Bolsillos: $ 1.850.000
+                                </p>
+                            </div>
+
+                            <!-- Caja Destacada: Gestión Diaria hasta el 25 -->
+                            <div class="mt-3.5 p-3 rounded-2xl bg-black/35 border border-white/10 backdrop-blur-md">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <div class="flex items-center gap-1.5">
+                                            <p class="text-[11px] text-slate-400 font-medium">Cupo Diario Sugerido</p>
+                                            <button onclick="toggleReserveDebts()" id="reserve-debts-pill" class="text-[9px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-semibold">
+                                                Deudas reservadas
+                                            </button>
+                                        </div>
+                                        <p id="daily-budget-display" class="text-lg font-extrabold text-emerald-400 font-display mt-0.5">
+                                            $ 76.918 <span class="text-[10px] font-normal text-slate-400">/ día</span>
+                                        </p>
+                                    </div>
+                                    <div class="text-right">
+                                        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl bg-indigo-500/20 border border-indigo-400/30 text-indigo-300 text-xs font-bold">
+                                            <i data-lucide="calendar-clock" class="w-3.5 h-3.5"></i>
+                                            <span id="days-left-count">11 días</span>
+                                        </span>
+                                        <p class="text-[10px] text-slate-400 mt-1">para pago del <strong class="text-white" id="payday-label">25</strong></p>
+                                    </div>
+                                </div>
+
+                                <!-- Barra de Progreso del Ciclo -->
+                                <div class="mt-2.5">
+                                    <div class="flex justify-between text-[10px] text-slate-400 mb-1">
+                                        <span>Progreso del ciclo</span>
+                                        <span id="cycle-percent-text" class="text-slate-200 font-semibold">63% transcurrido</span>
+                                    </div>
+                                    <div class="w-full h-1.5 bg-slate-800/90 rounded-full overflow-hidden">
+                                        <div id="cycle-progress-bar" class="h-full rounded-full bg-gradient-to-r from-emerald-400 via-teal-400 to-indigo-400 transition-all duration-500" style="width: 63%"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Mini Resumen Ingresos vs Gastos -->
+                            <div class="grid grid-cols-2 gap-2 mt-2.5">
+                                <div class="flex items-center gap-2 p-2 rounded-xl bg-white/5 border border-white/5">
+                                    <div class="w-6 h-6 rounded-lg bg-emerald-500/20 flex items-center justify-center text-emerald-400">
+                                        <i data-lucide="arrow-down-left" class="w-3.5 h-3.5"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-[9px] text-slate-400">Ingresos Ciclo</p>
+                                        <p id="total-income-display" class="text-xs font-bold text-white">$ 3.200.000</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-2 p-2 rounded-xl bg-white/5 border border-white/5">
+                                    <div class="w-6 h-6 rounded-lg bg-rose-500/20 flex items-center justify-center text-rose-400">
+                                        <i data-lucide="arrow-up-right" class="w-3.5 h-3.5"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-[9px] text-slate-400">Gastado Ciclo</p>
+                                        <p id="total-expense-display" class="text-xs font-bold text-white">$ 1.350.000</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SECCIÓN BOLSILLOS / METAS ESTILO NEQUI / DAVIPLATA (MODO SIN CULPA) -->
+                    <div class="space-y-2">
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-xs font-bold text-white flex items-center gap-1.5">
+                                <i data-lucide="piggy-bank" class="w-4 h-4 text-cyan-400"></i>
+                                Mis Bolsillos (Modo Sin Culpa)
+                            </h3>
+                            <button onclick="openPocketModal()" class="text-[11px] font-bold text-cyan-400 hover:underline flex items-center gap-0.5">
+                                + Nuevo Bolsillo
+                            </button>
+                        </div>
+                        <div id="pockets-carousel" class="flex gap-2.5 overflow-x-auto pb-1 app-scroll">
+                            <!-- Renderizado dinámico por JS -->
+                        </div>
+                    </div>
+
+                    <!-- PRÓXIMOS VENCIMIENTOS / ALERTAS DE DEUDAS -->
+                    <div id="home-upcoming-alerts-card" class="glass-card rounded-2xl p-3 space-y-2 border border-amber-500/20">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-bold text-white flex items-center gap-1.5">
+                                <i data-lucide="bell-ring" class="w-3.5 h-3.5 text-amber-400"></i>
+                                Próximos Recibos & Deudas
+                            </span>
+                            <button onclick="switchTab('alerts')" class="text-[11px] font-semibold text-emerald-400 hover:underline">
+                                Ver todas →
+                            </button>
+                        </div>
+                        <div id="home-upcoming-list" class="space-y-1.5">
+                            <!-- Se llena dinámicamente -->
+                        </div>
+                    </div>
+
+                    <!-- MOVIMIENTOS RECIENTES -->
+                    <div class="space-y-2">
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-xs font-bold text-white">Movimientos Recientes</h3>
+                            <div class="flex gap-1 text-[10px]">
+                                <button onclick="setTxFilter('all')" id="filter-all" class="px-2 py-0.5 rounded-lg bg-white/10 text-white font-medium">Todos</button>
+                                <button onclick="setTxFilter('expense')" id="filter-expense" class="px-2 py-0.5 rounded-lg text-slate-400 hover:text-white">Gastos</button>
+                                <button onclick="setTxFilter('income')" id="filter-income" class="px-2 py-0.5 rounded-lg text-slate-400 hover:text-white">Saldos</button>
+                            </div>
+                        </div>
+
+                        <div id="transactions-list" class="space-y-2">
+                            <!-- Se renderiza con JS -->
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ==================== VISTA 2: ANALÍTICA, BURN RATE & CONTROL 4x1000 ==================== -->
+                <section id="view-analytics" class="hidden space-y-4 animate-fade-in">
+                    <div class="pt-1">
+                        <h2 class="text-lg font-bold text-white">Analítica & Colombia</h2>
+                        <p class="text-xs text-slate-400">Ritmo de gasto, categorías, 4x1000 y simulador de cuotas</p>
+                    </div>
+
+                    <!-- 1. SEMÁFORO DE RITMO DE GASTO (BURN RATE) -->
+                    <div class="glass-card-strong rounded-3xl p-4 space-y-3">
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-xs font-bold text-white flex items-center gap-1.5">
+                                <i data-lucide="flame" class="w-4 h-4 text-orange-400"></i>
+                                Semáforo Ritmo de Gasto (Burn Rate)
+                            </h3>
+                            <span id="burn-rate-badge" class="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-500/20 text-emerald-400">
+                                Saludable
+                            </span>
+                        </div>
+
+                        <div class="space-y-2 text-[11px]">
+                            <div>
+                                <div class="flex justify-between text-slate-400 mb-1">
+                                    <span>Tiempo del ciclo transcurrido</span>
+                                    <span id="burn-time-pct" class="text-white font-bold">63%</span>
+                                </div>
+                                <div class="w-full h-2 bg-slate-800 rounded-full overflow-hidden">
+                                    <div id="burn-time-bar" class="h-full bg-indigo-400 rounded-full" style="width: 63%"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between text-slate-400 mb-1">
+                                    <span>Presupuesto del ciclo consumido</span>
+                                    <span id="burn-money-pct" class="text-white font-bold">42%</span>
+                                </div>
+                                <div class="w-full h-2 bg-slate-800 rounded-full overflow-hidden">
+                                    <div id="burn-money-bar" class="h-full bg-emerald-400 rounded-full transition-all" style="width: 42%"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <p id="burn-rate-projection" class="text-[11px] text-slate-300 bg-black/30 p-2.5 rounded-xl border border-white/5 leading-relaxed">
+                            Calculando proyección de agotamiento...
+                        </p>
+                    </div>
+
+                    <!-- 2. GRÁFICO DE ANILLO (DONUT CHART SVG) POR CATEGORÍAS -->
+                    <div class="glass-card rounded-3xl p-4 space-y-3">
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-xs font-bold text-white">Distribución por Categoría</h3>
+                            <span id="donut-total-label" class="text-xs font-extrabold text-rose-400">$ 1.350.000</span>
+                        </div>
+
+                        <div class="flex items-center gap-4">
+                            <!-- SVG Donut Ring -->
+                            <div class="relative w-32 h-32 flex-shrink-0 flex items-center justify-center">
+                                <svg id="category-donut-svg" viewBox="0 0 36 36" class="w-full h-full -rotate-90"></svg>
+                                <div class="absolute inset-0 flex flex-col items-center justify-center text-center pointer-events-none">
+                                    <span class="text-[9px] text-slate-400 uppercase">Top Rubro</span>
+                                    <span id="donut-top-cat" class="text-[11px] font-extrabold text-white truncate max-w-[70px]">Hogar</span>
+                                </div>
+                            </div>
+
+                            <!-- Leyenda -->
+                            <div id="category-donut-legend" class="flex-1 space-y-1.5 text-[11px]">
+                                <!-- Generado por JS -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 3. MEDIDOR EXENCIÓN 4x1000 (350 UVT COLOMBIA) -->
+                    <div class="glass-card rounded-3xl p-4 space-y-2.5 border border-cyan-500/20">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h3 class="text-xs font-bold text-white flex items-center gap-1.5">
+                                    <i data-lucide="landmark" class="w-4 h-4 text-cyan-400"></i>
+                                    Control Exención 4x1000 (350 UVT)
+                                </h3>
+                                <p class="text-[10px] text-slate-400">Movimientos acumulados en el mes calendario</p>
+                            </div>
+                            <span id="gmf-percent-badge" class="text-xs font-extrabold text-cyan-400">7.4%</span>
+                        </div>
+
+                        <div class="w-full h-2.5 bg-slate-900 rounded-full overflow-hidden p-[1px]">
+                            <div id="gmf-progress-bar" class="h-full rounded-full bg-gradient-to-r from-cyan-400 to-indigo-500 transition-all" style="width: 7.4%"></div>
+                        </div>
+
+                        <div class="flex items-center justify-between text-[11px]">
+                            <span class="text-slate-300">Usado: <strong id="gmf-used-amount" class="text-white">$ 1.350.000</strong></span>
+                            <span class="text-slate-400">Tope: <strong id="gmf-limit-amount" class="text-cyan-300">$ 18.300.000</strong></span>
+                        </div>
+                    </div>
+
+                    <!-- 4. CALCULADORA DE CUOTAS Y TASA E.A. A M.V. (TARJETA CRÉDITO COLOMBIA) -->
+                    <div class="glass-card rounded-3xl p-4 space-y-3">
+                        <h3 class="text-xs font-bold text-white flex items-center gap-1.5">
+                            <i data-lucide="credit-card" class="w-4 h-4 text-amber-400"></i>
+                            Simulador Cuotas Tarjeta (E.A. → M.V.)
+                        </h3>
+                        <div class="grid grid-cols-3 gap-2 text-xs">
+                            <div class="space-y-1">
+                                <label class="text-[10px] text-slate-400">Compra COP</label>
+                                <input type="number" id="cc-amount" value="600000" oninput="calculateCreditCardInstallments()" class="w-full bg-slate-950 border border-white/10 rounded-xl px-2.5 py-2 text-white font-bold outline-none">
+                            </div>
+                            <div class="space-y-1">
+                                <label class="text-[10px] text-slate-400">Cuotas</label>
+                                <input type="number" id="cc-months" value="6" min="1" max="36" oninput="calculateCreditCardInstallments()" class="w-full bg-slate-950 border border-white/10 rounded-xl px-2.5 py-2 text-white font-bold outline-none">
+                            </div>
+                            <div class="space-y-1">
+                                <label class="text-[10px] text-slate-400">Tasa % E.A.</label>
+                                <input type="number" id="cc-ea-rate" value="25.5" step="0.1" oninput="calculateCreditCardInstallments()" class="w-full bg-slate-950 border border-white/10 rounded-xl px-2.5 py-2 text-white font-bold outline-none">
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-3 gap-2 p-2.5 rounded-2xl bg-black/35 border border-white/5 text-center">
+                            <div>
+                                <p class="text-[9px] text-slate-400">Tasa M.V.</p>
+                                <p id="cc-mv-result" class="text-xs font-extrabold text-amber-400 mt-0.5">1.91%</p>
+                            </div>
+                            <div>
+                                <p class="text-[9px] text-slate-400">Cuota Mes</p>
+                                <p id="cc-monthly-result" class="text-xs font-extrabold text-white mt-0.5">$ 106.810</p>
+                            </div>
+                            <div>
+                                <p class="text-[9px] text-slate-400">Interés Total</p>
+                                <p id="cc-interest-result" class="text-xs font-extrabold text-rose-400 mt-0.5">$ 40.860</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ==================== VISTA 3: CALENDARIO MENSUAL & EXPORTAR .ICS ==================== -->
+                <section id="view-calendar" class="hidden space-y-4 animate-fade-in">
+                    <div class="flex items-center justify-between pt-1">
+                        <div>
+                            <h2 class="text-lg font-bold text-white">Calendario Mensual</h2>
+                            <p class="text-xs text-slate-400">Toca un día para ver o programar fechas</p>
+                        </div>
+                        <button onclick="openAlertModal(selectedCalendarDate)" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-emerald-500 text-slate-950 text-xs font-bold shadow-glow-emerald active:scale-95 transition-all">
+                            <i data-lucide="plus" class="w-3.5 h-3.5"></i> Fecha
+                        </button>
+                    </div>
+
+                    <!-- Botón Exportar a Google / Apple Calendar (.ics) -->
+                    <button onclick="exportCalendarICS()" class="w-full py-2.5 px-4 rounded-2xl bg-gradient-to-r from-indigo-500/20 to-cyan-500/20 hover:from-indigo-500/30 hover:to-cyan-500/30 border border-indigo-400/30 text-indigo-200 text-xs font-bold flex items-center justify-center gap-2 transition-all">
+                        <i data-lucide="calendar-arrow-down" class="w-4 h-4 text-cyan-400"></i>
+                        Sincronizar Alertas con Google / Apple Calendar (.ics)
+                    </button>
+
+                    <!-- Selector de Mes -->
+                    <div class="glass-card rounded-3xl p-4 space-y-3">
+                        <div class="flex items-center justify-between">
+                            <button onclick="changeCalendarMonth(-1)" class="p-2 rounded-xl bg-white/5 hover:bg-white/10 text-slate-300">
+                                <i data-lucide="chevron-left" class="w-4 h-4"></i>
+                            </button>
+                            <h3 id="calendar-month-title" class="text-sm font-extrabold text-white capitalize font-display">
+                                Noviembre 2026
+                            </h3>
+                            <button onclick="changeCalendarMonth(1)" class="p-2 rounded-xl bg-white/5 hover:bg-white/10 text-slate-300">
+                                <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+
+                        <div class="flex items-center justify-center gap-3 text-[10px] text-slate-400 pb-1">
+                            <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-emerald-400"></span> Pago 25</span>
+                            <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-amber-400"></span> Deuda/Recibo</span>
+                            <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-indigo-400"></span> Gasto</span>
+                        </div>
+
+                        <div class="grid grid-cols-7 text-center text-[10px] font-bold text-slate-500 uppercase">
+                            <span>Dom</span><span>Lun</span><span>Mar</span><span>Mié</span><span>Jue</span><span>Vie</span><span>Sáb</span>
+                        </div>
+
+                        <div id="calendar-days-grid" class="grid grid-cols-7 gap-1.5">
+                            <!-- Generado por JS -->
+                        </div>
+                    </div>
+
+                    <!-- Detalle del Día Seleccionado -->
+                    <div class="glass-card-strong rounded-3xl p-4 space-y-3">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-[10px] uppercase tracking-wider text-slate-400 font-semibold">Detalle de Fecha</p>
+                                <h4 id="selected-day-label" class="text-sm font-bold text-white">14 de Noviembre, 2026</h4>
+                            </div>
+                            <div class="flex gap-1.5">
+                                <button onclick="openAlertModal(selectedCalendarDate)" class="px-2.5 py-1.5 rounded-xl bg-amber-500/20 border border-amber-500/30 text-amber-300 text-[11px] font-semibold flex items-center gap-1">
+                                    <i data-lucide="bell-plus" class="w-3.5 h-3.5"></i> Alerta
+                                </button>
+                                <button onclick="openTransactionModal('expense', '', selectedCalendarDate)" class="px-2.5 py-1.5 rounded-xl bg-white/10 text-white text-[11px] font-semibold flex items-center gap-1">
+                                    <i data-lucide="plus" class="w-3.5 h-3.5"></i> Gasto
+                                </button>
+                            </div>
+                        </div>
+
+                        <div id="selected-day-events" class="space-y-2">
+                            <!-- Eventos, recibos y gastos del día seleccionado -->
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ==================== VISTA 4: ALERTAS DE DEUDAS Y NOTIFICACIONES ==================== -->
+                <section id="view-alerts" class="hidden space-y-4 animate-fade-in">
+                    <div class="flex items-center justify-between pt-1">
+                        <div>
+                            <h2 class="text-lg font-bold text-white">Alertas & Deudas</h2>
+                            <p class="text-xs text-slate-400">Recibos, tarjetas y recordatorios móviles</p>
+                        </div>
+                        <button onclick="openAlertModal()" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-emerald-500 text-slate-950 text-xs font-bold shadow-glow-emerald active:scale-95 transition-all">
+                            <i data-lucide="plus" class="w-3.5 h-3.5"></i> Nueva Alerta
+                        </button>
+                    </div>
+
+                    <!-- Panel Estado de Notificaciones Móviles Reales + Exportar .ics -->
+                    <div class="rounded-3xl p-4 bg-gradient-to-br from-slate-900 to-indigo-950/70 border border-indigo-500/25 space-y-3">
+                        <div class="flex items-center gap-2.5">
+                            <div class="w-9 h-9 rounded-xl bg-indigo-500/20 text-indigo-300 flex items-center justify-center flex-shrink-0">
+                                <i data-lucide="smartphone-nfc" class="w-5 h-5"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-xs font-bold text-white">Notificaciones Push & Calendario</h3>
+                                <p id="notif-permission-status" class="text-[11px] text-slate-400">Verificando permisos...</p>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2">
+                            <button onclick="requestMobileNotifications()" id="btn-enable-notif" class="py-2 px-3 rounded-xl bg-indigo-500 hover:bg-indigo-400 text-white text-xs font-bold transition-all flex items-center justify-center gap-1.5">
+                                <i data-lucide="bell" class="w-3.5 h-3.5"></i> Activar Push
+                            </button>
+                            <button onclick="exportCalendarICS()" class="py-2 px-3 rounded-xl bg-white/10 hover:bg-white/15 text-cyan-300 text-xs font-semibold transition-all flex items-center justify-center gap-1.5">
+                                <i data-lucide="calendar-plus" class="w-3.5 h-3.5"></i> Exportar .ics
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Resumen Total Compromisos Pendientes -->
+                    <div class="glass-card rounded-2xl p-3.5 flex items-center justify-between">
+                        <div>
+                            <p class="text-[11px] text-slate-400">Total Deudas / Recibos Pendientes</p>
+                            <p id="total-pending-debts" class="text-lg font-extrabold text-amber-400 font-display">$ 0</p>
+                        </div>
+                        <span id="pending-debts-count" class="px-2.5 py-1 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-300 text-xs font-bold">
+                            0 pendientes
+                        </span>
+                    </div>
+
+                    <!-- Lista de Deudas y Recordatorios -->
+                    <div id="alerts-full-list" class="space-y-2.5">
+                        <!-- Renderizado dinámico -->
+                    </div>
+                </section>
+
+                <!-- ==================== VISTA 5: CONSEJOS FINANCIEROS, TRM EN VIVO & AJUSTES ==================== -->
+                <section id="view-advisor" class="hidden space-y-4 animate-fade-in">
+                    <div class="pt-1">
+                        <h2 class="text-lg font-bold text-white">Consejos, TRM & Ajustes</h2>
+                        <p class="text-xs text-slate-400">Coach financiero, divisas en vivo y seguridad PIN</p>
+                    </div>
+
+                    <!-- Diagnóstico Dinámico Personalizado -->
+                    <div class="rounded-3xl p-4 bg-gradient-to-br from-emerald-950/80 via-slate-900 to-indigo-950/70 border border-emerald-500/25 space-y-3">
+                        <div class="flex items-center gap-2">
+                            <span class="p-1.5 rounded-lg bg-emerald-500/20 text-emerald-400">
+                                <i data-lucide="brain-circuit" class="w-4 h-4"></i>
+                            </span>
+                            <h3 class="text-xs font-extrabold uppercase tracking-wider text-emerald-300">Diagnóstico de tu Ciclo 25</h3>
+                        </div>
+                        <p id="advisor-dynamic-diagnosis" class="text-xs text-slate-200 leading-relaxed"></p>
+                        <div class="pt-2 border-t border-white/10 grid grid-cols-3 gap-2 text-center">
+                            <div class="p-2 rounded-xl bg-black/30 border border-white/5">
+                                <p class="text-[10px] text-slate-400">50% Necesidades</p>
+                                <p id="rule-50-val" class="text-xs font-bold text-white mt-0.5">$ 1.600.000</p>
+                            </div>
+                            <div class="p-2 rounded-xl bg-black/30 border border-white/5">
+                                <p class="text-[10px] text-slate-400">30% Gustos</p>
+                                <p id="rule-30-val" class="text-xs font-bold text-cyan-300 mt-0.5">$ 960.000</p>
+                            </div>
+                            <div class="p-2 rounded-xl bg-black/30 border border-white/5">
+                                <p class="text-[10px] text-slate-400">20% Ahorro</p>
+                                <p id="rule-20-val" class="text-xs font-bold text-emerald-400 mt-0.5">$ 640.000</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TRM EN VIVO CON RESPALDO OFFLINE + CONVERSOR -->
+                    <div class="glass-card rounded-3xl p-4 space-y-3">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h3 class="text-xs font-bold text-white flex items-center gap-1.5">
+                                    <i data-lucide="globe" class="w-4 h-4 text-cyan-400"></i>
+                                    Tasa TRM & Euro en Vivo
+                                </h3>
+                                <p id="trm-last-updated" class="text-[10px] text-slate-400 mt-0.5">Respaldo offline activo</p>
+                            </div>
+                            <button onclick="fetchLiveTRM(true)" id="btn-fetch-trm" class="px-2.5 py-1.5 rounded-xl bg-cyan-500/20 hover:bg-cyan-500/30 border border-cyan-500/30 text-cyan-300 text-[11px] font-bold flex items-center gap-1 transition-all">
+                                <i data-lucide="refresh-cw" class="w-3 h-3"></i> Actualizar TRM
+                            </button>
+                        </div>
+
+                        <!-- Mini Calculadora Divisa -->
+                        <div class="flex items-center gap-2 bg-slate-950/80 border border-white/10 rounded-2xl p-2.5">
+                            <select id="conv-from" onchange="calculateConversion()" class="bg-slate-800 text-white text-xs font-bold px-2 py-1.5 rounded-xl outline-none">
+                                <option value="USD" selected>🇺🇸 USD</option>
+                                <option value="EUR">🇪🇺 EUR</option>
+                            </select>
+                            <input type="number" id="conv-amount" value="50" oninput="calculateConversion()" class="w-20 bg-transparent text-right text-sm font-extrabold text-white outline-none">
+                            <span class="text-slate-500 text-xs">=</span>
+                            <div id="conv-result" class="flex-1 text-right text-xs font-extrabold text-emerald-400 truncate">
+                                $ 217.500 COP
+                            </div>
+                        </div>
+                        
+                        <div class="grid grid-cols-2 gap-2 text-xs">
+                            <div class="flex items-center justify-between p-2.5 rounded-xl bg-white/5">
+                                <span class="text-slate-300">🇺🇸 USD</span>
+                                <input type="number" id="rate-USD" value="4350" onchange="updateExchangeRates()" class="w-20 bg-slate-900 border border-white/10 rounded-lg px-2 py-1 text-right font-bold text-white outline-none">
+                            </div>
+                            <div class="flex items-center justify-between p-2.5 rounded-xl bg-white/5">
+                                <span class="text-slate-300">🇪🇺 EUR</span>
+                                <input type="number" id="rate-EUR" value="4680" onchange="updateExchangeRates()" class="w-20 bg-slate-900 border border-white/10 rounded-lg px-2 py-1 text-right font-bold text-white outline-none">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SEGURIDAD PIN DE 4 DÍGITOS -->
+                    <div class="glass-card rounded-3xl p-4 space-y-3">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-2.5">
+                                <div class="w-8 h-8 rounded-xl bg-amber-500/15 text-amber-400 flex items-center justify-center">
+                                    <i data-lucide="shield" class="w-4 h-4"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-xs font-bold text-white">Bloqueo con PIN (4 dígitos)</h3>
+                                    <p id="pin-status-label" class="text-[10px] text-slate-400">Desactivado</p>
+                                </div>
+                            </div>
+                            <button onclick="togglePinProtection()" id="btn-toggle-pin" class="px-3 py-1.5 rounded-xl bg-amber-500/20 border border-amber-500/30 text-amber-300 text-xs font-bold">
+                                Configurar PIN
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Consejos Financieros Prácticos -->
+                    <div class="space-y-2">
+                        <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400">Consejos Clave en Colombia</h3>
+                        <div id="financial-tips-list" class="space-y-2"></div>
+                    </div>
+
+                    <!-- Configuración Ciclo 25 & Exportación GitHub Pages -->
+                    <div class="glass-card rounded-3xl p-4 space-y-3">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h3 class="text-xs font-bold text-white">Día de Pago Mensual</h3>
+                                <p class="text-[11px] text-slate-400">Reinicia el cálculo diario</p>
+                            </div>
+                            <select id="setting-payday" onchange="updatePaydaySetting()" class="bg-slate-900 border border-emerald-500/40 text-emerald-400 font-bold text-sm rounded-xl px-3 py-2 outline-none">
+                                <option value="25" selected>Día 25</option>
+                                <option value="15">Día 15</option>
+                                <option value="30">Día 30</option>
+                                <option value="1">Día 1</option>
+                            </select>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-2 pt-1">
+                            <button onclick="exportDataJSON()" class="flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 text-emerald-300 text-xs font-semibold transition-all">
+                                <i data-lucide="download" class="w-3.5 h-3.5"></i> Respaldo JSON
+                            </button>
+                            <button onclick="exportDataCSV()" class="flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl bg-indigo-500/15 hover:bg-indigo-500/25 border border-indigo-500/30 text-indigo-300 text-xs font-semibold transition-all">
+                                <i data-lucide="file-spreadsheet" class="w-3.5 h-3.5"></i> Excel CSV
+                            </button>
+                        </div>
+
+                        <button onclick="downloadGitHubPagesBundle()" class="w-full py-2.5 rounded-xl bg-white/10 hover:bg-white/15 border border-white/10 text-white text-xs font-bold flex items-center justify-center gap-2 transition-all">
+                            <i data-lucide="github" class="w-4 h-4"></i> Descargar manifest.json + sw.js para GitHub
+                        </button>
+
+                        <button onclick="resetDemoData()" class="w-full py-2 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/20 text-rose-400 text-[11px] font-semibold transition-all">
+                            Restaurar Datos de Ejemplo COP
+                        </button>
+                    </div>
+                </section>
+
+            </main>
+
+            <!-- BARRA DE NAVEGACIÓN INFERIOR (4 PESTAÑAS + BOTÓN CENTRAL) -->
+            <nav class="absolute bottom-0 left-0 right-0 z-30 bg-[#0b101d]/95 backdrop-blur-xl border-t border-white/10 px-2 pt-2 pb-5 sm:pb-6">
+                <div class="flex items-center justify-between relative">
+                    <button onclick="switchTab('home')" id="nav-home" class="nav-item flex flex-col items-center gap-1 text-emerald-400 w-14 transition-all">
+                        <i data-lucide="home" class="w-5 h-5"></i>
+                        <span class="text-[10px] font-semibold">Inicio</span>
+                    </button>
+
+                    <button onclick="switchTab('analytics')" id="nav-analytics" class="nav-item flex flex-col items-center gap-1 text-slate-400 hover:text-slate-200 w-14 transition-all">
+                        <i data-lucide="pie-chart" class="w-5 h-5"></i>
+                        <span class="text-[10px] font-medium">Analítica</span>
+                    </button>
+
+                    <!-- BOTÓN FLOTANTE CENTRAL (+) -->
+                    <div class="relative -top-5">
+                        <button onclick="openTransactionModal('expense')" class="w-14 h-14 rounded-full bg-gradient-to-tr from-emerald-500 via-teal-400 to-cyan-400 text-slate-950 flex items-center justify-center shadow-glow-emerald hover:scale-105 active:scale-95 transition-all border-4 border-[#090d16]">
+                            <i data-lucide="plus" class="w-7 h-7 stroke-[2.5]"></i>
+                        </button>
+                    </div>
+
+                    <button onclick="switchTab('calendar')" id="nav-calendar" class="nav-item flex flex-col items-center gap-1 text-slate-400 hover:text-slate-200 w-14 transition-all">
+                        <i data-lucide="calendar-days" class="w-5 h-5"></i>
+                        <span class="text-[10px] font-medium">Agenda</span>
+                    </button>
+
+                    <button onclick="switchTab('alerts')" id="nav-alerts" class="nav-item relative flex flex-col items-center gap-1 text-slate-400 hover:text-slate-200 w-14 transition-all">
+                        <span id="nav-alerts-badge" class="hidden absolute top-0 right-3 w-2 h-2 rounded-full bg-rose-500 ring-2 ring-[#0b101d]"></span>
+                        <i data-lucide="bell-ring" class="w-5 h-5"></i>
+                        <span class="text-[10px] font-medium">Alertas</span>
+                    </button>
+
+                    <button onclick="switchTab('advisor')" id="nav-advisor" class="nav-item flex flex-col items-center gap-1 text-slate-400 hover:text-slate-200 w-14 transition-all">
+                        <i data-lucide="sliders-horizontal" class="w-5 h-5"></i>
+                        <span class="text-[10px] font-medium">Más</span>
+                    </button>
+                </div>
+                <div class="hidden sm:block w-32 h-1 bg-white/25 rounded-full mx-auto mt-2"></div>
+            </nav>
+
+            <!-- MODAL BOTTOM-SHEET PARA AGREGAR GASTO O SALDO -->
+            <div id="tx-modal" class="hidden absolute inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-end">
+                <div class="w-full bg-[#111827] border-t border-white/15 rounded-t-3xl p-5 pb-8 space-y-3.5 animate-slide-up shadow-2xl max-h-[92%] overflow-y-auto">
+                    <div class="w-10 h-1 bg-white/20 rounded-full mx-auto"></div>
+
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-base font-bold text-white">Nuevo Movimiento</h3>
+                        <button onclick="closeTransactionModal()" class="p-1.5 rounded-full bg-white/5 text-slate-400 hover:text-white">
+                            <i data-lucide="x" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-1.5 p-1 bg-slate-950 rounded-2xl border border-white/5">
+                        <button type="button" id="type-btn-expense" onclick="setModalType('expense')" class="py-2 rounded-xl text-xs font-bold bg-rose-500 text-white transition-all">
+                            - Registrar Gasto
+                        </button>
+                        <button type="button" id="type-btn-income" onclick="setModalType('income')" class="py-2 rounded-xl text-xs font-bold text-slate-400 hover:text-white transition-all">
+                            + Agregar Saldo / Pago
+                        </button>
+                    </div>
+
+                    <div class="space-y-1">
+                        <label class="text-[11px] text-slate-400 font-medium">Monto</label>
+                        <div class="flex items-center gap-2 bg-slate-950 border border-white/10 focus-within:border-emerald-400 rounded-2xl px-3.5 py-2.5">
+                            <select id="tx-currency" onchange="updateModalConversionPreview()" class="bg-slate-800 text-white text-xs font-bold px-2.5 py-1.5 rounded-xl outline-none">
+                                <option value="COP" selected>COP $</option>
+                                <option value="USD">USD $</option>
+                                <option value="EUR">EUR €</option>
+                            </select>
+                            <input type="number" id="tx-amount" oninput="updateModalConversionPreview()" placeholder="0" class="w-full bg-transparent text-right text-2xl font-extrabold text-white outline-none font-display">
+                        </div>
+                        <p id="tx-cop-preview" class="text-[11px] text-emerald-400 text-right hidden">Equivale a $ 0 COP</p>
+                    </div>
+
+                    <div class="grid grid-cols-3 gap-2">
+                        <div class="col-span-2 space-y-1">
+                            <label class="text-[11px] text-slate-400 font-medium">Concepto</label>
+                            <input type="text" id="tx-title" placeholder="Ej: Almuerzo, Uber..." class="w-full bg-slate-950 border border-white/10 focus:border-emerald-400 rounded-xl px-3 py-2.5 text-xs text-white outline-none">
+                        </div>
+                        <div class="space-y-1">
+                            <label class="text-[11px] text-slate-400 font-medium">Fecha</label>
+                            <input type="date" id="tx-date" class="w-full bg-slate-950 border border-white/10 focus:border-emerald-400 rounded-xl px-2 py-2.5 text-[11px] text-white outline-none">
+                        </div>
+                    </div>
+
+                    <div id="category-selector-group" class="space-y-1.5">
+                        <label class="text-[11px] text-slate-400 font-medium">Categoría</label>
+                        <div class="grid grid-cols-3 gap-2" id="modal-categories"></div>
+                    </div>
+
+                    <button onclick="saveTransaction()" class="w-full py-3.5 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-400 text-slate-950 font-extrabold text-sm shadow-glow-emerald active:scale-98 transition-all">
+                        Guardar Movimiento
+                    </button>
+                </div>
+            </div>
+
+            <!-- MODAL BOTTOM-SHEET PARA BOLSILLOS (CREAR / ABONAR / RETIRAR) -->
+            <div id="pocket-modal" class="hidden absolute inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-end">
+                <div class="w-full bg-[#111827] border-t border-white/15 rounded-t-3xl p-5 pb-8 space-y-3.5 animate-slide-up shadow-2xl">
+                    <div class="w-10 h-1 bg-white/20 rounded-full mx-auto"></div>
+                    <div class="flex items-center justify-between">
+                        <h3 id="pocket-modal-title" class="text-base font-bold text-white">Nuevo Bolsillo de Ahorro</h3>
+                        <button onclick="closePocketModal()" class="p-1.5 rounded-full bg-white/5 text-slate-400 hover:text-white">
+                            <i data-lucide="x" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+
+                    <!-- Formulario Crear Bolsillo -->
+                    <div id="pocket-create-fields" class="space-y-3">
+                        <div class="space-y-1">
+                            <label class="text-[11px] text-slate-400 font-medium">Nombre del Bolsillo</label>
+                            <input type="text" id="pocket-name" placeholder="Ej: Fondo Emergencia, Vacaciones, Arriendo..." class="w-full bg-slate-950 border border-white/10 focus:border-cyan-400 rounded-xl px-3.5 py-2.5 text-xs text-white outline-none">
+                        </div>
+                        <div class="grid grid-cols-2 gap-2.5">
+                            <div class="space-y-1">
+                                <label class="text-[11px] text-slate-400 font-medium">Meta (COP)</label>
+                                <input type="number" id="pocket-target" placeholder="1000000" class="w-full bg-slate-950 border border-white/10 focus:border-cyan-400 rounded-xl px-3 py-2.5 text-xs text-white font-bold outline-none">
+                            </div>
+                            <div class="space-y-1">
+                                <label class="text-[11px] text-slate-400 font-medium">Abono Inicial (COP)</label>
+                                <input type="number" id="pocket-initial" placeholder="200000" class="w-full bg-slate-950 border border-white/10 focus:border-cyan-400 rounded-xl px-3 py-2.5 text-xs text-white font-bold outline-none">
+                            </div>
+                        </div>
+                        <button onclick="saveNewPocket()" class="w-full py-3.5 rounded-2xl bg-gradient-to-r from-cyan-500 to-indigo-500 text-slate-950 font-extrabold text-sm">
+                            Crear Bolsillo
+                        </button>
+                    </div>
+
+                    <!-- Formulario Gestionar Bolsillo Existente -->
+                    <div id="pocket-manage-fields" class="hidden space-y-3">
+                        <div class="p-3 rounded-2xl bg-slate-950 border border-white/10 flex items-center justify-between">
+                            <span class="text-xs text-slate-400">Saldo en este bolsillo:</span>
+                            <span id="manage-pocket-balance" class="text-base font-extrabold text-cyan-400 font-display">$ 0</span>
+                        </div>
+                        <div class="space-y-1">
+                            <label class="text-[11px] text-slate-400 font-medium">Monto a mover (COP)</label>
+                            <input type="number" id="pocket-move-amount" placeholder="50000" class="w-full bg-slate-950 border border-white/10 focus:border-cyan-400 rounded-xl px-3.5 py-2.5 text-lg font-extrabold text-white text-right outline-none">
+                        </div>
+                        <div class="grid grid-cols-2 gap-2.5">
+                            <button onclick="movePocketFunds('deposit')" class="py-3 rounded-xl bg-emerald-500 text-slate-950 font-extrabold text-xs">
+                                + Guardar en Bolsillo
+                            </button>
+                            <button onclick="movePocketFunds('withdraw')" class="py-3 rounded-xl bg-white/10 hover:bg-white/15 text-white font-bold text-xs">
+                                - Liberar a Saldo Libre
+                            </button>
+                        </div>
+                        <button onclick="deleteCurrentPocket()" class="w-full py-2 text-[11px] text-rose-400 hover:underline">
+                            Eliminar bolsillo (devuelve el dinero al saldo libre)
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MODAL BOTTOM-SHEET PARA AGREGAR ALERTA / DEUDA / RECIBO -->
+            <div id="alert-modal" class="hidden absolute inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-end">
+                <div class="w-full bg-[#111827] border-t border-white/15 rounded-t-3xl p-5 pb-8 space-y-3.5 animate-slide-up shadow-2xl max-h-[92%] overflow-y-auto">
+                    <div class="w-10 h-1 bg-white/20 rounded-full mx-auto"></div>
+
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-base font-bold text-white flex items-center gap-2">
+                            <i data-lucide="bell-plus" class="w-4 h-4 text-amber-400"></i>
+                            Programar Alerta / Deuda
+                        </h3>
+                        <button onclick="closeAlertModal()" class="p-1.5 rounded-full bg-white/5 text-slate-400 hover:text-white">
+                            <i data-lucide="x" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+
+                    <div class="flex gap-1.5 overflow-x-auto pb-1">
+                        <button type="button" onclick="fillAlertPreset('Recibo Teléfono / Plan', 'telefono')" class="px-2.5 py-1 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-[10px] text-slate-300 whitespace-nowrap">📱 Recibo Teléfono</button>
+                        <button type="button" onclick="fillAlertPreset('Cuota Tarjeta de Crédito', 'tarjeta')" class="px-2.5 py-1 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-[10px] text-slate-300 whitespace-nowrap">💳 Tarjeta Crédito</button>
+                        <button type="button" onclick="fillAlertPreset('Internet Hogar', 'servicios')" class="px-2.5 py-1 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-[10px] text-slate-300 whitespace-nowrap">🌐 Internet</button>
+                        <button type="button" onclick="fillAlertPreset('Arriendo / Administración', 'hogar')" class="px-2.5 py-1 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-[10px] text-slate-300 whitespace-nowrap">🏠 Arriendo</button>
+                    </div>
+
+                    <div class="space-y-1">
+                        <label class="text-[11px] text-slate-400 font-medium">Nombre del Recibo, Deuda o Recordatorio</label>
+                        <input type="text" id="alert-title" placeholder="Ej: Factura Claro, Tarjeta Bancolombia..." class="w-full bg-slate-950 border border-white/10 focus:border-amber-400 rounded-xl px-3.5 py-2.5 text-xs text-white outline-none">
+                    </div>
+
+                    <div class="space-y-1">
+                        <label class="text-[11px] text-slate-400 font-medium">Monto Estimado a Pagar</label>
+                        <div class="flex items-center gap-2 bg-slate-950 border border-white/10 focus-within:border-amber-400 rounded-2xl px-3 py-2">
+                            <select id="alert-currency" class="bg-slate-800 text-white text-xs font-bold px-2 py-1.5 rounded-xl outline-none">
+                                <option value="COP" selected>COP $</option>
+                                <option value="USD">USD $</option>
+                                <option value="EUR">EUR €</option>
+                            </select>
+                            <input type="number" id="alert-amount" placeholder="85000" class="w-full bg-transparent text-right text-xl font-extrabold text-white outline-none font-display">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-2.5">
+                        <div class="space-y-1">
+                            <label class="text-[11px] text-slate-400 font-medium">Fecha Vencimiento</label>
+                            <input type="date" id="alert-date" class="w-full bg-slate-950 border border-white/10 focus:border-amber-400 rounded-xl px-3 py-2.5 text-xs text-white outline-none">
+                        </div>
+                        <div class="space-y-1">
+                            <label class="text-[11px] text-slate-400 font-medium">Notificarme antes</label>
+                            <select id="alert-advance" class="w-full bg-slate-950 border border-white/10 focus:border-amber-400 rounded-xl px-2.5 py-2.5 text-xs text-white outline-none">
+                                <option value="0">El mismo día</option>
+                                <option value="1" selected>1 día antes</option>
+                                <option value="3">3 días antes</option>
+                                <option value="5">5 días antes</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <label class="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/5 cursor-pointer">
+                        <span class="text-xs text-slate-200 font-medium">Repetir automáticamente cada mes</span>
+                        <input type="checkbox" id="alert-recurring" checked class="w-4 h-4 accent-emerald-500 rounded">
+                    </label>
+
+                    <button onclick="saveAlert()" class="w-full py-3.5 rounded-2xl bg-gradient-to-r from-amber-500 to-orange-400 text-slate-950 font-extrabold text-sm shadow-lg active:scale-98 transition-all">
+                        Guardar Alerta y Activar Recordatorio
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT DE LA APLICACIÓN -->
+    <script>
+        // ==================== CONFIGURACIÓN PWA MANIFEST & SERVICE WORKER ====================
+        const manifestData = {
+            name: "FinFlow COP - Control Ciclo 25",
+            short_name: "FinFlow COP",
+            start_url: ".",
+            display: "standalone",
+            background_color: "#090d16",
+            theme_color: "#090d16",
+            description: "Control de gastos mensuales en Pesos Colombianos con ciclo del día 25, bolsillos, calendario y alertas.",
+            icons: [{
+                src: "https://cdn-icons-png.flaticon.com/512/10149/10149458.png",
+                sizes: "512x512",
+                type: "image/png"
+            }]
+        };
+        const manifestBlob = new Blob([JSON.stringify(manifestData)], {type: 'application/json'});
+        document.getElementById('pwa-manifest').setAttribute('href', URL.createObjectURL(manifestBlob));
+
+        const swCode = `
+            const CACHE_NAME = 'finflow-cop-v3';
+            self.addEventListener('install', (e) => { self.skipWaiting(); });
+            self.addEventListener('activate', (e) => { e.waitUntil(clients.claim()); });
+            self.addEventListener('fetch', (e) => {
+                e.respondWith(fetch(e.request).catch(() => caches.match(e.request)));
+            });
+            self.addEventListener('notificationclick', (e) => {
+                e.notification.close();
+                e.waitUntil(clients.openWindow('./'));
+            });
+        `;
+
+        if ('serviceWorker' in navigator) {
+            const swBlob = new Blob([swCode], { type: 'application/javascript' });
+            navigator.serviceWorker.register(URL.createObjectURL(swBlob)).catch(() => {});
+        }
+
+        let deferredInstallPrompt = null;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredInstallPrompt = e;
+            document.getElementById('pwa-install-banner')?.classList.remove('hidden');
+        });
+
+        async function installPWA() {
+            if (!deferredInstallPrompt) return;
+            deferredInstallPrompt.prompt();
+            await deferredInstallPrompt.userChoice;
+            deferredInstallPrompt = null;
+            document.getElementById('pwa-install-banner')?.classList.add('hidden');
+        }
+
+        // ==================== ESTADO Y DATOS INICIALES ====================
+        const CATEGORIES = [
+            { id: 'comida', name: 'Comida', icon: 'utensils', color: '#f59e0b', bg: 'bg-amber-500/15 text-amber-400' },
+            { id: 'transporte', name: 'Transporte', icon: 'car', color: '#06b6d4', bg: 'bg-cyan-500/15 text-cyan-400' },
+            { id: 'hogar', name: 'Hogar', icon: 'home', color: '#8b5cf6', bg: 'bg-violet-500/15 text-violet-400' },
+            { id: 'servicios', name: 'Recibos', icon: 'smartphone', color: '#f43f5e', bg: 'bg-rose-500/15 text-rose-400' },
+            { id: 'ocio', name: 'Ocio', icon: 'gamepad-2', color: '#ec4899', bg: 'bg-pink-500/15 text-pink-400' },
+            { id: 'salud', name: 'Salud', icon: 'heart-pulse', color: '#10b981', bg: 'bg-emerald-500/15 text-emerald-400' }
+        ];
+
+        function toLocalDateStr(dateObj) {
+            const y = dateObj.getFullYear();
+            const m = String(dateObj.getMonth() + 1).padStart(2, '0');
+            const d = String(dateObj.getDate()).padStart(2, '0');
+            return `${y}-${m}-${d}`;
+        }
+
+        function getRelativeDateStr(daysOffset) {
+            const d = new Date();
+            d.setDate(d.getDate() + daysOffset);
+            return toLocalDateStr(d);
+        }
+
+        const DEFAULT_STATE = {
+            payday: 25,
+            displayCurrency: 'COP',
+            reserveDebtsInDaily: true,
+            gmfLimitCOP: 18300000, // ~350 UVT Colombia
+            pinCode: '', // Vacío = desactivado
+            trmUpdatedAt: 'Tasa base offline',
+            rates: {
+                COP: 1,
+                USD: 4350,
+                EUR: 4680
+            },
+            pockets: [
+                { id: 1, name: 'Fondo Emergencia', savedCOP: 350000, targetCOP: 1500000, icon: 'shield-alert', color: 'from-cyan-500 to-blue-600' },
+                { id: 2, name: 'Vacaciones / Viaje', savedCOP: 150000, targetCOP: 800000, icon: 'plane', color: 'from-emerald-500 to-teal-600' }
+            ],
+            transactions: [
+                { id: 1, type: 'income', title: 'Pago Mensual (Día 25)', amountCOP: 3200000, category: 'ingreso', date: getRelativeDateStr(-20) },
+                { id: 2, type: 'expense', title: 'Arriendo y Administración', amountCOP: 850000, category: 'hogar', date: getRelativeDateStr(-18) },
+                { id: 3, type: 'expense', title: 'Mercado Carulla / D1', amountCOP: 285000, category: 'comida', date: getRelativeDateStr(-11) },
+                { id: 4, type: 'expense', title: 'Uber y Gasolina', amountCOP: 115000, category: 'transporte', date: getRelativeDateStr(-5) },
+                { id: 5, type: 'expense', title: 'Almuerzo Ejecutivo & Café', amountCOP: 32000, category: 'comida', date: getRelativeDateStr(0) }
+            ],
+            alerts: [
+                { id: 101, title: 'Recibo Plan Teléfono Celular', amountCOP: 68900, dueDate: getRelativeDateStr(2), advanceDays: 1, recurring: true, paid: false, icon: 'smartphone' },
+                { id: 102, title: 'Cuota Tarjeta de Crédito', amountCOP: 340000, dueDate: getRelativeDateStr(5), advanceDays: 3, recurring: true, paid: false, icon: 'credit-card' },
+                { id: 103, title: 'Internet Fibra Óptica', amountCOP: 95000, dueDate: getRelativeDateStr(8), advanceDays: 1, recurring: true, paid: false, icon: 'wifi' }
+            ]
+        };
+
+        let savedRaw = JSON.parse(localStorage.getItem('finflow_cop_state'));
+        let appState = savedRaw ? { ...DEFAULT_STATE, ...savedRaw } : JSON.parse(JSON.stringify(DEFAULT_STATE));
+        if (!appState.pockets) appState.pockets = DEFAULT_STATE.pockets;
+        if (!appState.alerts) appState.alerts = DEFAULT_STATE.alerts;
+        if (!appState.gmfLimitCOP) appState.gmfLimitCOP = 18300000;
+
+        let currentFilter = 'all';
+        let modalType = 'expense';
+        let selectedCategory = 'comida';
+        let selectedAlertPresetIcon = 'bell';
+        let activePocketId = null;
+
+        let calendarViewDate = new Date();
+        let selectedCalendarDate = toLocalDateStr(new Date());
+
+        function saveState() {
+            localStorage.setItem('finflow_cop_state', JSON.stringify(appState));
+        }
+
+        // ==================== FORMATEO DE MONEDA ====================
+        function formatMoney(amountCOP, currency = appState.displayCurrency, showCode = false) {
+            const rate = appState.rates[currency] || 1;
+            const converted = amountCOP / rate;
+
+            if (currency === 'COP') {
+                const formatted = Math.round(converted).toLocaleString('es-CO');
+                return `$ ${formatted}${showCode ? ' COP' : ''}`;
+            } else {
+                const symbol = currency === 'EUR' ? '€' : '$';
+                const formatted = converted.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                return `${symbol} ${formatted}${showCode ? ' ' + currency : ''}`;
+            }
+        }
+
+        // ==================== TASA TRM Y EURO EN VIVO CON RESPALDO OFFLINE ====================
+        async function fetchLiveTRM(showToast = false) {
+            const btn = document.getElementById('btn-fetch-trm');
+            if (btn) btn.innerHTML = `<i data-lucide="loader-2" class="w-3 h-3 animate-spin"></i> Consultando...`;
+            lucide.createIcons();
+
+            try {
+                const res = await fetch('https://open.er-api.com/v6/latest/USD');
+                const data = await res.json();
+                if (data && data.rates && data.rates.COP) {
+                    const usdToCop = Math.round(data.rates.COP);
+                    const usdToEur = data.rates.EUR || 0.92;
+                    const eurToCop = Math.round(usdToCop / usdToEur);
+
+                    appState.rates.USD = usdToCop;
+                    appState.rates.EUR = eurToCop;
+                    const nowStr = new Date().toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' });
+                    appState.trmUpdatedAt = `TRM en vivo • Hoy ${nowStr}`;
+
+                    document.getElementById('rate-USD').value = usdToCop;
+                    document.getElementById('rate-EUR').value = eurToCop;
+                    saveState();
+                    renderAll();
+                    if (showToast) showNotification(`TRM actualizada: 1 USD = $${usdToCop.toLocaleString('es-CO')} COP`);
+                }
+            } catch (err) {
+                if (showToast) showNotification('Sin conexión: usando última TRM guardada offline.');
+            } finally {
+                if (btn) btn.innerHTML = `<i data-lucide="refresh-cw" class="w-3 h-3"></i> Actualizar TRM`;
+                lucide.createIcons();
+            }
+        }
+
+        // ==================== PARSER DE LENGUAJE NATURAL Y VOZ (es-CO) ====================
+        function parseNaturalExpenseText(rawText) {
+            const text = rawText.trim();
+            if (!text) return null;
+
+            const lower = text.toLowerCase();
+            let amount = 0;
+
+            // Detectar patrones como "22 mil", "15.5 mil", "200k", "15.500", "22,000", "8500"
+            const milMatch = lower.match(/(\d+(?:[.,]\d+)?)\s*(?:mil|k)\b/);
+            if (milMatch) {
+                const num = parseFloat(milMatch[1].replace(',', '.'));
+                amount = Math.round(num * 1000);
+            } else {
+                const numMatch = lower.match(/(\d{1,3}(?:[.,]\d{3})+|\d+)/);
+                if (numMatch) {
+                    amount = parseInt(numMatch[1].replace(/[.,]/g, ''), 10);
+                }
+            }
+
+            if (!amount || amount <= 0) return null;
+
+            // Detectar si es ingreso o gasto
+            const isIncome = /(pago|sueldo|ingreso|abono|me pagaron|recibi|recibí|extra|bono)/i.test(lower);
+            const type = isIncome ? 'income' : 'expense';
+
+            // Detectar categoría por palabras clave colombianas
+            let category = 'comida';
+            if (/(uber|didi|indriver|taxi|bus|transmilenio|mio|metro|gasolina|parqueadero|peaje)/i.test(lower)) category = 'transporte';
+            else if (/(arriendo|administracion|administración|aseo|hogar|mueble)/i.test(lower)) category = 'hogar';
+            else if (/(recibo|luz|agua|gas|internet|claro|movistar|tigo|wom|celular|plan|tarjeta)/i.test(lower)) category = 'servicios';
+            else if (/(cine|cerveza|pola|fiesta|netflix|spotify|juego|salida|bar)/i.test(lower)) category = 'ocio';
+            else if (/(drogueria|farmacia|medico|médico|salud|gym|gimnasio|eps)/i.test(lower)) category = 'salud';
+
+            // Limpiar concepto
+            let cleanTitle = text
+                .replace(/(\d+(?:[.,]\d+)?)\s*(?:mil|k)\b/gi, '')
+                .replace(/(\d{1,3}(?:[.,]\d{3})+|\d+)/g, '')
+                .replace(/\b(en|de|por|pesos|cop)\b/gi, '')
+                .trim();
+            if (!cleanTitle) {
+                cleanTitle = isIncome ? 'Ingreso rápido' : (CATEGORIES.find(c => c.id === category)?.name || 'Gasto rápido');
+            } else {
+                cleanTitle = cleanTitle.charAt(0).toUpperCase() + cleanTitle.slice(1);
+            }
+
+            return { type, title: cleanTitle, amountCOP: amount, category };
+        }
+
+        function previewNaturalInput() {
+            const val = document.getElementById('quick-nlp-input').value;
+            const parsed = parseNaturalExpenseText(val);
+            const bar = document.getElementById('nlp-preview-bar');
+
+            if (!parsed) {
+                bar.classList.add('hidden');
+                return;
+            }
+
+            bar.classList.remove('hidden');
+            const catObj = CATEGORIES.find(c => c.id === parsed.category);
+            document.getElementById('nlp-preview-text').textContent = `${parsed.type === 'income' ? '+' : '-'} ${parsed.title}: ${formatMoney(parsed.amountCOP, 'COP', true)}`;
+            document.getElementById('nlp-preview-cat').textContent = parsed.type === 'income' ? 'Ingreso' : (catObj ? catObj.name : 'Gasto');
+        }
+
+        function commitNaturalInput() {
+            const inputEl = document.getElementById('quick-nlp-input');
+            const parsed = parseNaturalExpenseText(inputEl.value);
+            if (!parsed) {
+                showNotification('Escribe algo como: "Almuerzo 22 mil" o "Uber 15.000"');
+                return;
+            }
+
+            appState.transactions.unshift({
+                id: Date.now(),
+                type: parsed.type,
+                title: parsed.title,
+                amountCOP: parsed.amountCOP,
+                category: parsed.type === 'income' ? 'ingreso' : parsed.category,
+                date: toLocalDateStr(new Date())
+            });
+
+            inputEl.value = '';
+            document.getElementById('nlp-preview-bar').classList.add('hidden');
+            saveState();
+            renderAll();
+            showNotification(`Registrado: ${parsed.title} (${formatMoney(parsed.amountCOP, 'COP', true)})`);
+        }
+
+        function startVoiceRecognition() {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            const micBtn = document.getElementById('voice-mic-btn');
+
+            if (!SpeechRecognition) {
+                simulateQuickVoiceInput();
+                return;
+            }
+
+            const recognition = new SpeechRecognition();
+            recognition.lang = 'es-CO';
+            recognition.interimResults = false;
+
+            micBtn.classList.add('bg-rose-500', 'text-white', 'animate-pulse');
+            showNotification('Escuchando... Di por ejemplo: "Almuerzo 24 mil"');
+
+            recognition.onresult = (event) => {
+                const transcript = event.results[0][0].transcript;
+                document.getElementById('quick-nlp-input').value = transcript;
+                previewNaturalInput();
+                commitNaturalInput();
+            };
+
+            recognition.onerror = () => {
+                showNotification('No se pudo captar voz. Escribe el monto en la barra.');
+            };
+
+            recognition.onend = () => {
+                micBtn.classList.remove('bg-rose-500', 'text-white', 'animate-pulse');
+            };
+
+            recognition.start();
+        }
+
+        function simulateQuickVoiceInput() {
+            const samples = ['Almuerzo corriente 24 mil', 'Uber al trabajo 16.500', 'Café y pan 9 mil'];
+            const pick = samples[Math.floor(Math.random() * samples.length)];
+            const inputEl = document.getElementById('quick-nlp-input');
+            inputEl.value = pick;
+            previewNaturalInput();
+            showNotification(`Voz detectada: "${pick}" — Toca Añadir para guardar.`);
+        }
+
+        // ==================== BOLSILLOS / METAS (MODO SIN CULPA) ====================
+        function renderPocketsCarousel() {
+            const container = document.getElementById('pockets-carousel');
+            container.innerHTML = '';
+
+            appState.pockets.forEach(p => {
+                const pct = Math.min(100, Math.round((p.savedCOP / Math.max(1, p.targetCOP)) * 100));
+                container.insertAdjacentHTML('beforeend', `
+                    <div onclick="openManagePocketModal(${p.id})" class="cursor-pointer min-w-[165px] glass-card rounded-2xl p-3 space-y-2 border border-white/10 hover:border-cyan-400/40 transition-all flex-shrink-0">
+                        <div class="flex items-center justify-between">
+                            <span class="w-7 h-7 rounded-lg bg-gradient-to-br ${p.color || 'from-cyan-500 to-indigo-600'} text-white flex items-center justify-center">
+                                <i data-lucide="${p.icon || 'piggy-bank'}" class="w-3.5 h-3.5"></i>
+                            </span>
+                            <span class="text-[10px] font-bold text-cyan-300">${pct}%</span>
+                        </div>
+                        <div>
+                            <p class="text-xs font-bold text-white truncate">${p.name}</p>
+                            <p class="text-xs font-extrabold text-cyan-300 font-display mt-0.5">${formatMoney(p.savedCOP)}</p>
+                            <p class="text-[9px] text-slate-400">Meta: ${formatMoney(p.targetCOP)}</p>
+                        </div>
+                        <div class="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden">
+                            <div class="h-full bg-gradient-to-r from-cyan-400 to-emerald-400 rounded-full" style="width: ${pct}%"></div>
+                        </div>
+                    </div>
+                `);
+            });
+        }
+
+        function openPocketModal() {
+            activePocketId = null;
+            document.getElementById('pocket-modal').classList.remove('hidden');
+            document.getElementById('pocket-modal-title').textContent = 'Nuevo Bolsillo de Ahorro';
+            document.getElementById('pocket-create-fields').classList.remove('hidden');
+            document.getElementById('pocket-manage-fields').classList.add('hidden');
+            document.getElementById('pocket-name').value = '';
+            document.getElementById('pocket-target').value = '';
+            document.getElementById('pocket-initial').value = '';
+        }
+
+        function openManagePocketModal(id) {
+            const pocket = appState.pockets.find(p => p.id === id);
+            if (!pocket) return;
+            activePocketId = id;
+            document.getElementById('pocket-modal').classList.remove('hidden');
+            document.getElementById('pocket-modal-title').textContent = `Bolsillo: ${pocket.name}`;
+            document.getElementById('pocket-create-fields').classList.add('hidden');
+            document.getElementById('pocket-manage-fields').classList.remove('hidden');
+            document.getElementById('manage-pocket-balance').textContent = formatMoney(pocket.savedCOP, 'COP', true);
+            document.getElementById('pocket-move-amount').value = '';
+        }
+
+        function closePocketModal() {
+            document.getElementById('pocket-modal').classList.add('hidden');
+        }
+
+        function saveNewPocket() {
+            const name = document.getElementById('pocket-name').value.trim();
+            const targetCOP = parseInt(document.getElementById('pocket-target').value, 10) || 500000;
+            const savedCOP = parseInt(document.getElementById('pocket-initial').value, 10) || 0;
+
+            if (!name) {
+                showNotification('Escribe un nombre para tu bolsillo.');
+                return;
+            }
+
+            appState.pockets.push({
+                id: Date.now(),
+                name,
+                savedCOP,
+                targetCOP,
+                icon: 'piggy-bank',
+                color: 'from-cyan-500 to-emerald-500'
+            });
+
+            saveState();
+            closePocketModal();
+            renderAll();
+            showNotification(`Bolsillo "${name}" creado.`);
+        }
+
+        function movePocketFunds(direction) {
+            const pocket = appState.pockets.find(p => p.id === activePocketId);
+            const amount = parseInt(document.getElementById('pocket-move-amount').value, 10);
+            if (!pocket || !amount || amount <= 0) return;
+
+            if (direction === 'deposit') {
+                pocket.savedCOP += amount;
+                showNotification(`Guardados ${formatMoney(amount, 'COP', true)} en ${pocket.name}.`);
+            } else {
+                const actualWithdraw = Math.min(pocket.savedCOP, amount);
+                pocket.savedCOP -= actualWithdraw;
+                showNotification(`Liberados ${formatMoney(actualWithdraw, 'COP', true)} a tu Saldo Libre.`);
+            }
+
+            saveState();
+            closePocketModal();
+            renderAll();
+        }
+
+        function deleteCurrentPocket() {
+            appState.pockets = appState.pockets.filter(p => p.id !== activePocketId);
+            saveState();
+            closePocketModal();
+            renderAll();
+            showNotification('Bolsillo eliminado. El dinero regresó a tu Saldo Libre.');
+        }
+
+        // ==================== LÓGICA DEL CICLO DE PAGO (DÍA 25) ====================
+        function getCycleMetrics() {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const payDay = parseInt(appState.payday) || 25;
+
+            let cycleStart = new Date(today.getFullYear(), today.getMonth(), payDay);
+            let nextPayDate = new Date(today.getFullYear(), today.getMonth(), payDay);
+
+            if (today.getDate() >= payDay) {
+                cycleStart = new Date(today.getFullYear(), today.getMonth(), payDay);
+                nextPayDate = new Date(today.getFullYear(), today.getMonth() + 1, payDay);
+            } else {
+                cycleStart = new Date(today.getFullYear(), today.getMonth() - 1, payDay);
+                nextPayDate = new Date(today.getFullYear(), today.getMonth(), payDay);
+            }
+
+            const msPerDay = 1000 * 60 * 60 * 24;
+            const totalDaysInCycle = Math.max(1, Math.round((nextPayDate - cycleStart) / msPerDay));
+            const daysElapsed = Math.max(1, Math.round((today - cycleStart) / msPerDay));
+            const daysRemaining = Math.max(1, Math.round((nextPayDate - today) / msPerDay));
+            const progressPercent = Math.min(100, Math.max(5, Math.round((daysElapsed / totalDaysInCycle) * 100)));
+
+            const monthsShort = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+            const rangeText = `${cycleStart.getDate()} ${monthsShort[cycleStart.getMonth()]} – ${nextPayDate.getDate()} ${monthsShort[nextPayDate.getMonth()]}`;
+
+            return { cycleStart, nextPayDate, daysRemaining, totalDaysInCycle, daysElapsed, progressPercent, rangeText };
+        }
+
+        function getDaysUntilDate(dateStr) {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const [y, m, d] = dateStr.split('-').map(Number);
+            const target = new Date(y, m - 1, d);
+            return Math.round((target - today) / (1000 * 60 * 60 * 24));
+        }
+
+        // ==================== RENDERIZADO PRINCIPAL ====================
+        function renderAll() {
+            const metrics = getCycleMetrics();
+
+            let totalIncome = 0;
+            let totalExpense = 0;
+            let currentMonthExpenses = 0;
+            const currentYearMonth = toLocalDateStr(new Date()).slice(0, 7);
+
+            appState.transactions.forEach(tx => {
+                if (tx.type === 'income') {
+                    totalIncome += tx.amountCOP;
+                } else {
+                    totalExpense += tx.amountCOP;
+                    if (tx.date.startsWith(currentYearMonth)) {
+                        currentMonthExpenses += tx.amountCOP;
+                    }
+                }
+            });
+
+            const totalPocketsCOP = appState.pockets.reduce((sum, p) => sum + p.savedCOP, 0);
+            const pendingAlerts = appState.alerts.filter(a => !a.paid);
+            const totalPendingDebtsCOP = pendingAlerts.reduce((acc, a) => acc + a.amountCOP, 0);
+
+            const totalPatrimonyCOP = totalIncome - totalExpense;
+            const freeBalanceCOP = totalPatrimonyCOP - totalPocketsCOP;
+            const spendableForDailyCOP = appState.reserveDebtsInDaily
+                ? Math.max(0, freeBalanceCOP - totalPendingDebtsCOP)
+                : Math.max(0, freeBalanceCOP);
+            const dailyBudgetCOP = spendableForDailyCOP / metrics.daysRemaining;
+
+            // Dashboard Inicio
+            document.getElementById('cycle-date-range').textContent = metrics.rangeText;
+            document.getElementById('payday-label').textContent = appState.payday;
+            document.getElementById('days-left-count').textContent = `${metrics.daysRemaining} ${metrics.daysRemaining === 1 ? 'día' : 'días'}`;
+            document.getElementById('cycle-percent-text').textContent = `${metrics.progressPercent}% transcurrido`;
+            document.getElementById('cycle-progress-bar').style.width = `${metrics.progressPercent}%`;
+
+            document.getElementById('main-balance-display').textContent = formatMoney(freeBalanceCOP);
+            document.getElementById('main-currency-label').textContent = appState.displayCurrency;
+            document.getElementById('total-patrimony-label').textContent = `Con bolsillos: ${formatMoney(totalPatrimonyCOP)}`;
+
+            if (appState.displayCurrency === 'COP') {
+                document.getElementById('secondary-balance-display').textContent = `≈ ${formatMoney(freeBalanceCOP, 'USD', true)} • TRM $${appState.rates.USD.toLocaleString('es-CO')}`;
+            } else {
+                document.getElementById('secondary-balance-display').textContent = `Equivalente: ${formatMoney(freeBalanceCOP, 'COP', true)}`;
+            }
+
+            const pill = document.getElementById('reserve-debts-pill');
+            pill.textContent = appState.reserveDebtsInDaily ? 'Deudas reservadas' : 'Sin reservar deudas';
+            pill.className = appState.reserveDebtsInDaily
+                ? 'text-[9px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-semibold'
+                : 'text-[9px] px-1.5 py-0.5 rounded bg-white/5 text-slate-400 border border-white/10 font-medium';
+
+            document.getElementById('daily-budget-display').innerHTML = `${formatMoney(dailyBudgetCOP)} <span class="text-[10px] font-normal text-slate-400">/ día</span>`;
+            document.getElementById('total-income-display').textContent = formatMoney(totalIncome);
+            document.getElementById('total-expense-display').textContent = formatMoney(totalExpense);
+
+            ['COP', 'USD', 'EUR'].forEach(curr => {
+                const btn = document.getElementById(`curr-btn-${curr}`);
+                btn.className = curr === appState.displayCurrency
+                    ? 'px-2 py-1 rounded-full bg-emerald-500 text-slate-950 transition-all shadow-sm'
+                    : 'px-2 py-1 rounded-full text-slate-400 hover:text-white transition-all';
+            });
+
+            document.getElementById('trm-last-updated').textContent = appState.trmUpdatedAt || 'Respaldo offline';
+
+            // PIN UI
+            const lockBtn = document.getElementById('header-lock-btn');
+            const pinStatus = document.getElementById('pin-status-label');
+            const pinToggleBtn = document.getElementById('btn-toggle-pin');
+            if (appState.pinCode) {
+                lockBtn.classList.remove('hidden');
+                pinStatus.textContent = 'Activo (PIN de 4 dígitos configurado)';
+                pinToggleBtn.textContent = 'Desactivar PIN';
+            } else {
+                lockBtn.classList.add('hidden');
+                pinStatus.textContent = 'Desactivado';
+                pinToggleBtn.textContent = 'Activar PIN';
+            }
+
+            renderPocketsCarousel();
+            renderHomeUpcomingAlerts(pendingAlerts);
+            renderTransactionsList();
+            renderAnalyticsView(totalIncome, totalExpense, freeBalanceCOP, currentMonthExpenses, metrics);
+            renderCalendar();
+            renderAlertsView(pendingAlerts, totalPendingDebtsCOP);
+            renderAdvisorView(totalIncome, freeBalanceCOP, dailyBudgetCOP, totalPendingDebtsCOP, metrics);
+            updateNotificationPermissionUI();
+
+            lucide.createIcons();
+        }
+
+        // ==================== VISTA ANALÍTICA: BURN RATE, DONUT SVG & 4x1000 ====================
+        function renderAnalyticsView(totalIncome, totalExpense, freeBalanceCOP, currentMonthExpenses, metrics) {
+            // 1. Burn Rate
+            const budgetBase = Math.max(1, totalIncome);
+            const moneyPct = Math.min(100, Math.round((totalExpense / budgetBase) * 100));
+            const timePct = metrics.progressPercent;
+
+            document.getElementById('burn-time-pct').textContent = `${timePct}%`;
+            document.getElementById('burn-time-bar').style.width = `${timePct}%`;
+            document.getElementById('burn-money-pct').textContent = `${moneyPct}%`;
+            document.getElementById('burn-money-bar').style.width = `${moneyPct}%`;
+
+            const badge = document.getElementById('burn-rate-badge');
+            const moneyBar = document.getElementById('burn-money-bar');
+            const projEl = document.getElementById('burn-rate-projection');
+
+            const avgDailyBurn = totalExpense / Math.max(1, metrics.daysElapsed);
+            const daysUntilZero = avgDailyBurn > 0 ? Math.floor(Math.max(0, freeBalanceCOP) / avgDailyBurn) : 99;
+
+            if (moneyPct > timePct + 12) {
+                badge.textContent = 'Ritmo Acelerado ⚠️';
+                badge.className = 'px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-rose-500/20 text-rose-400';
+                moneyBar.className = 'h-full bg-rose-500 rounded-full transition-all';
+                projEl.innerHTML = `Estás gastando un <strong>${moneyPct - timePct}% más rápido</strong> de lo ideal. Al ritmo actual (${formatMoney(avgDailyBurn)}/día), tu saldo libre se agotaría en <strong>${daysUntilZero} días</strong>.`;
+            } else {
+                badge.textContent = 'Ritmo Óptimo ✓';
+                badge.className = 'px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-500/20 text-emerald-400';
+                moneyBar.className = 'h-full bg-emerald-400 rounded-full transition-all';
+                projEl.innerHTML = `¡Excelente control! Tu gasto va por debajo del avance del calendario. Promedio diario: <strong>${formatMoney(avgDailyBurn)}</strong>.`;
+            }
+
+            // 2. Gráfico de Anillo SVG por Categorías
+            document.getElementById('donut-total-label').textContent = formatMoney(totalExpense);
+            const svgEl = document.getElementById('category-donut-svg');
+            const legendEl = document.getElementById('category-donut-legend');
+            svgEl.innerHTML = '';
+            legendEl.innerHTML = '';
+
+            const catTotals = CATEGORIES.map(c => {
+                const sum = appState.transactions
+                    .filter(t => t.type === 'expense' && t.category === c.id)
+                    .reduce((acc, t) => acc + t.amountCOP, 0);
+                return { ...c, sum };
+            }).filter(c => c.sum > 0).sort((a, b) => b.sum - a.sum);
+
+            if (catTotals.length === 0) {
+                svgEl.innerHTML = `<circle cx="18" cy="18" r="14" fill="transparent" stroke="#1e293b" stroke-width="4"></circle>`;
+                document.getElementById('donut-top-cat').textContent = 'Sin gastos';
+            } else {
+                document.getElementById('donut-top-cat').textContent = catTotals[0].name;
+                let cumulativePct = 0;
+                const radius = 14;
+                const circumference = 2 * Math.PI * radius;
+
+                catTotals.forEach(item => {
+                    const pct = (item.sum / Math.max(1, totalExpense)) * 100;
+                    const dashArray = `${(pct / 100) * circumference} ${circumference}`;
+                    const dashOffset = -((cumulativePct / 100) * circumference);
+                    cumulativePct += pct;
+
+                    svgEl.insertAdjacentHTML('beforeend', `
+                        <circle cx="18" cy="18" r="${radius}" fill="transparent"
+                            stroke="${item.color}" stroke-width="4.2"
+                            stroke-dasharray="${dashArray}" stroke-dashoffset="${dashOffset}" />
+                    `);
+
+                    legendEl.insertAdjacentHTML('beforeend', `
+                        <div class="flex items-center justify-between">
+                            <span class="flex items-center gap-1.5 text-slate-300 truncate">
+                                <span class="w-2 h-2 rounded-full flex-shrink-0" style="background:${item.color}"></span>
+                                ${item.name}
+                            </span>
+                            <span class="font-bold text-white">${Math.round(pct)}%</span>
+                        </div>
+                    `);
+                });
+            }
+
+            // 3. Medidor Exención 4x1000 (350 UVT)
+            const gmfPct = Math.min(100, (currentMonthExpenses / appState.gmfLimitCOP) * 100);
+            document.getElementById('gmf-percent-badge').textContent = `${gmfPct.toFixed(1)}%`;
+            document.getElementById('gmf-progress-bar').style.width = `${Math.max(3, gmfPct)}%`;
+            document.getElementById('gmf-used-amount').textContent = formatMoney(currentMonthExpenses);
+            document.getElementById('gmf-limit-amount').textContent = formatMoney(appState.gmfLimitCOP);
+
+            // 4. Calculadora Cuotas Tarjeta Crédito
+            calculateCreditCardInstallments();
+        }
+
+        function calculateCreditCardInstallments() {
+            const P = parseFloat(document.getElementById('cc-amount')?.value) || 0;
+            const n = Math.max(1, parseInt(document.getElementById('cc-months')?.value, 10) || 1);
+            const ea = parseFloat(document.getElementById('cc-ea-rate')?.value) || 0;
+
+            // Conversión Efectiva Anual (E.A.) a Mes Vencido (M.V.): (1 + EA)^(1/12) - 1
+            const mv = Math.pow(1 + ea / 100, 1 / 12) - 1;
+            let monthlyPayment = P / n;
+            if (n > 1 && mv > 0) {
+                monthlyPayment = (P * mv) / (1 - Math.pow(1 + mv, -n));
+            }
+            const totalPaid = monthlyPayment * n;
+            const totalInterest = Math.max(0, totalPaid - P);
+
+            document.getElementById('cc-mv-result').textContent = `${(mv * 100).toFixed(2)}%`;
+            document.getElementById('cc-monthly-result').textContent = formatMoney(monthlyPayment, 'COP');
+            document.getElementById('cc-interest-result').textContent = formatMoney(totalInterest, 'COP');
+        }
+
+        // ==================== EXPORTAR ALERTAS A CALENDARIO NATIVO (.ICS) ====================
+        function exportCalendarICS() {
+            const metrics = getCycleMetrics();
+            const pad = (n) => String(n).padStart(2, '0');
+            const formatICSDate = (dateStr) => dateStr.replace(/-/g, '');
+            const nowStamp = new Date().toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+
+            let icsLines = [
+                'BEGIN:VCALENDAR',
+                'VERSION:2.0',
+                'PRODID:-//FinFlow COP//Control Financiero Ciclo 25//ES',
+                'CALSCALE:GREGORIAN',
+                'METHOD:PUBLISH'
+            ];
+
+            // Evento recurrente día de pago 25
+            const nextPayStr = toLocalDateStr(metrics.nextPayDate);
+            icsLines.push(
+                'BEGIN:VEVENT',
+                `UID:finflow-payday-${appState.payday}@finflow.app`,
+                `DTSTAMP:${nowStamp}`,
+                `DTSTART;VALUE=DATE:${formatICSDate(nextPayStr)}`,
+                `RRULE:FREQ=MONTHLY;BYMONTHDAY=${appState.payday}`,
+                `SUMMARY:💰 Día de Pago Mensual (Ciclo ${appState.payday} - FinFlow COP)`,
+                'DESCRIPTION:Revisa tu presupuesto diario y separa tus bolsillos de ahorro en FinFlow COP.',
+                'BEGIN:VALARM',
+                'TRIGGER:-PT9H',
+                'ACTION:DISPLAY',
+                'DESCRIPTION:Hoy es día de pago en FinFlow COP',
+                'END:VALARM',
+                'END:VEVENT'
+            );
+
+            // Eventos por cada alerta de deuda/recibo pendiente
+            appState.alerts.filter(a => !a.paid).forEach(al => {
+                icsLines.push(
+                    'BEGIN:VEVENT',
+                    `UID:finflow-alert-${al.id}@finflow.app`,
+                    `DTSTAMP:${nowStamp}`,
+                    `DTSTART;VALUE=DATE:${formatICSDate(al.dueDate)}`,
+                    ...(al.recurring ? ['RRULE:FREQ=MONTHLY'] : []),
+                    `SUMMARY:⚠️ Pagar: ${al.title} (${formatMoney(al.amountCOP, 'COP', true)})`,
+                    `DESCRIPTION:Recordatorio automático de FinFlow COP. Monto estimado: ${formatMoney(al.amountCOP, 'COP', true)}.`,
+                    'BEGIN:VALARM',
+                    'TRIGGER:-P1D',
+                    'ACTION:DISPLAY',
+                    `DESCRIPTION:Mañana vence: ${al.title}`,
+                    'END:VALARM',
+                    'END:VEVENT'
+                );
+            });
+
+            icsLines.push('END:VCALENDAR');
+
+            const blob = new Blob([icsLines.join('\r\n')], { type: 'text/calendar;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `finflow_cop_recordatorios.ics`;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+
+            showNotification('Archivo .ics descargado. Ábrelo para añadir tus alertas a Google / Apple Calendar.');
+        }
+
+        // ==================== SEGURIDAD PIN DE 4 DÍGITOS ====================
+        let enteredPinBuffer = '';
+
+        function togglePinProtection() {
+            if (appState.pinCode) {
+                appState.pinCode = '';
+                saveState();
+                renderAll();
+                showNotification('Bloqueo con PIN desactivado.');
+            } else {
+                const newPin = prompt('Crea un PIN numérico de 4 dígitos (ej: 1234):');
+                if (newPin && /^\d{4}$/.test(newPin.trim())) {
+                    appState.pinCode = newPin.trim();
+                    saveState();
+                    renderAll();
+                    showNotification(`PIN configurado (${appState.pinCode}). Usa el candado superior para bloquear.`);
+                } else if (newPin !== null) {
+                    showNotification('El PIN debe tener exactamente 4 números.');
+                }
+            }
+        }
+
+        function lockAppWithPin() {
+            if (!appState.pinCode) {
+                appState.pinCode = '1234';
+                saveState();
+                renderAll();
+                showNotification('PIN de prueba activado: 1234');
+            }
+            enteredPinBuffer = '';
+            updatePinDotsUI();
+            document.getElementById('pin-lock-screen').classList.remove('hidden');
+            lucide.createIcons();
+        }
+
+        function enterPinDigit(digit) {
+            if (enteredPinBuffer.length >= 4) return;
+            enteredPinBuffer += digit;
+            updatePinDotsUI();
+
+            if (enteredPinBuffer.length === 4) {
+                setTimeout(() => {
+                    if (enteredPinBuffer === appState.pinCode) {
+                        document.getElementById('pin-lock-screen').classList.add('hidden');
+                        enteredPinBuffer = '';
+                        updatePinDotsUI();
+                    } else {
+                        const dots = document.getElementById('pin-dots');
+                        dots.classList.add('animate-shake');
+                        document.getElementById('pin-prompt-text').textContent = 'PIN incorrecto, intenta de nuevo';
+                        setTimeout(() => {
+                            dots.classList.remove('animate-shake');
+                            enteredPinBuffer = '';
+                            updatePinDotsUI();
+                        }, 400);
+                    }
+                }, 120);
+            }
+        }
+
+        function backspacePinDigit() {
+            enteredPinBuffer = enteredPinBuffer.slice(0, -1);
+            updatePinDotsUI();
+        }
+
+        function updatePinDotsUI() {
+            const spans = document.querySelectorAll('#pin-dots span');
+            spans.forEach((sp, idx) => {
+                sp.className = idx < enteredPinBuffer.length
+                    ? 'w-3.5 h-3.5 rounded-full bg-emerald-400 border-2 border-emerald-400 scale-110 transition-all'
+                    : 'w-3.5 h-3.5 rounded-full border-2 border-emerald-400 transition-all';
+            });
+        }
+
+        // ==================== DESCARGA PAQUETE GITHUB PAGES ====================
+        function downloadGitHubPagesBundle() {
+            const mBlob = new Blob([JSON.stringify(manifestData, null, 2)], { type: 'application/json' });
+            const a1 = document.createElement('a');
+            a1.href = URL.createObjectURL(mBlob);
+            a1.download = 'manifest.json';
+            a1.click();
+
+            const sBlob = new Blob([swCode], { type: 'application/javascript' });
+            const a2 = document.createElement('a');
+            a2.href = URL.createObjectURL(sBlob);
+            a2.download = 'sw.js';
+            a2.click();
+
+            showNotification('Descargados manifest.json y sw.js listos para tu repositorio GitHub.');
+        }
+
+        // ==================== RESTO DE FUNCIONES (ALERTAS, CALENDARIO, CONSEJOS, MODALES) ====================
+        function toggleReserveDebts() {
+            appState.reserveDebtsInDaily = !appState.reserveDebtsInDaily;
+            saveState();
+            renderAll();
+            showNotification(appState.reserveDebtsInDaily
+                ? 'Cupo diario ajustado descontando tus recibos pendientes.'
+                : 'Cupo diario calculado sin reservar recibos.');
+        }
+
+        function renderHomeUpcomingAlerts(pendingAlerts) {
+            const container = document.getElementById('home-upcoming-list');
+            const badgeDot = document.getElementById('nav-alerts-badge');
+            container.innerHTML = '';
+
+            const sorted = [...pendingAlerts].sort((a, b) => a.dueDate.localeCompare(b.dueDate));
+            const urgent = sorted.filter(a => getDaysUntilDate(a.dueDate) <= a.advanceDays);
+            badgeDot.classList.toggle('hidden', urgent.length === 0);
+
+            if (sorted.length === 0) {
+                container.innerHTML = `<p class="text-[11px] text-slate-400">¡Al día! No tienes recibos ni deudas pendientes.</p>`;
+                return;
+            }
+
+            sorted.slice(0, 2).forEach(al => {
+                const daysLeft = getDaysUntilDate(al.dueDate);
+                const statusBadge = daysLeft < 0
+                    ? `<span class="text-[10px] font-bold text-rose-400">Vencido hace ${Math.abs(daysLeft)}d</span>`
+                    : daysLeft === 0
+                        ? `<span class="text-[10px] font-bold text-amber-400">¡Vence HOY!</span>`
+                        : `<span class="text-[10px] font-semibold text-amber-300">En ${daysLeft} ${daysLeft === 1 ? 'día' : 'días'}</span>`;
+
+                container.insertAdjacentHTML('beforeend', `
+                    <div class="flex items-center justify-between p-2 rounded-xl bg-black/30 border border-white/5">
+                        <div class="flex items-center gap-2 min-w-0">
+                            <div class="w-7 h-7 rounded-lg bg-amber-500/15 text-amber-400 flex items-center justify-center flex-shrink-0">
+                                <i data-lucide="${al.icon || 'bell'}" class="w-3.5 h-3.5"></i>
+                            </div>
+                            <div class="min-w-0">
+                                <p class="text-xs font-bold text-white truncate">${al.title}</p>
+                                ${statusBadge}
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2 flex-shrink-0">
+                            <span class="text-xs font-extrabold text-white">${formatMoney(al.amountCOP)}</span>
+                            <button onclick="markAlertAsPaid(${al.id})" class="px-2 py-1 rounded-lg bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 text-[10px] font-bold">
+                                Pagar
+                            </button>
+                        </div>
+                    </div>
+                `);
+            });
+        }
+
+        function renderTransactionsList() {
+            const container = document.getElementById('transactions-list');
+            container.innerHTML = '';
+
+            const filtered = appState.transactions
+                .filter(tx => currentFilter === 'all' || tx.type === currentFilter)
+                .sort((a, b) => b.date.localeCompare(a.date));
+
+            if (filtered.length === 0) {
+                container.innerHTML = `<div class="text-center py-6 text-slate-500 text-xs">Sin movimientos en este filtro.</div>`;
+                return;
+            }
+
+            filtered.forEach(tx => {
+                const isIncome = tx.type === 'income';
+                const catObj = CATEGORIES.find(c => c.id === tx.category) || { name: 'Ingreso', icon: 'wallet', bg: 'bg-emerald-500/15 text-emerald-400' };
+                const [y, m, d] = tx.date.slice(0, 10).split('-').map(Number);
+                const dateStr = new Date(y, m - 1, d).toLocaleDateString('es-CO', { day: 'numeric', month: 'short' });
+
+                container.insertAdjacentHTML('beforeend', `
+                    <div class="flex items-center justify-between p-2.5 rounded-2xl glass-card hover:bg-white/[0.06] transition-all">
+                        <div class="flex items-center gap-2.5 min-w-0">
+                            <div class="w-9 h-9 rounded-xl ${isIncome ? 'bg-emerald-500/15 text-emerald-400' : catObj.bg} flex items-center justify-center flex-shrink-0">
+                                <i data-lucide="${isIncome ? 'trending-up' : catObj.icon}" class="w-4 h-4"></i>
+                            </div>
+                            <div class="min-w-0">
+                                <p class="text-xs font-bold text-white truncate">${tx.title}</p>
+                                <p class="text-[10px] text-slate-400">${isIncome ? 'Saldo / Ingreso' : catObj.name} • ${dateStr}</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-1.5 flex-shrink-0">
+                            <span class="text-xs font-extrabold font-display ${isIncome ? 'text-emerald-400' : 'text-slate-100'}">
+                                ${isIncome ? '+' : '-'} ${formatMoney(tx.amountCOP)}
+                            </span>
+                            <button onclick="deleteTransaction(${tx.id})" class="p-1.5 rounded-lg text-slate-500 hover:text-rose-400 hover:bg-rose-500/10">
+                                <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                            </button>
+                        </div>
+                    </div>
+                `);
+            });
+        }
+
+        function changeCalendarMonth(delta) {
+            calendarViewDate.setMonth(calendarViewDate.getMonth() + delta);
+            renderCalendar();
+            lucide.createIcons();
+        }
+
+        function selectCalendarDay(dateStr) {
+            selectedCalendarDate = dateStr;
+            renderCalendar();
+            lucide.createIcons();
+        }
+
+        function renderCalendar() {
+            const year = calendarViewDate.getFullYear();
+            const month = calendarViewDate.getMonth();
+            const monthNames = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+            document.getElementById('calendar-month-title').textContent = `${monthNames[month]} ${year}`;
+
+            const firstDayOfWeek = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const todayStr = toLocalDateStr(new Date());
+            const payDay = parseInt(appState.payday) || 25;
+
+            const grid = document.getElementById('calendar-days-grid');
+            grid.innerHTML = '';
+
+            for (let i = 0; i < firstDayOfWeek; i++) {
+                grid.insertAdjacentHTML('beforeend', `<div class="h-11"></div>`);
+            }
+
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                const isSelected = dateStr === selectedCalendarDate;
+                const isToday = dateStr === todayStr;
+                const isPayday = day === payDay;
+
+                const dayExpenses = appState.transactions.filter(t => t.date.slice(0, 10) === dateStr && t.type === 'expense');
+                const dayAlerts = appState.alerts.filter(a => a.dueDate === dateStr && !a.paid);
+
+                let cellClasses = 'h-11 rounded-xl flex flex-col items-center justify-center relative text-xs font-bold transition-all border ';
+                if (isSelected) cellClasses += 'bg-emerald-500 text-slate-950 border-emerald-300 shadow-glow-emerald scale-105 z-10';
+                else if (isPayday) cellClasses += 'bg-emerald-500/15 text-emerald-300 border-emerald-500/40';
+                else if (isToday) cellClasses += 'bg-white/10 text-white border-white/30';
+                else cellClasses += 'bg-white/[0.03] text-slate-300 border-transparent hover:bg-white/10';
+
+                let dotsHTML = '<div class="flex items-center gap-0.5 mt-0.5 h-1.5">';
+                if (isPayday) dotsHTML += `<span class="w-1.5 h-1.5 rounded-full ${isSelected ? 'bg-slate-950' : 'bg-emerald-400'}"></span>`;
+                if (dayAlerts.length > 0) dotsHTML += `<span class="w-1.5 h-1.5 rounded-full ${isSelected ? 'bg-rose-700' : 'bg-amber-400 animate-pulse'}"></span>`;
+                if (dayExpenses.length > 0) dotsHTML += `<span class="w-1.5 h-1.5 rounded-full ${isSelected ? 'bg-indigo-900' : 'bg-indigo-400'}"></span>`;
+                dotsHTML += '</div>';
+
+                grid.insertAdjacentHTML('beforeend', `
+                    <button onclick="selectCalendarDay('${dateStr}')" class="${cellClasses}">
+                        <span>${day}</span>
+                        ${dotsHTML}
+                    </button>
+                `);
+            }
+
+            const [sy, sm, sd] = selectedCalendarDate.split('-').map(Number);
+            document.getElementById('selected-day-label').textContent = `${sd} de ${monthNames[sm - 1]}, ${sy}`;
+
+            const eventsContainer = document.getElementById('selected-day-events');
+            eventsContainer.innerHTML = '';
+
+            if (sd === payDay) {
+                eventsContainer.insertAdjacentHTML('beforeend', `
+                    <div class="flex items-center gap-2.5 p-2.5 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 text-xs">
+                        <i data-lucide="banknote" class="w-4 h-4 flex-shrink-0"></i>
+                        <span class="font-bold">Día de Pago Mensual (Ciclo ${payDay})</span>
+                    </div>
+                `);
+            }
+
+            const selAlerts = appState.alerts.filter(a => a.dueDate === selectedCalendarDate);
+            selAlerts.forEach(al => {
+                eventsContainer.insertAdjacentHTML('beforeend', `
+                    <div class="flex items-center justify-between p-2.5 rounded-xl bg-amber-500/15 border border-amber-500/30 text-xs">
+                        <div>
+                            <p class="font-bold text-white">${al.title}</p>
+                            <p class="text-[10px] text-amber-300">${al.paid ? 'Pagado ✓' : 'Alerta programada'}</p>
+                        </div>
+                        <span class="font-extrabold text-amber-300">${formatMoney(al.amountCOP)}</span>
+                    </div>
+                `);
+            });
+
+            const selTxs = appState.transactions.filter(t => t.date.slice(0, 10) === selectedCalendarDate);
+            selTxs.forEach(tx => {
+                const isInc = tx.type === 'income';
+                eventsContainer.insertAdjacentHTML('beforeend', `
+                    <div class="flex items-center justify-between p-2.5 rounded-xl bg-white/5 border border-white/5 text-xs">
+                        <span class="text-slate-200 font-medium">${tx.title}</span>
+                        <span class="font-bold ${isInc ? 'text-emerald-400' : 'text-rose-400'}">${isInc ? '+' : '-'} ${formatMoney(tx.amountCOP)}</span>
+                    </div>
+                `);
+            });
+
+            if (sd !== payDay && selAlerts.length === 0 && selTxs.length === 0) {
+                eventsContainer.innerHTML = `<p class="text-xs text-slate-500 py-2 text-center">Sin gastos ni alertas programadas para este día.</p>`;
+            }
+        }
+
+        function renderAlertsView(pendingAlerts, totalPendingDebtsCOP) {
+            document.getElementById('total-pending-debts').textContent = formatMoney(totalPendingDebtsCOP);
+            document.getElementById('pending-debts-count').textContent = `${pendingAlerts.length} ${pendingAlerts.length === 1 ? 'pendiente' : 'pendientes'}`;
+
+            const container = document.getElementById('alerts-full-list');
+            container.innerHTML = '';
+
+            const sortedAlerts = [...appState.alerts].sort((a, b) => {
+                if (a.paid !== b.paid) return a.paid ? 1 : -1;
+                return a.dueDate.localeCompare(b.dueDate);
+            });
+
+            sortedAlerts.forEach(al => {
+                const daysLeft = getDaysUntilDate(al.dueDate);
+                let badgeHTML = al.paid
+                    ? `<span class="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 text-[10px] font-bold">Pagado ✓</span>`
+                    : daysLeft < 0
+                        ? `<span class="px-2 py-0.5 rounded-full bg-rose-500/20 text-rose-400 text-[10px] font-bold">Vencido (${Math.abs(daysLeft)}d)</span>`
+                        : daysLeft === 0
+                            ? `<span class="px-2 py-0.5 rounded-full bg-amber-500/25 text-amber-300 text-[10px] font-bold animate-pulse">Vence HOY</span>`
+                            : `<span class="px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 text-[10px] font-semibold">En ${daysLeft} días (${al.dueDate.slice(5)})</span>`;
+
+                container.insertAdjacentHTML('beforeend', `
+                    <div class="glass-card rounded-2xl p-3.5 space-y-2.5 ${al.paid ? 'opacity-60' : ''}">
+                        <div class="flex items-start justify-between gap-2">
+                            <div class="flex items-center gap-3 min-w-0">
+                                <div class="w-10 h-10 rounded-xl ${al.paid ? 'bg-emerald-500/15 text-emerald-400' : 'bg-amber-500/15 text-amber-400'} flex items-center justify-center flex-shrink-0">
+                                    <i data-lucide="${al.icon || 'bell'}" class="w-5 h-5"></i>
+                                </div>
+                                <div class="min-w-0">
+                                    <p class="text-xs font-bold text-white truncate">${al.title}</p>
+                                    <div class="flex items-center gap-1.5 mt-1">
+                                        ${badgeHTML}
+                                        ${al.recurring ? '<span class="text-[10px] text-slate-400">• Mensual</span>' : ''}
+                                    </div>
+                                </div>
+                            </div>
+                            <p class="text-sm font-extrabold text-white font-display flex-shrink-0">${formatMoney(al.amountCOP)}</p>
+                        </div>
+
+                        <div class="flex items-center justify-between pt-2 border-t border-white/5">
+                            <span class="text-[10px] text-slate-400">Aviso: ${al.advanceDays === 0 ? 'El mismo día' : al.advanceDays + ' día(s) antes'}</span>
+                            <div class="flex items-center gap-2">
+                                ${!al.paid ? `<button onclick="markAlertAsPaid(${al.id})" class="px-3 py-1.5 rounded-xl bg-emerald-500 text-slate-950 text-[11px] font-extrabold">Marcar Pagado</button>` : ''}
+                                <button onclick="deleteAlert(${al.id})" class="p-1.5 rounded-lg text-slate-400 hover:text-rose-400 hover:bg-rose-500/10">
+                                    <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `);
+            });
+        }
+
+        function markAlertAsPaid(alertId) {
+            const alertObj = appState.alerts.find(a => a.id === alertId);
+            if (!alertObj) return;
+            alertObj.paid = true;
+
+            appState.transactions.unshift({
+                id: Date.now(),
+                type: 'expense',
+                title: `Pago: ${alertObj.title}`,
+                amountCOP: alertObj.amountCOP,
+                category: 'servicios',
+                date: toLocalDateStr(new Date())
+            });
+
+            if (alertObj.recurring) {
+                const [y, m, d] = alertObj.dueDate.split('-').map(Number);
+                const nextMonthDate = new Date(y, m, d);
+                appState.alerts.push({ ...alertObj, id: Date.now() + 1, dueDate: toLocalDateStr(nextMonthDate), paid: false });
+            }
+
+            saveState();
+            renderAll();
+            showNotification(`¡Pagado! Descontados ${formatMoney(alertObj.amountCOP, 'COP', true)}.`);
+        }
+
+        function deleteAlert(id) {
+            appState.alerts = appState.alerts.filter(a => a.id !== id);
+            saveState();
+            renderAll();
+        }
+
+        function updateNotificationPermissionUI() {
+            const statusEl = document.getElementById('notif-permission-status');
+            if (!statusEl) return;
+            if (!('Notification' in window)) {
+                statusEl.textContent = 'Usa el botón Exportar .ics para alertas nativas';
+                return;
+            }
+            if (Notification.permission === 'granted') {
+                statusEl.innerHTML = 'Push activo en tu dispositivo ✓';
+            } else {
+                statusEl.textContent = 'Activa Push o sincroniza con tu calendario (.ics)';
+            }
+        }
+
+        async function requestMobileNotifications() {
+            if (!('Notification' in window)) {
+                exportCalendarICS();
+                return;
+            }
+            const perm = await Notification.requestPermission();
+            updateNotificationPermissionUI();
+            if (perm === 'granted') {
+                sendMobilePush('¡Alertas FinFlow COP activadas!', 'Te avisaremos antes de que venzan tus recibos.');
+            }
+        }
+
+        function sendMobilePush(title, body) {
+            showNotification(`${title}: ${body}`);
+            if ('Notification' in window && Notification.permission === 'granted') {
+                navigator.serviceWorker?.ready.then(reg => {
+                    reg.showNotification(title, { body, icon: 'https://cdn-icons-png.flaticon.com/512/10149/10149458.png' });
+                });
+            }
+        }
+
+        function renderAdvisorView(totalIncome, freeBalanceCOP, dailyBudgetCOP, totalPendingDebtsCOP, metrics) {
+            const baseIncome = totalIncome > 0 ? totalIncome : 3200000;
+            document.getElementById('rule-50-val').textContent = formatMoney(baseIncome * 0.5);
+            document.getElementById('rule-30-val').textContent = formatMoney(baseIncome * 0.3);
+            document.getElementById('rule-20-val').textContent = formatMoney(baseIncome * 0.2);
+
+            const diagEl = document.getElementById('advisor-dynamic-diagnosis');
+            if (freeBalanceCOP <= totalPendingDebtsCOP && totalPendingDebtsCOP > 0) {
+                diagEl.innerHTML = `⚠️ <strong class="text-amber-300">Alerta de liquidez:</strong> Tus recibos pendientes (${formatMoney(totalPendingDebtsCOP)}) igualan o superan tu saldo libre actual. Evita gastos hormiga hasta el <strong>día ${appState.payday}</strong>.`;
+            } else {
+                diagEl.innerHTML = `✅ <strong class="text-emerald-400">¡Buen equilibrio!</strong> Tienes <strong>${formatMoney(dailyBudgetCOP)}/día</strong> libres durante los próximos <strong>${metrics.daysRemaining} días</strong> con tus bolsillos y recibos protegidos.`;
+            }
+
+            const tips = [
+                { icon: 'piggy-bank', color: 'text-cyan-400 bg-cyan-500/15', title: 'Usa Bolsillos apenas te paguen el 25', desc: 'Apartar el dinero en bolsillos evita que el cupo diario te invite a gastar dinero comprometido.' },
+                { icon: 'landmark', color: 'text-emerald-400 bg-emerald-500/15', title: 'Vigila el tope de 350 UVT del 4x1000', desc: 'Revisa el medidor en Analítica antes de mover montos altos desde tu cuenta exenta.' },
+                { icon: 'credit-card', color: 'text-amber-400 bg-amber-500/15', title: 'Difiere compras solo si es necesario', desc: 'Usa el simulador E.A. → M.V. en Analítica para conocer el costo real de los intereses.' }
+            ];
+
+            const tipsContainer = document.getElementById('financial-tips-list');
+            tipsContainer.innerHTML = '';
+            tips.forEach(tip => {
+                tipsContainer.insertAdjacentHTML('beforeend', `
+                    <div class="glass-card rounded-2xl p-3 flex items-start gap-3">
+                        <div class="w-8 h-8 rounded-xl ${tip.color} flex items-center justify-center flex-shrink-0 mt-0.5">
+                            <i data-lucide="${tip.icon}" class="w-4 h-4"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-xs font-bold text-white">${tip.title}</h4>
+                            <p class="text-[11px] text-slate-400 mt-0.5 leading-relaxed">${tip.desc}</p>
+                        </div>
+                    </div>
+                `);
+            });
+        }
+
+        function switchTab(tabName) {
+            ['home', 'analytics', 'calendar', 'alerts', 'advisor'].forEach(t => {
+                document.getElementById(`view-${t}`).classList.add('hidden');
+                const navBtn = document.getElementById(`nav-${t}`);
+                if (navBtn) {
+                    navBtn.classList.remove('text-emerald-400');
+                    navBtn.classList.add('text-slate-400');
+                }
+            });
+
+            document.getElementById(`view-${tabName}`).classList.remove('hidden');
+            const activeBtn = document.getElementById(`nav-${tabName}`);
+            if (activeBtn) {
+                activeBtn.classList.remove('text-slate-400');
+                activeBtn.classList.add('text-emerald-400');
+            }
+            if (tabName === 'advisor') calculateConversion();
+            lucide.createIcons();
+        }
+
+        function setDisplayCurrency(curr) {
+            appState.displayCurrency = curr;
+            saveState();
+            renderAll();
+        }
+
+        function setTxFilter(filter) {
+            currentFilter = filter;
+            ['all', 'expense', 'income'].forEach(f => {
+                const btn = document.getElementById(`filter-${f}`);
+                btn.className = f === filter ? 'px-2 py-0.5 rounded-lg bg-white/10 text-white font-medium' : 'px-2 py-0.5 rounded-lg text-slate-400 hover:text-white';
+            });
+            renderTransactionsList();
+            lucide.createIcons();
+        }
+
+        function openTransactionModal(defaultType = 'expense', prefillAmountCOP = '', prefillDate = '') {
+            document.getElementById('tx-modal').classList.remove('hidden');
+            setModalType(defaultType);
+            document.getElementById('tx-currency').value = 'COP';
+            document.getElementById('tx-amount').value = prefillAmountCOP ? Math.round(prefillAmountCOP) : '';
+            document.getElementById('tx-title').value = '';
+            document.getElementById('tx-date').value = prefillDate || toLocalDateStr(new Date());
+            document.getElementById('tx-cop-preview').classList.add('hidden');
+            renderModalCategories();
+            lucide.createIcons();
+        }
+
+        function closeTransactionModal() { document.getElementById('tx-modal').classList.add('hidden'); }
+
+        function setModalType(type) {
+            modalType = type;
+            const expBtn = document.getElementById('type-btn-expense');
+            const incBtn = document.getElementById('type-btn-income');
+            const catGroup = document.getElementById('category-selector-group');
+            if (type === 'expense') {
+                expBtn.className = 'py-2 rounded-xl text-xs font-bold bg-rose-500 text-white transition-all shadow-sm';
+                incBtn.className = 'py-2 rounded-xl text-xs font-bold text-slate-400 hover:text-white transition-all';
+                catGroup.classList.remove('hidden');
+            } else {
+                incBtn.className = 'py-2 rounded-xl text-xs font-bold bg-emerald-500 text-slate-950 transition-all shadow-sm';
+                expBtn.className = 'py-2 rounded-xl text-xs font-bold text-slate-400 hover:text-white transition-all';
+                catGroup.classList.add('hidden');
+            }
+        }
+
+        function renderModalCategories() {
+            const container = document.getElementById('modal-categories');
+            container.innerHTML = '';
+            CATEGORIES.forEach(cat => {
+                const isSelected = selectedCategory === cat.id;
+                container.insertAdjacentHTML('beforeend', `
+                    <button type="button" onclick="selectModalCategory('${cat.id}')" class="flex items-center gap-2 p-2 rounded-xl border text-left text-xs transition-all ${isSelected ? 'bg-emerald-500/20 border-emerald-400 text-white font-bold' : 'bg-slate-950 border-white/5 text-slate-400'}">
+                        <i data-lucide="${cat.icon}" class="w-4 h-4"></i>
+                        <span class="truncate">${cat.name}</span>
+                    </button>
+                `);
+            });
+            lucide.createIcons();
+        }
+
+        function selectModalCategory(catId) { selectedCategory = catId; renderModalCategories(); }
+
+        function updateModalConversionPreview() {
+            const amount = parseFloat(document.getElementById('tx-amount').value) || 0;
+            const curr = document.getElementById('tx-currency').value;
+            const previewEl = document.getElementById('tx-cop-preview');
+            if (curr !== 'COP' && amount > 0) {
+                previewEl.textContent = `Se registrará como ${formatMoney(amount * (appState.rates[curr] || 1), 'COP', true)}`;
+                previewEl.classList.remove('hidden');
+            } else {
+                previewEl.classList.add('hidden');
+            }
+        }
+
+        function saveTransaction() {
+            const rawAmount = parseFloat(document.getElementById('tx-amount').value);
+            if (!rawAmount || rawAmount <= 0) { showNotification('Ingresa un monto válido.'); return; }
+            const curr = document.getElementById('tx-currency').value;
+            const amountCOP = Math.round(rawAmount * (appState.rates[curr] || 1));
+            const title = document.getElementById('tx-title').value.trim() || (modalType === 'income' ? 'Saldo Extra' : 'Gasto');
+            const dateVal = document.getElementById('tx-date').value || toLocalDateStr(new Date());
+
+            appState.transactions.unshift({
+                id: Date.now(),
+                type: modalType,
+                title: curr !== 'COP' ? `${title} (${rawAmount} ${curr})` : title,
+                amountCOP,
+                category: modalType === 'income' ? 'ingreso' : selectedCategory,
+                date: dateVal
+            });
+            saveState();
+            closeTransactionModal();
+            renderAll();
+            showNotification(modalType === 'income' ? `Saldo agregado: +${formatMoney(amountCOP, 'COP', true)}` : `Gasto registrado: -${formatMoney(amountCOP, 'COP', true)}`);
+        }
+
+        function deleteTransaction(id) {
+            appState.transactions = appState.transactions.filter(t => t.id !== id);
+            saveState();
+            renderAll();
+        }
+
+        function openAlertModal(prefillDate = '') {
+            document.getElementById('alert-modal').classList.remove('hidden');
+            document.getElementById('alert-title').value = '';
+            document.getElementById('alert-amount').value = '';
+            document.getElementById('alert-date').value = prefillDate || getRelativeDateStr(3);
+            selectedAlertPresetIcon = 'bell';
+            lucide.createIcons();
+        }
+
+        function closeAlertModal() { document.getElementById('alert-modal').classList.add('hidden'); }
+
+        function fillAlertPreset(title, type) {
+            document.getElementById('alert-title').value = title;
+            const iconMap = { telefono: 'smartphone', tarjeta: 'credit-card', servicios: 'wifi', hogar: 'home' };
+            selectedAlertPresetIcon = iconMap[type] || 'bell';
+        }
+
+        function saveAlert() {
+            const title = document.getElementById('alert-title').value.trim();
+            const rawAmount = parseFloat(document.getElementById('alert-amount').value);
+            const dueDate = document.getElementById('alert-date').value;
+            const advanceDays = parseInt(document.getElementById('alert-advance').value) || 0;
+            const recurring = document.getElementById('alert-recurring').checked;
+            const curr = document.getElementById('alert-currency').value;
+
+            if (!title || !rawAmount || !dueDate) { showNotification('Completa todos los campos.'); return; }
+            const amountCOP = Math.round(rawAmount * (appState.rates[curr] || 1));
+
+            appState.alerts.push({ id: Date.now(), title, amountCOP, dueDate, advanceDays, recurring, paid: false, icon: selectedAlertPresetIcon });
+            saveState();
+            closeAlertModal();
+            renderAll();
+            sendMobilePush('Alerta Programada ✓', `${title} (${formatMoney(amountCOP, 'COP', true)}) para el ${dueDate}.`);
+        }
+
+        function calculateConversion() {
+            const amount = parseFloat(document.getElementById('conv-amount').value) || 0;
+            const from = document.getElementById('conv-from').value;
+            document.getElementById('conv-result').textContent = `$ ${Math.round(amount * (appState.rates[from] || 1)).toLocaleString('es-CO')} COP`;
+        }
+
+        function updateExchangeRates() {
+            appState.rates.USD = parseFloat(document.getElementById('rate-USD').value) || 4350;
+            appState.rates.EUR = parseFloat(document.getElementById('rate-EUR').value) || 4680;
+            appState.trmUpdatedAt = 'Editada manualmente';
+            saveState();
+            calculateConversion();
+            renderAll();
+        }
+
+        function updatePaydaySetting() {
+            appState.payday = parseInt(document.getElementById('setting-payday').value) || 25;
+            saveState();
+            renderAll();
+        }
+
+        function exportDataJSON() {
+            const a = document.createElement('a');
+            a.href = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(appState, null, 2));
+            a.download = `finflow_cop_${toLocalDateStr(new Date())}.json`;
+            a.click();
+        }
+
+        function exportDataCSV() {
+            let csv = "Fecha,Tipo,Concepto,Categoria,Monto_COP\n";
+            appState.transactions.forEach(t => { csv += `${t.date.slice(0,10)},${t.type},"${t.title}",${t.category},${t.amountCOP}\n`; });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8;' }));
+            a.download = `gastos_cop_${toLocalDateStr(new Date())}.csv`;
+            a.click();
+        }
+
+        function resetDemoData() {
+            appState = JSON.parse(JSON.stringify(DEFAULT_STATE));
+            saveState();
+            renderAll();
+            showNotification('Datos de ejemplo restaurados.');
+        }
+
+        let notifTimeout;
+        function showNotification(message) {
+            const banner = document.getElementById('push-banner');
+            document.getElementById('push-banner-text').textContent = message;
+            banner.classList.remove('hidden');
+            clearTimeout(notifTimeout);
+            notifTimeout = setTimeout(hideNotification, 4500);
+        }
+
+        function hideNotification() { document.getElementById('push-banner').classList.add('hidden'); }
+
+        function updateClock() {
+            const el = document.getElementById('status-clock');
+            if (el) el.textContent = new Date().toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit', hour12: false });
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('setting-payday').value = appState.payday;
+            document.getElementById('rate-USD').value = appState.rates.USD;
+            document.getElementById('rate-EUR').value = appState.rates.EUR;
+
+            if (appState.pinCode) {
+                document.getElementById('pin-lock-screen').classList.remove('hidden');
+            }
+
+            updateClock();
+            setInterval(updateClock, 15000);
+            renderAll();
+            fetchLiveTRM(false);
+        });
+    </script>
+</body>
+</html>
