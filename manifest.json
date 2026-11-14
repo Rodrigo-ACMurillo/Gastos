@@ -1,0 +1,16 @@
+{
+  "name": "FinFlow COP - Control Ciclo 25",
+  "short_name": "FinFlow COP",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#090d16",
+  "theme_color": "#090d16",
+  "description": "Control de gastos mensuales en Pesos Colombianos con ciclo del día 25, bolsillos, calendario y alertas.",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/10149/10149458.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
