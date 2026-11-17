@@ -1,9 +1,8 @@
-const CACHE_NAME = 'finflow-cop-v3.2';
+const CACHE_NAME = 'finflow-cop-v3.3';
 const CORE_ASSETS = [
   './',
   './index.html',
-  './manifest.json',
-  './icon.svg'
+  './manifest.json'
 ];
 
 self.addEventListener('install', (event) => {
