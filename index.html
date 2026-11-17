@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' blob: data:; script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://unpkg.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://open.er-api.com https://cdn.jsdelivr.net; img-src 'self' data: blob:;" />
   <meta name="theme-color" content="#060913" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -10,8 +11,8 @@
   <title>FinFlow COP • Gestor Financiero & Asistente de Voz</title>
 
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://unpkg.com/lucide@latest"></script>
-  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+  <script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js" crossorigin="anonymous"></script>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
 
   <script>
@@ -175,11 +176,11 @@
       <div class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-emerald-400 to-sky-400 flex items-center justify-center text-slate-950 font-extrabold text-xl shadow-lg">F</div>
       <div>
         <h1 class="font-bold text-lg text-white leading-tight">FinFlow COP</h1>
-        <p class="text-xs text-sky-300">PWA GitHub Pages • Ciclo Día 25</p>
+        <p class="text-xs text-sky-300">PWA v2.1 • Real vs Proyección</p>
       </div>
     </div>
     <p class="text-xs text-slate-300 leading-relaxed">
-      Tus datos de respaldo (<span class="font-mono text-emerald-300">finflow_cop_2026-11-16.json</span>) ya están cargados. Prueba el <b>Asistente de Voz</b>, el simulador <b>Antes de Comprar</b> o las tarjetas <b>FinFlow Wrapped</b>.
+      Separa automáticamente tu <b>Dinero Real Hoy</b> (fechas ≤ hoy) de los <b>Ingresos Proyectados</b> (ej. nómina del 25). Detecta actualizaciones en GitHub Pages automáticamente.
     </p>
     <div class="space-y-2 pt-2 border-t border-white/10">
       <button onclick="openVoiceAssistant()" class="w-full py-2.5 px-3 rounded-xl bg-gradient-to-r from-emerald-500/20 to-sky-500/20 border border-emerald-400/30 text-emerald-300 text-xs font-semibold flex items-center justify-center gap-2 hover:brightness-110 transition">
@@ -201,13 +202,27 @@
   <main class="phone-shell flex flex-col">
     <div class="dynamic-island"><span class="w-2.5 h-2.5 rounded-full bg-emerald-400/70"></span></div>
 
+    <!-- GitHub Pages Auto-Update Banner -->
+    <div id="updateBanner" class="hidden absolute top-3 inset-x-3 z-50 rounded-2xl bg-gradient-to-r from-emerald-500 to-sky-500 text-slate-950 p-3 shadow-2xl flex items-center justify-between gap-2 animate-view">
+      <div class="flex items-center gap-2 min-w-0">
+        <i data-lucide="sparkles" class="w-5 h-5 shrink-0"></i>
+        <div class="text-xs leading-tight">
+          <p class="font-extrabold">¡Nueva versión disponible!</p>
+          <p class="text-[11px] opacity-90">Se detectó un cambio en GitHub.</p>
+        </div>
+      </div>
+      <button onclick="applyAppUpdate()" class="px-3 py-1.5 rounded-xl bg-slate-950 text-emerald-300 text-xs font-extrabold shrink-0 active:scale-95 transition">
+        Actualizar
+      </button>
+    </div>
+
     <!-- PIN Lock Screen -->
-    <div id="pinScreen" class="hidden absolute inset-0 z-50 bg-void/95 backdrop-blur-2xl flex flex-col items-center justify-center p-6">
+    <div id="pinScreen" class="hidden absolute inset-0 z-50 bg-void flex flex-col items-center justify-center p-6">
       <div class="w-16 h-16 rounded-3xl bg-gradient-to-tr from-emerald-400 to-sky-400 flex items-center justify-center text-slate-950 font-extrabold text-2xl mb-4 shadow-xl">
         <i data-lucide="lock" class="w-8 h-8"></i>
       </div>
       <h2 class="text-lg font-bold text-white">FinFlow Protegido</h2>
-      <p class="text-xs text-slate-400 mt-1 mb-6">Ingresa tu PIN de 4 dígitos</p>
+      <p id="pinSubtitle" class="text-xs text-slate-400 mt-1 mb-6">Ingresa tu PIN de 4 dígitos</p>
       <div id="pinDots" class="flex gap-3 mb-8">
         <span class="w-3.5 h-3.5 rounded-full border border-sky-400"></span>
         <span class="w-3.5 h-3.5 rounded-full border border-sky-400"></span>
@@ -230,371 +245,376 @@
       </div>
     </div>
 
-    <!-- Top Header -->
-    <header class="pt-4 md:pt-12 px-5 pb-3 flex items-center justify-between border-b border-white/5 bg-void/80 backdrop-blur-xl z-20">
-      <div class="flex items-center gap-2.5">
-        <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-emerald-400 to-sky-400 flex items-center justify-center text-slate-950 font-extrabold text-base shadow">F</div>
-        <div>
-          <div class="flex items-center gap-1.5">
-            <span class="font-bold text-sm text-white">FinFlow COP</span>
-            <span id="cycleBadge" class="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-300 font-semibold border border-emerald-400/20">Pago día 25</span>
-          </div>
-          <p id="trmHeaderLabel" class="text-[11px] text-slate-400">TRM: $3.317 • EUR: $3.659</p>
-        </div>
-      </div>
-
-      <div class="flex items-center gap-1.5">
-        <button onclick="openWrappedModal()" title="FinFlow Wrapped" class="w-8 h-8 rounded-xl glass flex items-center justify-center text-amber-300 active:scale-90 transition">
-          <i data-lucide="sparkles" class="w-4 h-4"></i>
-        </button>
-        <button onclick="cycleDisplayCurrency()" id="currencyBtn" class="px-2.5 h-8 rounded-xl glass text-xs font-mono font-bold text-sky-300 active:scale-90 transition">
-          COP
-        </button>
-        <button onclick="openTxModal()" class="w-8 h-8 rounded-xl bg-emerald-500 text-slate-950 flex items-center justify-center font-bold shadow-lg shadow-emerald-500/25 active:scale-90 transition">
-          <i data-lucide="plus" class="w-4 h-4"></i>
-        </button>
-      </div>
-    </header>
-
-    <!-- Scrollable Main Content -->
-    <div id="mainScroll" class="flex-1 overflow-y-auto no-scrollbar px-4 pt-3 pb-28 space-y-4">
-
-      <!-- ==================== TAB 1: INICIO ==================== -->
-      <section id="view-home" class="space-y-4 animate-view">
-
-        <!-- Quick Natural Language + OCR + Voice Strip -->
-        <div class="glass rounded-2xl p-2 flex items-center gap-2">
-          <button onclick="openVoiceAssistant()" class="w-9 h-9 rounded-xl bg-gradient-to-tr from-emerald-400 to-sky-400 text-slate-950 flex items-center justify-center shrink-0 shadow active:scale-90 transition" title="Asistente de Voz">
-            <i data-lucide="mic" class="w-4 h-4"></i>
-          </button>
-          <input id="quickNlInput" type="text" placeholder='Ej: "Almuerzo 22 mil" o "Ingreso 150k"' class="bg-transparent text-xs text-white placeholder-slate-400 flex-1 focus:outline-none" onkeydown="if(event.key==='Enter') parseQuickInput()" />
-          <label class="w-8 h-8 rounded-xl bg-white/5 hover:bg-white/10 flex items-center justify-center text-sky-300 cursor-pointer shrink-0 transition" title="Escanear factura/recibo">
-            <i data-lucide="camera" class="w-4 h-4"></i>
-            <input type="file" accept="image/*" capture="environment" class="hidden" onchange="handleReceiptOCR(event)" />
-          </label>
-          <button onclick="parseQuickInput()" class="px-2.5 h-8 rounded-xl bg-sky-500/20 text-sky-300 text-xs font-semibold active:scale-90 transition">OK</button>
-        </div>
-
-        <!-- Hero Card: Saldo Libre Real & Cupo Diario -->
-        <div class="hero-card rounded-3xl p-5 relative overflow-hidden">
-          <div class="flex items-start justify-between">
-            <div>
-              <p class="text-xs text-sky-200/80 font-medium flex items-center gap-1.5">
-                Saldo Libre Real
-                <span class="inline-block w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-              </p>
-              <h2 id="freeBalanceDisplay" class="text-3xl font-extrabold font-mono text-white tracking-tight mt-1">$ 953.000</h2>
-            </div>
-            <button onclick="openVoiceAssistant()" class="px-3 py-1.5 rounded-full bg-slate-950/60 border border-sky-400/30 text-[11px] font-semibold text-sky-300 flex items-center gap-1.5 active:scale-95 transition">
-              <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span> Voz IA
-            </button>
-          </div>
-
-          <!-- Breakdown pills -->
-          <div class="grid grid-cols-3 gap-2 mt-4 pt-3 border-t border-white/10 text-[11px]">
-            <div class="bg-slate-950/40 rounded-xl p-2">
-              <span class="text-slate-400 block">Saldo Total</span>
-              <span id="totalBalanceDisplay" class="font-mono font-bold text-white">$ 2.749.000</span>
-            </div>
-            <div class="bg-slate-950/40 rounded-xl p-2">
-              <span class="text-slate-400 block">Bolsillos</span>
-              <span id="pocketsSumDisplay" class="font-mono font-bold text-cyan-300">- $ 200.000</span>
-            </div>
-            <button onclick="toggleReserveDebts()" class="bg-slate-950/40 rounded-xl p-2 text-left hover:bg-slate-950/60 transition">
-              <span class="text-slate-400 flex items-center justify-between">Deudas <i data-lucide="sliders-horizontal" class="w-3 h-3 text-amber-300"></i></span>
-              <span id="debtsSumDisplay" class="font-mono font-bold text-amber-300">- $ 1.596.000</span>
-            </button>
-          </div>
-
-          <!-- Cupo Diario Sugerido Box -->
-          <div class="mt-3 bg-slate-950/55 rounded-2xl p-3.5 border border-white/10">
-            <div class="flex items-center justify-between">
-              <div>
-                <div class="flex items-center gap-1.5">
-                  <span class="text-xs font-semibold text-emerald-300">Cupo Diario Sugerido</span>
-                  <button onclick="toggleDailyExplain()" class="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-200 font-semibold hover:bg-emerald-500/30 transition">? ¿Qué es?</button>
-                </div>
-                <p id="daysLeftText" class="text-[11px] text-slate-400 mt-0.5">Faltan 9 días para tu pago del 25</p>
-              </div>
-              <div class="text-right">
-                <span id="dailyBudgetDisplay" class="text-xl font-extrabold font-mono text-emerald-400">$ 105.889</span>
-                <span class="block text-[10px] text-slate-400">por día hoy</span>
-              </div>
-            </div>
-
-            <!-- Today progress bar -->
-            <div class="mt-2.5">
-              <div class="flex justify-between text-[10px] text-slate-400 mb-1">
-                <span>Gastado hoy: <b id="spentTodayLabel" class="text-white font-mono">$ 0</b></span>
-                <span id="todayPctLabel">0% del cupo de hoy</span>
-              </div>
-              <div class="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden">
-                <div id="todayProgressBar" class="h-full bg-gradient-to-r from-emerald-400 to-sky-400 rounded-full transition-all duration-500" style="width: 0%"></div>
-              </div>
-            </div>
-
-            <!-- Collapsible Formula Explanation -->
-            <div id="dailyExplainBox" class="hidden mt-3 pt-2.5 border-t border-white/10 text-[11px] text-slate-300 space-y-1">
-              <p>Es el límite diario ideal para llegar al <b>día 25</b> sin tocar tus bolsillos ni quedarte sin dinero para tus recibos pendientes:</p>
-              <p id="dailyFormulaMath" class="font-mono text-sky-300 bg-slate-900/80 p-2 rounded-lg text-[10px]"></p>
-            </div>
-          </div>
-        </div>
-
-        <!-- Simulador "Antes de Comprar" -->
-        <div class="glass rounded-2xl p-3.5 space-y-2.5">
-          <div class="flex items-center justify-between">
-            <h3 class="text-xs font-bold text-white flex items-center gap-1.5">
-              <i data-lucide="shield-question" class="w-4 h-4 text-sky-400"></i> Simulador "Antes de Comprar"
-            </h3>
-            <span class="text-[10px] text-slate-400">Calcula el impacto en tu cupo</span>
-          </div>
-          <div class="flex gap-2">
-            <input id="impulseAmountInput" type="number" placeholder="Valor antojo en COP (ej: 180000)" oninput="simulatePurchase()" class="flex-1 bg-slate-900/90 border border-white/10 rounded-xl px-3 py-2 text-xs text-white font-mono focus:outline-none focus:border-sky-400" />
-            <button onclick="document.getElementById('impulseAmountInput').value='';simulatePurchase()" class="px-2.5 rounded-xl bg-white/5 text-slate-400 text-xs">Limpiar</button>
-          </div>
-          <div id="impulseResultBox" class="hidden rounded-xl p-2.5 text-xs bg-slate-900/90 border border-white/10"></div>
-        </div>
-
-        <!-- Bolsillos / Metas -->
-        <div class="space-y-2">
-          <div class="flex items-center justify-between px-1">
-            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400">Bolsillos (Modo Sin Culpa)</h3>
-            <button onclick="openPocketModal()" class="text-xs text-sky-400 font-semibold flex items-center gap-1">+ Nuevo bolsillo</button>
-          </div>
-          <div id="pocketsContainer" class="flex gap-2.5 overflow-x-auto no-scrollbar pb-1"></div>
-        </div>
-
-        <!-- Próximas Deudas y Recibos -->
-        <div class="space-y-2">
-          <div class="flex items-center justify-between px-1">
-            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400">Deudas y Recibos Reservados</h3>
-            <button onclick="switchTab('alerts')" class="text-xs text-amber-300 font-semibold">Ver todas</button>
-          </div>
-          <div id="homeAlertsList" class="space-y-2"></div>
-        </div>
-
-        <!-- Últimos Movimientos -->
-        <div class="space-y-2">
-          <div class="flex items-center justify-between px-1">
-            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400">Movimientos Recientes</h3>
-            <button onclick="openTxModal()" class="text-xs text-emerald-400 font-semibold">+ Registrar</button>
-          </div>
-          <div id="transactionsList" class="space-y-2"></div>
-        </div>
-      </section>
-
-      <!-- ==================== TAB 2: AGENDA / CALENDARIO ==================== -->
-      <section id="view-calendar" class="hidden space-y-4 animate-view">
-        <div class="glass rounded-3xl p-4">
-          <div class="flex items-center justify-between mb-3">
-            <button onclick="changeCalMonth(-1)" class="w-8 h-8 rounded-xl bg-white/5 flex items-center justify-center"><i data-lucide="chevron-left" class="w-4 h-4"></i></button>
-            <h3 id="calMonthTitle" class="font-bold text-sm text-white capitalize">Noviembre 2026</h3>
-            <button onclick="changeCalMonth(1)" class="w-8 h-8 rounded-xl bg-white/5 flex items-center justify-center"><i data-lucide="chevron-right" class="w-4 h-4"></i></button>
-          </div>
-          <div class="grid grid-cols-7 text-center text-[10px] font-semibold text-slate-400 mb-2">
-            <span>Do</span><span>Lu</span><span>Ma</span><span>Mi</span><span>Ju</span><span>Vi</span><span>Sá</span>
-          </div>
-          <div id="calendarGrid" class="grid grid-cols-7 gap-1.5"></div>
-          <div class="flex items-center justify-center gap-4 mt-3 pt-2.5 border-t border-white/10 text-[10px] text-slate-400">
-            <span class="flex items-center gap-1"><i class="w-2 h-2 rounded-full bg-emerald-400 inline-block"></i> Pago 25</span>
-            <span class="flex items-center gap-1"><i class="w-2 h-2 rounded-full bg-amber-400 inline-block"></i> Deuda/Recibo</span>
-            <span class="flex items-center gap-1"><i class="w-2 h-2 rounded-full bg-sky-400 inline-block"></i> Movimiento</span>
-          </div>
-        </div>
-
-        <div class="glass rounded-2xl p-4 space-y-2.5">
-          <div class="flex items-center justify-between">
-            <h4 id="selectedDayTitle" class="text-xs font-bold text-white">Detalle del día seleccionado</h4>
-            <button onclick="openAlertModalForSelectedDate()" class="text-[11px] px-2.5 py-1 rounded-lg bg-amber-500/20 text-amber-300 font-semibold">+ Agendar Alerta</button>
-          </div>
-          <div id="selectedDayEvents" class="space-y-2 text-xs text-slate-300"></div>
-        </div>
-
-        <button onclick="exportICS()" class="w-full py-3 rounded-2xl bg-sky-500/20 border border-sky-400/30 text-sky-300 text-xs font-bold flex items-center justify-center gap-2 active:scale-95 transition">
-          <i data-lucide="calendar-plus" class="w-4 h-4"></i> Sincronizar Alertas con Google / Apple Calendar (.ics)
-        </button>
-      </section>
-
-      <!-- ==================== TAB 3: ALERTAS / DEUDAS ==================== -->
-      <section id="view-alerts" class="hidden space-y-4 animate-view">
-        <div class="flex items-center justify-between">
+    <!-- App Shell Container -->
+    <div id="appContentShell" class="flex-1 flex flex-col overflow-hidden">
+      <!-- Top Header -->
+      <header class="pt-4 md:pt-12 px-5 pb-3 flex items-center justify-between border-b border-white/5 bg-void/80 backdrop-blur-xl z-20">
+        <div class="flex items-center gap-2.5">
+          <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-emerald-400 to-sky-400 flex items-center justify-center text-slate-950 font-extrabold text-base shadow">F</div>
           <div>
-            <h3 class="text-base font-bold text-white">Alertas y Deudas</h3>
-            <p class="text-[11px] text-slate-400">Edita montos, marca pagados o activa notificaciones</p>
+            <div class="flex items-center gap-1.5">
+              <span class="font-bold text-sm text-white">FinFlow COP</span>
+              <span id="cycleBadge" class="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-300 font-semibold border border-emerald-400/20">Pago día 25</span>
+            </div>
+            <p id="trmHeaderLabel" class="text-[11px] text-slate-400">TRM: $4.000 • EUR: $4.350</p>
           </div>
-          <button onclick="openAlertModal()" class="px-3 py-2 rounded-xl bg-amber-500 text-slate-950 text-xs font-bold flex items-center gap-1 shadow-lg shadow-amber-500/20">
-            <i data-lucide="plus" class="w-3.5 h-3.5"></i> Nueva
+        </div>
+
+        <div class="flex items-center gap-1.5">
+          <button onclick="openWrappedModal()" title="FinFlow Wrapped" class="w-8 h-8 rounded-xl glass flex items-center justify-center text-amber-300 active:scale-90 transition">
+            <i data-lucide="sparkles" class="w-4 h-4"></i>
+          </button>
+          <button onclick="cycleDisplayCurrency()" id="currencyBtn" class="px-2.5 h-8 rounded-xl glass text-xs font-mono font-bold text-sky-300 active:scale-90 transition">
+            COP
+          </button>
+          <button onclick="openTxModal()" class="w-8 h-8 rounded-xl bg-emerald-500 text-slate-950 flex items-center justify-center font-bold shadow-lg shadow-emerald-500/25 active:scale-90 transition">
+            <i data-lucide="plus" class="w-4 h-4"></i>
           </button>
         </div>
+      </header>
 
-        <div class="glass rounded-2xl p-3 flex items-center justify-between">
-          <div class="flex items-center gap-2.5">
-            <div class="w-8 h-8 rounded-xl bg-sky-500/20 text-sky-300 flex items-center justify-center"><i data-lucide="bell-ring" class="w-4 h-4"></i></div>
-            <div>
-              <p class="text-xs font-semibold text-white">Notificaciones Push Móviles</p>
-              <p id="notifPermStatus" class="text-[10px] text-slate-400">Activa alertas en tu celular</p>
+      <!-- Scrollable Main Content -->
+      <div id="mainScroll" class="flex-1 overflow-y-auto no-scrollbar px-4 pt-3 pb-28 space-y-4">
+
+        <!-- ==================== TAB 1: INICIO ==================== -->
+        <section id="view-home" class="space-y-4 animate-view">
+
+          <!-- Quick Natural Language + OCR + Voice Strip -->
+          <div class="glass rounded-2xl p-2 flex items-center gap-2">
+            <button onclick="openVoiceAssistant()" class="w-9 h-9 rounded-xl bg-gradient-to-tr from-emerald-400 to-sky-400 text-slate-950 flex items-center justify-center shrink-0 shadow active:scale-90 transition" title="Asistente de Voz">
+              <i data-lucide="mic" class="w-4 h-4"></i>
+            </button>
+            <input id="quickNlInput" type="text" maxlength="100" placeholder='Ej: "Almuerzo 22 mil" o "Ingreso 150k"' class="bg-transparent text-xs text-white placeholder-slate-400 flex-1 focus:outline-none" onkeydown="if(event.key==='Enter') parseQuickInput()" />
+            <label class="w-8 h-8 rounded-xl bg-white/5 hover:bg-white/10 flex items-center justify-center text-sky-300 cursor-pointer shrink-0 transition" title="Escanear factura/recibo">
+              <i data-lucide="camera" class="w-4 h-4"></i>
+              <input type="file" accept="image/*" capture="environment" class="hidden" onchange="handleReceiptOCR(event)" />
+            </label>
+            <button onclick="parseQuickInput()" class="px-2.5 h-8 rounded-xl bg-sky-500/20 text-sky-300 text-xs font-semibold active:scale-90 transition">OK</button>
+          </div>
+
+          <!-- Hero Card: Liquidez Real Hoy vs Proyección al 25 -->
+          <div class="hero-card rounded-3xl p-5 relative overflow-hidden">
+            <div class="flex items-start justify-between">
+              <div>
+                <p class="text-xs text-sky-200/90 font-semibold flex items-center gap-1.5">
+                  Efectivo Real Hoy
+                  <span id="realDateBadge" class="text-[10px] px-2 py-0.5 rounded-full bg-white/10 text-emerald-300 font-mono">16 Nov</span>
+                </p>
+                <h2 id="realCashDisplay" class="text-3xl font-extrabold font-mono text-white tracking-tight mt-1">$ 0</h2>
+                <p id="realAfterPocketsText" class="text-[11px] text-slate-300 mt-0.5">Disponible hoy tras bolsillos: $ 0</p>
+              </div>
+              <button onclick="openVoiceAssistant()" class="px-3 py-1.5 rounded-full bg-slate-950/60 border border-sky-400/30 text-[11px] font-semibold text-sky-300 flex items-center gap-1.5 active:scale-95 transition">
+                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span> Voz IA
+              </button>
+            </div>
+
+            <!-- Breakdown pills: Real vs Proyectado -->
+            <div class="grid grid-cols-3 gap-2 mt-4 pt-3 border-t border-white/10 text-[11px]">
+              <div class="bg-slate-950/45 rounded-xl p-2">
+                <span class="text-slate-400 block">Por cobrar (25)</span>
+                <span id="projectedIncomeDisplay" class="font-mono font-bold text-indigo-300">+ $ 0</span>
+              </div>
+              <div class="bg-slate-950/45 rounded-xl p-2">
+                <span class="text-slate-400 block">Bolsillos</span>
+                <span id="pocketsSumDisplay" class="font-mono font-bold text-cyan-300">- $ 0</span>
+              </div>
+              <button onclick="toggleReserveDebts()" class="bg-slate-950/45 rounded-xl p-2 text-left hover:bg-slate-950/60 transition">
+                <span class="text-slate-400 flex items-center justify-between">Deudas <i data-lucide="sliders-horizontal" class="w-3 h-3 text-amber-300"></i></span>
+                <span id="debtsSumDisplay" class="font-mono font-bold text-amber-300">- $ 0</span>
+              </button>
+            </div>
+
+            <!-- Cupo Diario Hoy (Basado SOLO en dinero real disponible hoy) -->
+            <div class="mt-3 bg-slate-950/55 rounded-2xl p-3.5 border border-white/10">
+              <div class="flex items-center justify-between">
+                <div>
+                  <div class="flex items-center gap-1.5">
+                    <span class="text-xs font-semibold text-emerald-300">Cupo Diario Real (Hoy → 25)</span>
+                    <button onclick="toggleDailyExplain()" class="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-200 font-semibold hover:bg-emerald-500/30 transition">? Ver detalle</button>
+                  </div>
+                  <p id="daysLeftText" class="text-[11px] text-slate-400 mt-0.5">Faltan 9 días para recibir tu pago del 25</p>
+                </div>
+                <div class="text-right">
+                  <span id="dailyBudgetDisplay" class="text-xl font-extrabold font-mono text-emerald-400">$ 0</span>
+                  <span class="block text-[10px] text-slate-400">real por día</span>
+                </div>
+              </div>
+
+              <!-- Today progress bar -->
+              <div class="mt-2.5">
+                <div class="flex justify-between text-[10px] text-slate-400 mb-1">
+                  <span>Gastado hoy: <b id="spentTodayLabel" class="text-white font-mono">$ 0</b></span>
+                  <span id="todayPctLabel">0% del cupo de hoy</span>
+                </div>
+                <div class="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden">
+                  <div id="todayProgressBar" class="h-full bg-gradient-to-r from-emerald-400 to-sky-400 rounded-full transition-all duration-500" style="width: 0%"></div>
+                </div>
+              </div>
+
+              <!-- Collapsible Projection vs Real Explanation -->
+              <div id="dailyExplainBox" class="hidden mt-3 pt-2.5 border-t border-white/10 text-[11px] text-slate-300 space-y-1.5">
+                <p><b>1. Cupo Real Hoy:</b> Divide solo el dinero que ya tienes hoy (descontando bolsillos) entre los días que faltan para el 25:</p>
+                <p id="dailyFormulaMath" class="font-mono text-emerald-300 bg-slate-900/80 p-2 rounded-lg text-[10px]"></p>
+                <p><b>2. Balance Proyectado al 25:</b> Al sumar tus ingresos futuros (<span id="projIncInline" class="font-mono text-indigo-300"></span>) y restar tus deudas (<span id="projDebtInline" class="font-mono text-amber-300"></span>), tu saldo proyectado tras pagar todo será: <b id="projectedNetDisplay" class="font-mono text-white"></b>.</p>
+              </div>
             </div>
           </div>
-          <button onclick="requestPushPermission()" class="px-3 py-1.5 rounded-xl bg-sky-500 text-slate-950 text-xs font-bold">Activar</button>
-        </div>
 
-        <div id="allAlertsList" class="space-y-2.5"></div>
-      </section>
-
-      <!-- ==================== TAB 4: ANALÍTICA & CONSEJOS ==================== -->
-      <section id="view-analytics" class="hidden space-y-4 animate-view">
-        <!-- Burn Rate Semaphore -->
-        <div class="glass rounded-3xl p-4 space-y-2.5">
-          <div class="flex items-center justify-between">
-            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400">Semáforo Ritmo de Gasto (Burn Rate)</h3>
-            <span id="burnBadge" class="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 font-bold">Saludable</span>
-          </div>
-          <p id="burnExplanation" class="text-xs text-slate-300"></p>
-          <div class="space-y-1.5 text-[11px]">
-            <div class="flex justify-between"><span>Avance del ciclo (hasta el 25)</span><span id="cycleTimePct" class="font-mono text-sky-300">0%</span></div>
-            <div class="w-full h-2 bg-slate-800 rounded-full overflow-hidden"><div id="cycleTimeBar" class="h-full bg-sky-400 rounded-full"></div></div>
-            <div class="flex justify-between pt-1"><span>Presupuesto libre consumido</span><span id="cycleSpendPct" class="font-mono text-emerald-300">0%</span></div>
-            <div class="w-full h-2 bg-slate-800 rounded-full overflow-hidden"><div id="cycleSpendBar" class="h-full bg-emerald-400 rounded-full"></div></div>
-          </div>
-        </div>
-
-        <!-- Donut Chart por Categorías -->
-        <div class="glass rounded-3xl p-4">
-          <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">Distribución de Gastos</h3>
-          <div class="flex items-center gap-4">
-            <div id="donutChartBox" class="w-32 h-32 shrink-0 flex items-center justify-center"></div>
-            <div id="categoryLegend" class="flex-1 space-y-1.5 text-xs"></div>
-          </div>
-        </div>
-
-        <!-- Control 4x1000 Colombia -->
-        <div class="glass rounded-3xl p-4 space-y-2">
-          <div class="flex items-center justify-between">
-            <h3 class="text-xs font-bold text-white">Exención 4x1000 (Tope 350 UVT)</h3>
-            <span id="gmfPctLabel" class="font-mono text-xs text-emerald-300">0%</span>
-          </div>
-          <div class="w-full h-2 bg-slate-800 rounded-full overflow-hidden">
-            <div id="gmfBar" class="h-full bg-gradient-to-r from-emerald-400 to-amber-400 rounded-full" style="width: 5%"></div>
-          </div>
-          <p id="gmfDetailText" class="text-[11px] text-slate-400"></p>
-        </div>
-
-        <!-- Calculadora Cuotas Tarjeta E.A. -> M.V. -->
-        <div class="glass rounded-3xl p-4 space-y-2.5">
-          <h3 class="text-xs font-bold text-white flex items-center gap-1.5">
-            <i data-lucide="credit-card" class="w-4 h-4 text-indigo-400"></i> Simulador Cuotas Tarjeta (E.A. → M.V.)
-          </h3>
-          <div class="grid grid-cols-3 gap-2">
-            <input id="ccAmount" type="number" value="1000000" oninput="calcInstallments()" placeholder="Monto" class="bg-slate-900 border border-white/10 rounded-xl px-2.5 py-2 text-xs font-mono text-white" />
-            <input id="ccMonths" type="number" value="12" oninput="calcInstallments()" placeholder="Cuotas" class="bg-slate-900 border border-white/10 rounded-xl px-2.5 py-2 text-xs font-mono text-white" />
-            <input id="ccRateEA" type="number" value="27.5" step="0.1" oninput="calcInstallments()" placeholder="% E.A." class="bg-slate-900 border border-white/10 rounded-xl px-2.5 py-2 text-xs font-mono text-white" />
-          </div>
-          <div id="ccResult" class="bg-slate-900/90 rounded-xl p-2.5 text-[11px] text-slate-300 font-mono"></div>
-        </div>
-
-        <!-- Consejos Financieros Personalizados -->
-        <div id="smartAdviceBox" class="space-y-2"></div>
-      </section>
-
-      <!-- ==================== TAB 5: MÁS / RESPALDOS & CONFIG ==================== -->
-      <section id="view-more" class="hidden space-y-4 animate-view">
-        <div class="glass rounded-3xl p-4 space-y-3">
-          <h3 class="text-sm font-bold text-white">Respaldos JSON y Sincronización</h3>
-          <p class="text-xs text-slate-400">Guarda o restaura tus datos entre dispositivos en cualquier momento.</p>
-          <div class="grid grid-cols-2 gap-2.5">
-            <button onclick="openImportModal()" class="py-2.5 px-3 rounded-xl bg-emerald-500/20 border border-emerald-400/30 text-emerald-300 text-xs font-bold flex items-center justify-center gap-1.5">
-              <i data-lucide="upload" class="w-4 h-4"></i> Importar JSON
-            </button>
-            <button onclick="exportBackupJSON()" class="py-2.5 px-3 rounded-xl bg-sky-500/20 border border-sky-400/30 text-sky-300 text-xs font-bold flex items-center justify-center gap-1.5">
-              <i data-lucide="download" class="w-4 h-4"></i> Exportar JSON
-            </button>
-          </div>
-        </div>
-
-        <!-- Configuración Asistente de Voz -->
-        <div class="glass rounded-3xl p-4 space-y-3">
-          <div class="flex items-center justify-between">
-            <h3 class="text-sm font-bold text-white flex items-center gap-1.5"><i data-lucide="volume-2" class="w-4 h-4 text-sky-400"></i> Voz del Asistente IA</h3>
-            <button onclick="testVoiceSample()" class="text-xs text-emerald-400 font-semibold">Probar voz</button>
-          </div>
-          <select id="voiceSelect" onchange="saveVoiceSettings()" class="w-full bg-slate-900 border border-white/10 rounded-xl px-3 py-2 text-xs text-white"></select>
-          <div class="flex items-center justify-between text-xs text-slate-300">
-            <span>Velocidad de habla: <b id="voiceRateLabel">1.05x</b></span>
-            <input id="voiceRateInput" type="range" min="0.8" max="1.35" step="0.05" value="1.05" oninput="saveVoiceSettings()" class="w-32 accent-emerald-400" />
-          </div>
-        </div>
-
-        <!-- Divisas y TRM en vivo -->
-        <div class="glass rounded-3xl p-4 space-y-3">
-          <div class="flex items-center justify-between">
-            <h3 class="text-sm font-bold text-white">Divisas y TRM Colombia</h3>
-            <button onclick="fetchLiveTRM()" class="px-2.5 py-1 rounded-lg bg-emerald-500/20 text-emerald-300 text-xs font-semibold flex items-center gap-1">
-              <i data-lucide="refresh-cw" class="w-3 h-3"></i> Actualizar TRM
-            </button>
-          </div>
-          <div class="grid grid-cols-2 gap-2.5 text-xs">
-            <div>
-              <label class="text-slate-400 block mb-1">1 USD en COP</label>
-              <input id="usdRateInput" type="number" onchange="updateManualRates()" class="w-full bg-slate-900 border border-white/10 rounded-xl px-3 py-2 font-mono text-white" />
+          <!-- Simulador "Antes de Comprar" -->
+          <div class="glass rounded-2xl p-3.5 space-y-2.5">
+            <div class="flex items-center justify-between">
+              <h3 class="text-xs font-bold text-white flex items-center gap-1.5">
+                <i data-lucide="shield-question" class="w-4 h-4 text-sky-400"></i> Simulador "Antes de Comprar"
+              </h3>
+              <span class="text-[10px] text-slate-400">Calcula el impacto en tu efectivo real</span>
             </div>
-            <div>
-              <label class="text-slate-400 block mb-1">1 EUR en COP</label>
-              <input id="eurRateInput" type="number" onchange="updateManualRates()" class="w-full bg-slate-900 border border-white/10 rounded-xl px-3 py-2 font-mono text-white" />
-            </div>
-          </div>
-        </div>
-
-        <!-- Seguridad PIN & Día de Pago -->
-        <div class="glass rounded-3xl p-4 space-y-3">
-          <h3 class="text-sm font-bold text-white">Seguridad y Ciclo</h3>
-          <div class="flex items-center justify-between text-xs">
-            <span class="text-slate-300">Día de pago mensual</span>
-            <input id="paydayInput" type="number" min="1" max="31" onchange="updatePayday()" class="w-20 bg-slate-900 border border-white/10 rounded-xl px-3 py-1.5 font-mono text-center text-white" />
-          </div>
-          <div class="flex items-center justify-between text-xs pt-2 border-t border-white/10">
-            <span class="text-slate-300">PIN de acceso (4 dígitos)</span>
             <div class="flex gap-2">
-              <input id="setPinInput" type="password" maxlength="4" placeholder="****" class="w-20 bg-slate-900 border border-white/10 rounded-xl px-3 py-1.5 font-mono text-center text-white" />
-              <button onclick="savePinCode()" class="px-3 py-1.5 rounded-xl bg-indigo-500 text-white font-semibold">Guardar</button>
+              <input id="impulseAmountInput" type="number" min="0" placeholder="Valor antojo en COP (ej: 180000)" oninput="simulatePurchase()" class="flex-1 bg-slate-900/90 border border-white/10 rounded-xl px-3 py-2 text-xs text-white font-mono focus:outline-none focus:border-sky-400" />
+              <button onclick="document.getElementById('impulseAmountInput').value='';simulatePurchase()" class="px-2.5 rounded-xl bg-white/5 text-slate-400 text-xs">Limpiar</button>
+            </div>
+            <div id="impulseResultBox" class="hidden rounded-xl p-2.5 text-xs bg-slate-900/90 border border-white/10"></div>
+          </div>
+
+          <!-- Bolsillos / Metas -->
+          <div class="space-y-2">
+            <div class="flex items-center justify-between px-1">
+              <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400">Bolsillos (Modo Sin Culpa)</h3>
+              <button onclick="openPocketModal()" class="text-xs text-sky-400 font-semibold flex items-center gap-1">+ Nuevo bolsillo</button>
+            </div>
+            <div id="pocketsContainer" class="flex gap-2.5 overflow-x-auto no-scrollbar pb-1"></div>
+          </div>
+
+          <!-- Próximas Deudas y Recibos -->
+          <div class="space-y-2">
+            <div class="flex items-center justify-between px-1">
+              <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400">Deudas y Recibos Programados</h3>
+              <button onclick="switchTab('alerts')" class="text-xs text-amber-300 font-semibold">Ver todas</button>
+            </div>
+            <div id="homeAlertsList" class="space-y-2"></div>
+          </div>
+
+          <!-- Últimos Movimientos (Distinguishes Real vs Proyectado) -->
+          <div class="space-y-2">
+            <div class="flex items-center justify-between px-1">
+              <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400">Movimientos y Proyecciones</h3>
+              <button onclick="openTxModal()" class="text-xs text-emerald-400 font-semibold">+ Registrar</button>
+            </div>
+            <div id="transactionsList" class="space-y-2"></div>
+          </div>
+        </section>
+
+        <!-- ==================== TAB 2: AGENDA / CALENDARIO ==================== -->
+        <section id="view-calendar" class="hidden space-y-4 animate-view">
+          <div class="glass rounded-3xl p-4">
+            <div class="flex items-center justify-between mb-3">
+              <button onclick="changeCalMonth(-1)" class="w-8 h-8 rounded-xl bg-white/5 flex items-center justify-center"><i data-lucide="chevron-left" class="w-4 h-4"></i></button>
+              <h3 id="calMonthTitle" class="font-bold text-sm text-white capitalize">Noviembre 2026</h3>
+              <button onclick="changeCalMonth(1)" class="w-8 h-8 rounded-xl bg-white/5 flex items-center justify-center"><i data-lucide="chevron-right" class="w-4 h-4"></i></button>
+            </div>
+            <div class="grid grid-cols-7 text-center text-[10px] font-semibold text-slate-400 mb-2">
+              <span>Do</span><span>Lu</span><span>Ma</span><span>Mi</span><span>Ju</span><span>Vi</span><span>Sá</span>
+            </div>
+            <div id="calendarGrid" class="grid grid-cols-7 gap-1.5"></div>
+            <div class="flex items-center justify-center gap-4 mt-3 pt-2.5 border-t border-white/10 text-[10px] text-slate-400">
+              <span class="flex items-center gap-1"><i class="w-2 h-2 rounded-full bg-emerald-400 inline-block"></i> Pago 25</span>
+              <span class="flex items-center gap-1"><i class="w-2 h-2 rounded-full bg-amber-400 inline-block"></i> Deuda/Recibo</span>
+              <span class="flex items-center gap-1"><i class="w-2 h-2 rounded-full bg-sky-400 inline-block"></i> Movimiento</span>
             </div>
           </div>
-        </div>
-      </section>
 
+          <div class="glass rounded-2xl p-4 space-y-2.5">
+            <div class="flex items-center justify-between">
+              <h4 id="selectedDayTitle" class="text-xs font-bold text-white">Detalle del día seleccionado</h4>
+              <button onclick="openAlertModalForSelectedDate()" class="text-[11px] px-2.5 py-1 rounded-lg bg-amber-500/20 text-amber-300 font-semibold">+ Agendar Alerta</button>
+            </div>
+            <div id="selectedDayEvents" class="space-y-2 text-xs text-slate-300"></div>
+          </div>
+
+          <button onclick="exportICS()" class="w-full py-3 rounded-2xl bg-sky-500/20 border border-sky-400/30 text-sky-300 text-xs font-bold flex items-center justify-center gap-2 active:scale-95 transition">
+            <i data-lucide="calendar-plus" class="w-4 h-4"></i> Sincronizar Alertas con Google / Apple Calendar (.ics)
+          </button>
+        </section>
+
+        <!-- ==================== TAB 3: ALERTAS / DEUDAS ==================== -->
+        <section id="view-alerts" class="hidden space-y-4 animate-view">
+          <div class="flex items-center justify-between">
+            <div>
+              <h3 class="text-base font-bold text-white">Alertas y Deudas</h3>
+              <p class="text-[11px] text-slate-400">Edita montos, marca pagados o activa notificaciones</p>
+            </div>
+            <button onclick="openAlertModal()" class="px-3 py-2 rounded-xl bg-amber-500 text-slate-950 text-xs font-bold flex items-center gap-1 shadow-lg shadow-amber-500/20">
+              <i data-lucide="plus" class="w-3.5 h-3.5"></i> Nueva
+            </button>
+          </div>
+
+          <div class="glass rounded-2xl p-3 flex items-center justify-between">
+            <div class="flex items-center gap-2.5">
+              <div class="w-8 h-8 rounded-xl bg-sky-500/20 text-sky-300 flex items-center justify-center"><i data-lucide="bell-ring" class="w-4 h-4"></i></div>
+              <div>
+                <p class="text-xs font-semibold text-white">Notificaciones Push Móviles</p>
+                <p id="notifPermStatus" class="text-[10px] text-slate-400">Activa alertas en tu celular</p>
+              </div>
+            </div>
+            <button onclick="requestPushPermission()" class="px-3 py-1.5 rounded-xl bg-sky-500 text-slate-950 text-xs font-bold">Activar</button>
+          </div>
+
+          <div id="allAlertsList" class="space-y-2.5"></div>
+        </section>
+
+        <!-- ==================== TAB 4: ANALÍTICA & CONSEJOS ==================== -->
+        <section id="view-analytics" class="hidden space-y-4 animate-view">
+          <div class="glass rounded-3xl p-4 space-y-2.5">
+            <div class="flex items-center justify-between">
+              <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400">Semáforo Ritmo de Gasto (Burn Rate)</h3>
+              <span id="burnBadge" class="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 font-bold">Saludable</span>
+            </div>
+            <p id="burnExplanation" class="text-xs text-slate-300"></p>
+            <div class="space-y-1.5 text-[11px]">
+              <div class="flex justify-between"><span>Avance del ciclo (hasta el 25)</span><span id="cycleTimePct" class="font-mono text-sky-300">0%</span></div>
+              <div class="w-full h-2 bg-slate-800 rounded-full overflow-hidden"><div id="cycleTimeBar" class="h-full bg-sky-400 rounded-full"></div></div>
+              <div class="flex justify-between pt-1"><span>Efectivo real consumido</span><span id="cycleSpendPct" class="font-mono text-emerald-300">0%</span></div>
+              <div class="w-full h-2 bg-slate-800 rounded-full overflow-hidden"><div id="cycleSpendBar" class="h-full bg-emerald-400 rounded-full"></div></div>
+            </div>
+          </div>
+
+          <div class="glass rounded-3xl p-4">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">Distribución de Gastos</h3>
+            <div class="flex items-center gap-4">
+              <div id="donutChartBox" class="w-32 h-32 shrink-0 flex items-center justify-center"></div>
+              <div id="categoryLegend" class="flex-1 space-y-1.5 text-xs"></div>
+            </div>
+          </div>
+
+          <div class="glass rounded-3xl p-4 space-y-2">
+            <div class="flex items-center justify-between">
+              <h3 class="text-xs font-bold text-white">Exención 4x1000 (Tope 350 UVT)</h3>
+              <span id="gmfPctLabel" class="font-mono text-xs text-emerald-300">0%</span>
+            </div>
+            <div class="w-full h-2 bg-slate-800 rounded-full overflow-hidden">
+              <div id="gmfBar" class="h-full bg-gradient-to-r from-emerald-400 to-amber-400 rounded-full" style="width: 5%"></div>
+            </div>
+            <p id="gmfDetailText" class="text-[11px] text-slate-400"></p>
+          </div>
+
+          <div class="glass rounded-3xl p-4 space-y-2.5">
+            <h3 class="text-xs font-bold text-white flex items-center gap-1.5">
+              <i data-lucide="credit-card" class="w-4 h-4 text-indigo-400"></i> Simulador Cuotas Tarjeta (E.A. → M.V.)
+            </h3>
+            <div class="grid grid-cols-3 gap-2">
+              <input id="ccAmount" type="number" value="1000000" oninput="calcInstallments()" placeholder="Monto" class="bg-slate-900 border border-white/10 rounded-xl px-2.5 py-2 text-xs font-mono text-white" />
+              <input id="ccMonths" type="number" value="12" oninput="calcInstallments()" placeholder="Cuotas" class="bg-slate-900 border border-white/10 rounded-xl px-2.5 py-2 text-xs font-mono text-white" />
+              <input id="ccRateEA" type="number" value="27.5" step="0.1" oninput="calcInstallments()" placeholder="% E.A." class="bg-slate-900 border border-white/10 rounded-xl px-2.5 py-2 text-xs font-mono text-white" />
+            </div>
+            <div id="ccResult" class="bg-slate-900/90 rounded-xl p-2.5 text-[11px] text-slate-300 font-mono"></div>
+          </div>
+
+          <div id="smartAdviceBox" class="space-y-2"></div>
+        </section>
+
+        <!-- ==================== TAB 5: MÁS / RESPALDOS & CONFIG ==================== -->
+        <section id="view-more" class="hidden space-y-4 animate-view">
+          <div class="glass rounded-3xl p-4 space-y-3">
+            <div class="flex items-center justify-between">
+              <h3 class="text-sm font-bold text-white">Respaldos JSON y Actualizaciones</h3>
+              <button onclick="checkGitHubUpdates(true)" class="text-[11px] text-sky-300 font-semibold flex items-center gap-1">
+                <i data-lucide="refresh-cw" class="w-3 h-3"></i> Buscar cambios
+              </button>
+            </div>
+            <p class="text-xs text-slate-400">Importa tu respaldo JSON o verifica si hay una nueva versión subida en GitHub Pages.</p>
+            <div class="grid grid-cols-2 gap-2.5">
+              <button onclick="openImportModal()" class="py-2.5 px-3 rounded-xl bg-emerald-500/20 border border-emerald-400/30 text-emerald-300 text-xs font-bold flex items-center justify-center gap-1.5">
+                <i data-lucide="upload" class="w-4 h-4"></i> Importar JSON
+              </button>
+              <button onclick="exportBackupJSON()" class="py-2.5 px-3 rounded-xl bg-sky-500/20 border border-sky-400/30 text-sky-300 text-xs font-bold flex items-center justify-center gap-1.5">
+                <i data-lucide="download" class="w-4 h-4"></i> Exportar JSON
+              </button>
+            </div>
+          </div>
+
+          <div class="glass rounded-3xl p-4 space-y-3">
+            <div class="flex items-center justify-between">
+              <h3 class="text-sm font-bold text-white flex items-center gap-1.5"><i data-lucide="volume-2" class="w-4 h-4 text-sky-400"></i> Voz del Asistente IA</h3>
+              <button onclick="testVoiceSample()" class="text-xs text-emerald-400 font-semibold">Probar voz</button>
+            </div>
+            <select id="voiceSelect" onchange="saveVoiceSettings()" class="w-full bg-slate-900 border border-white/10 rounded-xl px-3 py-2 text-xs text-white"></select>
+            <div class="flex items-center justify-between text-xs text-slate-300">
+              <span>Velocidad de habla: <b id="voiceRateLabel">1.05x</b></span>
+              <input id="voiceRateInput" type="range" min="0.8" max="1.35" step="0.05" value="1.05" oninput="saveVoiceSettings()" class="w-32 accent-emerald-400" />
+            </div>
+          </div>
+
+          <div class="glass rounded-3xl p-4 space-y-3">
+            <div class="flex items-center justify-between">
+              <h3 class="text-sm font-bold text-white">Divisas y TRM Colombia</h3>
+              <button onclick="fetchLiveTRM()" class="px-2.5 py-1 rounded-lg bg-emerald-500/20 text-emerald-300 text-xs font-semibold flex items-center gap-1">
+                <i data-lucide="refresh-cw" class="w-3 h-3"></i> Actualizar TRM
+              </button>
+            </div>
+            <div class="grid grid-cols-2 gap-2.5 text-xs">
+              <div>
+                <label class="text-slate-400 block mb-1">1 USD en COP</label>
+                <input id="usdRateInput" type="number" min="1" onchange="updateManualRates()" class="w-full bg-slate-900 border border-white/10 rounded-xl px-3 py-2 font-mono text-white" />
+              </div>
+              <div>
+                <label class="text-slate-400 block mb-1">1 EUR en COP</label>
+                <input id="eurRateInput" type="number" min="1" onchange="updateManualRates()" class="w-full bg-slate-900 border border-white/10 rounded-xl px-3 py-2 font-mono text-white" />
+              </div>
+            </div>
+          </div>
+
+          <div class="glass rounded-3xl p-4 space-y-3">
+            <h3 class="text-sm font-bold text-white">Seguridad (PIN SHA-256) y Ciclo</h3>
+            <div class="flex items-center justify-between text-xs">
+              <span class="text-slate-300">Día de pago mensual</span>
+              <input id="paydayInput" type="number" min="1" max="31" onchange="updatePayday()" class="w-20 bg-slate-900 border border-white/10 rounded-xl px-3 py-1.5 font-mono text-center text-white" />
+            </div>
+            <div class="flex items-center justify-between text-xs pt-2 border-t border-white/10">
+              <span class="text-slate-300">PIN de acceso (4 dígitos)</span>
+              <div class="flex gap-2">
+                <input id="setPinInput" type="password" inputmode="numeric" maxlength="4" placeholder="****" class="w-20 bg-slate-900 border border-white/10 rounded-xl px-3 py-1.5 font-mono text-center text-white" />
+                <button onclick="savePinCode()" class="px-3 py-1.5 rounded-xl bg-indigo-500 text-white font-semibold">Guardar</button>
+              </div>
+            </div>
+            <div class="pt-2 border-t border-white/10 flex justify-between items-center text-xs">
+              <span class="text-slate-400">Limpiar todos los datos locales</span>
+              <button onclick="wipeAllData()" class="px-3 py-1.5 rounded-xl bg-rose-500/20 border border-rose-400/30 text-rose-300 font-semibold">Borrar Todo</button>
+            </div>
+          </div>
+        </section>
+
+      </div>
+
+      <!-- Bottom Navigation Bar -->
+      <nav class="absolute bottom-0 inset-x-0 glass border-t border-white/10 px-2 py-2 flex items-center justify-around z-30">
+        <button onclick="switchTab('home')" data-tab="home" class="nav-btn flex flex-col items-center gap-0.5 text-emerald-400 px-2 py-1">
+          <i data-lucide="wallet" class="w-5 h-5"></i>
+          <span class="text-[10px] font-semibold">Inicio</span>
+        </button>
+        <button onclick="switchTab('calendar')" data-tab="calendar" class="nav-btn flex flex-col items-center gap-0.5 text-slate-400 px-2 py-1">
+          <i data-lucide="calendar" class="w-5 h-5"></i>
+          <span class="text-[10px] font-semibold">Agenda</span>
+        </button>
+
+        <button onclick="openVoiceAssistant()" class="-mt-7 w-14 h-14 rounded-full bg-gradient-to-tr from-emerald-400 via-sky-400 to-indigo-500 text-slate-950 flex items-center justify-center shadow-xl shadow-sky-500/30 border-4 border-void active:scale-90 transition" title="Hablar con FinFlow">
+          <i data-lucide="mic" class="w-6 h-6"></i>
+        </button>
+
+        <button onclick="switchTab('alerts')" data-tab="alerts" class="nav-btn flex flex-col items-center gap-0.5 text-slate-400 px-2 py-1">
+          <i data-lucide="bell" class="w-5 h-5"></i>
+          <span class="text-[10px] font-semibold">Deudas</span>
+        </button>
+        <button onclick="switchTab('analytics')" data-tab="analytics" class="nav-btn flex flex-col items-center gap-0.5 text-slate-400 px-2 py-1">
+          <i data-lucide="pie-chart" class="w-5 h-5"></i>
+          <span class="text-[10px] font-semibold">Análisis</span>
+        </button>
+        <button onclick="switchTab('more')" data-tab="more" class="nav-btn flex flex-col items-center gap-0.5 text-slate-400 px-2 py-1">
+          <i data-lucide="sliders" class="w-5 h-5"></i>
+          <span class="text-[10px] font-semibold">Más</span>
+        </button>
+      </nav>
     </div>
 
-    <!-- Bottom Navigation Bar with Central Voice Orb Button -->
-    <nav class="absolute bottom-0 inset-x-0 glass border-t border-white/10 px-2 py-2 flex items-center justify-around z-30">
-      <button onclick="switchTab('home')" data-tab="home" class="nav-btn flex flex-col items-center gap-0.5 text-emerald-400 px-2 py-1">
-        <i data-lucide="wallet" class="w-5 h-5"></i>
-        <span class="text-[10px] font-semibold">Inicio</span>
-      </button>
-      <button onclick="switchTab('calendar')" data-tab="calendar" class="nav-btn flex flex-col items-center gap-0.5 text-slate-400 px-2 py-1">
-        <i data-lucide="calendar" class="w-5 h-5"></i>
-        <span class="text-[10px] font-semibold">Agenda</span>
-      </button>
-
-      <!-- Central Floating Voice AI Button -->
-      <button onclick="openVoiceAssistant()" class="-mt-7 w-14 h-14 rounded-full bg-gradient-to-tr from-emerald-400 via-sky-400 to-indigo-500 text-slate-950 flex items-center justify-center shadow-xl shadow-sky-500/30 border-4 border-void active:scale-90 transition" title="Hablar con FinFlow">
-        <i data-lucide="mic" class="w-6 h-6"></i>
-      </button>
-
-      <button onclick="switchTab('alerts')" data-tab="alerts" class="nav-btn flex flex-col items-center gap-0.5 text-slate-400 px-2 py-1">
-        <i data-lucide="bell" class="w-5 h-5"></i>
-        <span class="text-[10px] font-semibold">Deudas</span>
-      </button>
-      <button onclick="switchTab('analytics')" data-tab="analytics" class="nav-btn flex flex-col items-center gap-0.5 text-slate-400 px-2 py-1">
-        <i data-lucide="pie-chart" class="w-5 h-5"></i>
-        <span class="text-[10px] font-semibold">Análisis</span>
-      </button>
-      <button onclick="switchTab('more')" data-tab="more" class="nav-btn flex flex-col items-center gap-0.5 text-slate-400 px-2 py-1">
-        <i data-lucide="sliders" class="w-5 h-5"></i>
-        <span class="text-[10px] font-semibold">Más</span>
-      </button>
-    </nav>
-
-    <!-- ==================== MODAL: ASISTENTE DE VOZ (ESTILO CHATGPT / ALEXA) ==================== -->
+    <!-- ==================== MODAL: ASISTENTE DE VOZ ==================== -->
     <div id="voiceModal" class="hidden absolute inset-0 z-50 bg-void/95 backdrop-blur-2xl flex flex-col justify-between p-6 animate-view">
       <div class="flex items-center justify-between pt-2 md:pt-8">
         <span class="text-xs font-bold uppercase tracking-widest text-sky-400 flex items-center gap-1.5">
@@ -617,17 +637,16 @@
         </div>
 
         <div id="voiceReplyCard" class="glass rounded-2xl p-4 max-w-xs w-full text-xs text-slate-200 leading-relaxed">
-          Hola, soy tu asistente financiero. Pregúntame por tu cupo diario, tus deudas pendientes o díctame un gasto.
+          Hola, soy tu asistente financiero. Pregúntame por tu efectivo real hoy, tus ingresos proyectados o tus deudas pendientes.
         </div>
       </div>
 
-      <!-- Quick Voice Prompt Chips -->
       <div class="space-y-2 pb-4">
         <p class="text-[10px] text-center text-slate-500 uppercase tracking-wider">Prueba preguntar:</p>
         <div class="flex flex-wrap justify-center gap-1.5">
           <button onclick="processVoiceCommand('¿Cuánto puedo gastar hoy?')" class="px-3 py-1.5 rounded-full glass text-[11px] text-sky-300">¿Cuánto gasto hoy?</button>
           <button onclick="processVoiceCommand('¿Qué deudas tengo pendientes?')" class="px-3 py-1.5 rounded-full glass text-[11px] text-amber-300">Mis deudas</button>
-          <button onclick="processVoiceCommand('¿Cómo voy este mes?')" class="px-3 py-1.5 rounded-full glass text-[11px] text-emerald-300">Resumen del mes</button>
+          <button onclick="processVoiceCommand('¿Cómo voy este mes?')" class="px-3 py-1.5 rounded-full glass text-[11px] text-emerald-300">Real vs Proyección</button>
         </div>
       </div>
     </div>
@@ -636,16 +655,16 @@
     <div id="txModal" class="hidden absolute inset-0 z-40 bg-black/70 backdrop-blur-sm flex items-end">
       <div class="w-full glass rounded-t-3xl p-5 space-y-3.5 animate-sheet">
         <div class="flex items-center justify-between">
-          <h3 class="font-bold text-base text-white">Registrar Movimiento</h3>
+          <h3 class="font-bold text-base text-white">Registrar Movimiento o Proyección</h3>
           <button onclick="closeModal('txModal')" class="text-slate-400"><i data-lucide="x" class="w-5 h-5"></i></button>
         </div>
         <div class="grid grid-cols-2 gap-2">
           <button type="button" id="btnTypeExpense" onclick="setTxType('expense')" class="py-2 rounded-xl bg-rose-500/20 border border-rose-400/40 text-rose-300 text-xs font-bold">Gasto (-)</button>
           <button type="button" id="btnTypeIncome" onclick="setTxType('income')" class="py-2 rounded-xl bg-white/5 border border-white/10 text-slate-400 text-xs font-bold">Ingreso / Saldo (+)</button>
         </div>
-        <input id="txTitle" type="text" placeholder="Concepto (ej: Almuerzo, Pago extra)" class="w-full bg-slate-900 border border-white/10 rounded-xl px-3.5 py-2.5 text-xs text-white" />
+        <input id="txTitle" type="text" maxlength="80" placeholder="Concepto (ej: Almuerzo, Pago nómina 25)" class="w-full bg-slate-900 border border-white/10 rounded-xl px-3.5 py-2.5 text-xs text-white" />
         <div class="grid grid-cols-3 gap-2">
-          <input id="txAmount" type="number" placeholder="Monto" class="col-span-2 bg-slate-900 border border-white/10 rounded-xl px-3.5 py-2.5 text-xs font-mono text-white" />
+          <input id="txAmount" type="number" min="1" placeholder="Monto" class="col-span-2 bg-slate-900 border border-white/10 rounded-xl px-3.5 py-2.5 text-xs font-mono text-white" />
           <select id="txCurrency" class="bg-slate-900 border border-white/10 rounded-xl px-2.5 py-2.5 text-xs font-mono text-sky-300">
             <option value="COP">COP</option>
             <option value="USD">USD</option>
@@ -661,8 +680,9 @@
             <option value="salud">Salud / Educación</option>
             <option value="ingreso">Ingreso / Nómina</option>
           </select>
-          <input id="txDate" type="date" class="bg-slate-900 border border-white/10 rounded-xl px-3 py-2.5 text-xs text-white" />
+          <input id="txDate" type="date" onchange="updateTxDateHint()" class="bg-slate-900 border border-white/10 rounded-xl px-3 py-2.5 text-xs text-white" />
         </div>
+        <p id="txDateModeHint" class="text-[11px] text-emerald-300">Fecha de hoy o anterior: se cuenta como dinero real.</p>
         <button onclick="saveTransaction()" class="w-full py-3 rounded-2xl bg-gradient-to-r from-emerald-400 to-sky-400 text-slate-950 font-extrabold text-xs shadow-lg">Guardar Movimiento</button>
       </div>
     </div>
@@ -675,9 +695,9 @@
           <button onclick="closeModal('alertModal')" class="text-slate-400"><i data-lucide="x" class="w-5 h-5"></i></button>
         </div>
         <input type="hidden" id="editAlertId" />
-        <input id="alertTitleInput" type="text" placeholder="Ej: Tarjeta Nu, Plan Celular, Arriendo" class="w-full bg-slate-900 border border-white/10 rounded-xl px-3.5 py-2.5 text-xs text-white" />
+        <input id="alertTitleInput" type="text" maxlength="80" placeholder="Ej: Tarjeta Nu, Plan Celular, Arriendo" class="w-full bg-slate-900 border border-white/10 rounded-xl px-3.5 py-2.5 text-xs text-white" />
         <div class="grid grid-cols-2 gap-2">
-          <input id="alertAmountInput" type="number" placeholder="Valor en COP" class="bg-slate-900 border border-white/10 rounded-xl px-3.5 py-2.5 text-xs font-mono text-white" />
+          <input id="alertAmountInput" type="number" min="1" placeholder="Valor en COP" class="bg-slate-900 border border-white/10 rounded-xl px-3.5 py-2.5 text-xs font-mono text-white" />
           <input id="alertDateInput" type="date" class="bg-slate-900 border border-white/10 rounded-xl px-3.5 py-2.5 text-xs text-white" />
         </div>
         <div class="flex items-center justify-between text-xs text-slate-300 bg-slate-900/70 p-2.5 rounded-xl">
@@ -695,10 +715,10 @@
           <h3 class="font-bold text-base text-white">Nuevo Bolsillo de Ahorro</h3>
           <button onclick="closeModal('pocketModal')" class="text-slate-400"><i data-lucide="x" class="w-5 h-5"></i></button>
         </div>
-        <input id="pocketNameInput" type="text" placeholder="Nombre (ej: Vacaciones, Emergencia)" class="w-full bg-slate-900 border border-white/10 rounded-xl px-3.5 py-2.5 text-xs text-white" />
+        <input id="pocketNameInput" type="text" maxlength="40" placeholder="Nombre (ej: Vacaciones, Emergencia)" class="w-full bg-slate-900 border border-white/10 rounded-xl px-3.5 py-2.5 text-xs text-white" />
         <div class="grid grid-cols-2 gap-2">
-          <input id="pocketSavedInput" type="number" placeholder="Saldo inicial COP" class="bg-slate-900 border border-white/10 rounded-xl px-3.5 py-2.5 text-xs font-mono text-white" />
-          <input id="pocketTargetInput" type="number" placeholder="Meta COP" class="bg-slate-900 border border-white/10 rounded-xl px-3.5 py-2.5 text-xs font-mono text-white" />
+          <input id="pocketSavedInput" type="number" min="0" placeholder="Saldo inicial COP" class="bg-slate-900 border border-white/10 rounded-xl px-3.5 py-2.5 text-xs font-mono text-white" />
+          <input id="pocketTargetInput" type="number" min="1" placeholder="Meta COP" class="bg-slate-900 border border-white/10 rounded-xl px-3.5 py-2.5 text-xs font-mono text-white" />
         </div>
         <button onclick="savePocket()" class="w-full py-3 rounded-2xl bg-cyan-400 text-slate-950 font-extrabold text-xs">Crear Bolsillo</button>
       </div>
@@ -715,9 +735,9 @@
           Seleccionar archivo .json desde el teléfono
           <input type="file" accept=".json,application/json" class="hidden" onchange="handleJsonFileUpload(event)" />
         </label>
-        <textarea id="jsonPasteArea" rows="4" placeholder="O pega aquí el contenido JSON de tu respaldo..." class="w-full bg-slate-900 border border-white/10 rounded-xl p-3 text-[11px] font-mono text-slate-200"></textarea>
+        <textarea id="jsonPasteArea" rows="4" oninput="previewJsonImport()" placeholder="O pega aquí el contenido JSON de tu respaldo..." class="w-full bg-slate-900 border border-white/10 rounded-xl p-3 text-[11px] font-mono text-slate-200"></textarea>
         <div id="importPreviewLabel" class="text-[11px] text-sky-300"></div>
-        <button onclick="confirmJsonImport()" class="w-full py-3 rounded-2xl bg-emerald-400 text-slate-950 font-extrabold text-xs">Restaurar Datos Ahora</button>
+        <button onclick="confirmJsonImport()" class="w-full py-3 rounded-2xl bg-emerald-400 text-slate-950 font-extrabold text-xs">Restaurar Datos Validados</button>
       </div>
     </div>
 
@@ -739,46 +759,140 @@
   </main>
 
   <script>
-    const STORAGE_KEY = 'finflow_cop_state_v4';
+    const APP_BUILD_ID = 'finflow-cop-v2.1-2026-11-16';
+    const STORAGE_KEY = 'finflow_cop_state_secure_v5';
 
     const DEFAULT_STATE = {
       payday: 25,
       displayCurrency: "COP",
       reserveDebtsInDaily: true,
       gmfLimitCOP: 18300000,
-      pinCode: "",
-      trmUpdatedAt: "TRM en vivo • Hoy 06:54 p. m.",
-      rates: { COP: 1, USD: 3317, EUR: 3659 },
-      pockets: [
-        {
-          id: 1794691943701,
-          name: "Ahorro",
-          savedCOP: 200000,
-          targetCOP: 2000000,
-          icon: "piggy-bank",
-          color: "from-cyan-500 to-emerald-500"
-        }
-      ],
-      transactions: [
-        { id: 1794873307843, type: "expense", title: "Diversión", amountCOP: 150000, category: "ocio", date: "2026-11-15" },
-        { id: 1794873281309, type: "income", title: "Pago Marcela", amountCOP: 800000, category: "ingreso", date: "2026-11-14" },
-        { id: 1794691892349, type: "income", title: "Pago de nómina", amountCOP: 2099000, category: "ingreso", date: "2026-11-25" }
-      ],
-      alerts: [
-        { id: 1794692079634, title: "Recibo Teléfono / Plan", amountCOP: 36000, dueDate: "2026-11-26", advanceDays: 1, recurring: true, paid: false, icon: "smartphone" },
-        { id: 1794692200643, title: "Cuota Tarjeta de Crédito Nu", amountCOP: 643000, dueDate: "2026-12-17", advanceDays: 1, recurring: true, paid: false, icon: "credit-card" },
-        { id: 1794692298913, title: "Recibo Teléfono / Financiado", amountCOP: 372000, dueDate: "2026-11-25", advanceDays: 1, recurring: true, paid: false, icon: "smartphone" },
-        { id: 1794692408098, title: "Cuota Universidad", amountCOP: 500000, dueDate: "2026-11-30", advanceDays: 1, recurring: true, paid: false, icon: "bell" },
-        { id: 1794692768877, title: "Internet Hogar", amountCOP: 45000, dueDate: "2026-11-25", advanceDays: 1, recurring: true, paid: false, icon: "wifi" }
-      ]
+      pinHash: "",
+      trmUpdatedAt: "TRM base",
+      rates: { COP: 1, USD: 4000, EUR: 4350 },
+      pockets: [],
+      transactions: [],
+      alerts: []
     };
 
-    let state = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null') || structuredClone(DEFAULT_STATE);
+    // ==================== SECURITY & DATE HELPERS ====================
+    function getLocalTodayISO() {
+      const now = new Date();
+      const y = now.getFullYear();
+      const m = String(now.getMonth() + 1).padStart(2, '0');
+      const d = String(now.getDate()).padStart(2, '0');
+      return `${y}-${m}-${d}`;
+    }
+
+    function isFutureTransaction(tx) {
+      if (tx.projected === true) return true;
+      return tx.date > getLocalTodayISO();
+    }
+
+    function escapeHTML(str) {
+      if (str === null || str === undefined) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function sanitizeString(str, maxLen = 80) {
+      return String(str || '').replace(/[\u0000-\u001F\u007F]/g, '').trim().slice(0, maxLen);
+    }
+
+    function sanitizeNumber(val, fallback = 0, min = 0, max = 1e12) {
+      const n = Number(val);
+      if (!Number.isFinite(n)) return fallback;
+      return Math.min(max, Math.max(min, n));
+    }
+
+    function sanitizeDateISO(val) {
+      const s = String(val || '');
+      return /^\d{4}-\d{2}-\d{2}$/.test(s) ? s : getLocalTodayISO();
+    }
+
+    async function hashPinSHA256(pin) {
+      if (!window.crypto || !window.crypto.subtle) {
+        return btoa('finflow_salt_' + pin);
+      }
+      const enc = new TextEncoder().encode('finflow_cop_salt_v1:' + pin);
+      const buf = await window.crypto.subtle.digest('SHA-256', enc);
+      return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+    }
+
+    function validateAndSanitizeState(raw) {
+      if (!raw || typeof raw !== 'object') return structuredClone(DEFAULT_STATE);
+      const allowedIcons = new Set(['piggy-bank', 'smartphone', 'credit-card', 'bell', 'wifi', 'shield']);
+      const allowedCats = new Set(['comida', 'transporte', 'servicios', 'ocio', 'salud', 'ingreso']);
+      const allowedCurr = new Set(['COP', 'USD', 'EUR']);
+
+      return {
+        payday: Math.round(sanitizeNumber(raw.payday, 25, 1, 31)),
+        displayCurrency: allowedCurr.has(raw.displayCurrency) ? raw.displayCurrency : 'COP',
+        reserveDebtsInDaily: Boolean(raw.reserveDebtsInDaily ?? true),
+        gmfLimitCOP: sanitizeNumber(raw.gmfLimitCOP, 18300000, 100000, 1e12),
+        pinHash: typeof raw.pinHash === 'string' && /^[a-f0-9]{64}$/.test(raw.pinHash) ? raw.pinHash : '',
+        trmUpdatedAt: sanitizeString(raw.trmUpdatedAt || 'TRM guardada', 50),
+        rates: {
+          COP: 1,
+          USD: sanitizeNumber(raw.rates?.USD, 4000, 100, 100000),
+          EUR: sanitizeNumber(raw.rates?.EUR, 4350, 100, 100000)
+        },
+        pockets: Array.isArray(raw.pockets) ? raw.pockets.slice(0, 30).map(p => ({
+          id: sanitizeNumber(p?.id, Date.now(), 1, 1e15),
+          name: sanitizeString(p?.name || 'Bolsillo', 40),
+          savedCOP: Math.round(sanitizeNumber(p?.savedCOP, 0, 0, 1e12)),
+          targetCOP: Math.round(sanitizeNumber(p?.targetCOP, 1000000, 1, 1e12)),
+          icon: allowedIcons.has(p?.icon) ? p.icon : 'piggy-bank',
+          color: 'from-cyan-500 to-emerald-500'
+        })) : [],
+        transactions: Array.isArray(raw.transactions) ? raw.transactions.slice(0, 2000).map(t => ({
+          id: sanitizeNumber(t?.id, Date.now(), 1, 1e15),
+          type: t?.type === 'income' ? 'income' : 'expense',
+          title: sanitizeString(t?.title || 'Movimiento', 80),
+          amountCOP: Math.round(sanitizeNumber(t?.amountCOP, 0, 0, 1e12)),
+          category: allowedCats.has(t?.category) ? t.category : 'comida',
+          date: sanitizeDateISO(t?.date),
+          projected: Boolean(t?.projected)
+        })) : [],
+        alerts: Array.isArray(raw.alerts) ? raw.alerts.slice(0, 200).map(a => ({
+          id: sanitizeNumber(a?.id, Date.now(), 1, 1e15),
+          title: sanitizeString(a?.title || 'Deuda', 80),
+          amountCOP: Math.round(sanitizeNumber(a?.amountCOP, 0, 0, 1e12)),
+          dueDate: sanitizeDateISO(a?.dueDate),
+          advanceDays: Math.round(sanitizeNumber(a?.advanceDays, 1, 0, 30)),
+          recurring: Boolean(a?.recurring),
+          paid: Boolean(a?.paid),
+          icon: allowedIcons.has(a?.icon) ? a.icon : 'bell'
+        })) : []
+      };
+    }
+
+    function loadInitialState() {
+      try {
+        const stored = localStorage.getItem(STORAGE_KEY);
+        if (!stored) return structuredClone(DEFAULT_STATE);
+        return validateAndSanitizeState(JSON.parse(stored));
+      } catch (e) {
+        return structuredClone(DEFAULT_STATE);
+      }
+    }
+
+    let state = loadInitialState();
+    let isUnlocked = !state.pinHash;
     let currentTxType = 'expense';
     let calDate = new Date();
-    let selectedCalISO = new Date().toISOString().slice(0, 10);
+    let selectedCalISO = getLocalTodayISO();
     let wrappedIndex = 0;
-    let voiceSettings = JSON.parse(localStorage.getItem('finflow_voice_cfg') || '{"voiceURI":"","rate":1.05}');
+    let voiceSettings = { voiceURI: '', rate: 1.05 };
+    try {
+      const vc = JSON.parse(localStorage.getItem('finflow_voice_cfg') || '{}');
+      if (typeof vc.voiceURI === 'string') voiceSettings.voiceURI = vc.voiceURI;
+      voiceSettings.rate = sanitizeNumber(vc.rate, 1.05, 0.7, 1.5);
+    } catch (e) {}
 
     function saveState() {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
@@ -821,53 +935,83 @@
       requestAnimationFrame(step);
     }
 
+    // ==================== REAL CASH vs PROJECTION METRICS ====================
     function getMetrics() {
-      const income = state.transactions.filter(t => t.type === 'income').reduce((a, b) => a + b.amountCOP, 0);
-      const expense = state.transactions.filter(t => t.type === 'expense').reduce((a, b) => a + b.amountCOP, 0);
-      const totalBalance = income - expense;
+      const todayISO = getLocalTodayISO();
+
+      const realIncome = state.transactions
+        .filter(t => t.type === 'income' && !isFutureTransaction(t))
+        .reduce((a, b) => a + b.amountCOP, 0);
+      const realExpense = state.transactions
+        .filter(t => t.type === 'expense' && !isFutureTransaction(t))
+        .reduce((a, b) => a + b.amountCOP, 0);
+      const realCash = realIncome - realExpense;
+
+      const projectedIncome = state.transactions
+        .filter(t => t.type === 'income' && isFutureTransaction(t))
+        .reduce((a, b) => a + b.amountCOP, 0);
+      const projectedExpense = state.transactions
+        .filter(t => t.type === 'expense' && isFutureTransaction(t))
+        .reduce((a, b) => a + b.amountCOP, 0);
+
       const pocketsSum = state.pockets.reduce((a, b) => a + b.savedCOP, 0);
       const pendingDebts = state.alerts.filter(a => !a.paid).reduce((a, b) => a + b.amountCOP, 0);
       const reservedDebts = state.reserveDebtsInDaily ? pendingDebts : 0;
-      const freeBalance = totalBalance - pocketsSum - reservedDebts;
+
+      const realAvailableToday = realCash - pocketsSum;
+      const projectedNetBalance = realAvailableToday + projectedIncome - projectedExpense - reservedDebts;
 
       const today = new Date();
-      today.setHours(0,0,0,0);
+      today.setHours(0, 0, 0, 0);
       const payday = Number(state.payday) || 25;
       let nextPay = new Date(today.getFullYear(), today.getMonth(), payday);
       if (today.getDate() >= payday) {
         nextPay = new Date(today.getFullYear(), today.getMonth() + 1, payday);
       }
       const daysLeft = Math.max(1, Math.ceil((nextPay - today) / 86400000));
-      const dailyBudget = Math.max(0, Math.floor(freeBalance / daysLeft));
+      const dailyBudget = Math.max(0, Math.floor(realAvailableToday / daysLeft));
 
-      const todayISO = new Date().toISOString().slice(0, 10);
       const spentToday = state.transactions
         .filter(t => t.type === 'expense' && t.date === todayISO)
         .reduce((a, b) => a + b.amountCOP, 0);
 
-      return { income, expense, totalBalance, pocketsSum, pendingDebts, reservedDebts, freeBalance, daysLeft, dailyBudget, spentToday };
+      return {
+        realIncome, realExpense, realCash,
+        projectedIncome, projectedExpense,
+        pocketsSum, pendingDebts, reservedDebts,
+        realAvailableToday, projectedNetBalance,
+        daysLeft, dailyBudget, spentToday
+      };
     }
 
     function renderAll() {
+      if (!isUnlocked) return;
+
       const m = getMetrics();
+      const todayLabel = new Date().toLocaleDateString('es-CO', { day: 'numeric', month: 'short' });
+      document.getElementById('realDateBadge').textContent = todayLabel;
       document.getElementById('cycleBadge').textContent = `Pago día ${state.payday}`;
       document.getElementById('currencyBtn').textContent = state.displayCurrency;
       document.getElementById('trmHeaderLabel').textContent = `TRM: $${state.rates.USD.toLocaleString('es-CO')} • EUR: $${state.rates.EUR.toLocaleString('es-CO')}`;
 
-      animateValue(document.getElementById('freeBalanceDisplay'), m.freeBalance);
-      document.getElementById('totalBalanceDisplay').textContent = formatMoney(m.totalBalance);
+      animateValue(document.getElementById('realCashDisplay'), m.realCash);
+      document.getElementById('realAfterPocketsText').textContent = `Libre hoy tras bolsillos: ${formatMoney(m.realAvailableToday)}`;
+      document.getElementById('projectedIncomeDisplay').textContent = '+ ' + formatMoney(m.projectedIncome);
       document.getElementById('pocketsSumDisplay').textContent = '- ' + formatMoney(m.pocketsSum);
       document.getElementById('debtsSumDisplay').textContent = (state.reserveDebtsInDaily ? '- ' : '(Off) ') + formatMoney(m.pendingDebts);
 
-      document.getElementById('daysLeftText').textContent = `Faltan ${m.daysLeft} día${m.daysLeft === 1 ? '' : 's'} para tu pago del ${state.payday}`;
+      document.getElementById('daysLeftText').textContent = `Faltan ${m.daysLeft} día${m.daysLeft === 1 ? '' : 's'} para recibir tu pago del ${state.payday}`;
       animateValue(document.getElementById('dailyBudgetDisplay'), m.dailyBudget);
       document.getElementById('spentTodayLabel').textContent = formatMoney(m.spentToday);
       const todayPct = m.dailyBudget > 0 ? Math.min(100, Math.round((m.spentToday / m.dailyBudget) * 100)) : 0;
-      document.getElementById('todayPctLabel').textContent = `${todayPct}% del cupo de hoy`;
+      document.getElementById('todayPctLabel').textContent = `${todayPct}% del cupo real hoy`;
       document.getElementById('todayProgressBar').style.width = `${todayPct}%`;
 
       document.getElementById('dailyFormulaMath').textContent =
-        `${formatMoney(m.freeBalance)} (Saldo Libre) ÷ ${m.daysLeft} días = ${formatMoney(m.dailyBudget)} / día`;
+        `${formatMoney(m.realAvailableToday)} (Libre Real Hoy) ÷ ${m.daysLeft} días = ${formatMoney(m.dailyBudget)} / día`;
+      document.getElementById('projIncInline').textContent = formatMoney(m.projectedIncome);
+      document.getElementById('projDebtInline').textContent = formatMoney(m.pendingDebts);
+      document.getElementById('projectedNetDisplay').textContent = formatMoney(m.projectedNetBalance);
 
       renderPockets();
       renderAlerts();
@@ -886,19 +1030,20 @@
       }
       box.innerHTML = state.pockets.map(p => {
         const pct = Math.min(100, Math.round((p.savedCOP / (p.targetCOP || 1)) * 100));
+        const safeId = Number(p.id);
         return `
           <div class="glass rounded-2xl p-3 min-w-[175px] shrink-0 space-y-2">
             <div class="flex items-center justify-between">
-              <span class="text-xs font-bold text-white">${p.name}</span>
+              <span class="text-xs font-bold text-white truncate max-w-[115px]">${escapeHTML(p.name)}</span>
               <span class="text-[10px] font-mono text-cyan-300">${pct}%</span>
             </div>
             <p class="font-mono font-extrabold text-sm text-emerald-300">${formatMoney(p.savedCOP)}</p>
             <div class="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden">
-              <div class="h-full bg-gradient-to-r ${p.color || 'from-cyan-400 to-emerald-400'}" style="width:${pct}%"></div>
+              <div class="h-full bg-gradient-to-r from-cyan-400 to-emerald-400" style="width:${pct}%"></div>
             </div>
             <div class="flex gap-1.5 pt-1">
-              <button onclick="adjustPocket(${p.id}, 50000)" class="flex-1 py-1 rounded-lg bg-emerald-500/20 text-emerald-300 text-[10px] font-bold">+50k</button>
-              <button onclick="adjustPocket(${p.id}, -50000)" class="flex-1 py-1 rounded-lg bg-white/5 text-slate-300 text-[10px] font-bold">-50k</button>
+              <button onclick="adjustPocket(${safeId}, 50000)" class="flex-1 py-1 rounded-lg bg-emerald-500/20 text-emerald-300 text-[10px] font-bold">+50k</button>
+              <button onclick="adjustPocket(${safeId}, -50000)" class="flex-1 py-1 rounded-lg bg-white/5 text-slate-300 text-[10px] font-bold">-50k</button>
             </div>
           </div>`;
       }).join('');
@@ -907,56 +1052,82 @@
     function renderAlerts() {
       const homeList = document.getElementById('homeAlertsList');
       const allList = document.getElementById('allAlertsList');
-      const sorted = [...state.alerts].sort((a, b) => a.paid - b.paid || a.dueDate.localeCompare(b.dueDate));
+      const sorted = [...state.alerts].sort((a, b) => Number(a.paid) - Number(b.paid) || a.dueDate.localeCompare(b.dueDate));
 
-      const cardHTML = (a) => `
+      const cardHTML = (a) => {
+        const safeId = Number(a.id);
+        const iconName = a.paid ? 'check-circle-2' : escapeHTML(a.icon || 'bell');
+        return `
         <div class="glass rounded-2xl p-3 flex items-center justify-between gap-2 ${a.paid ? 'opacity-55' : ''}">
           <div class="flex items-center gap-2.5 min-w-0">
             <div class="w-9 h-9 rounded-xl ${a.paid ? 'bg-emerald-500/20 text-emerald-300' : 'bg-amber-500/20 text-amber-300'} flex items-center justify-center shrink-0">
-              <i data-lucide="${a.paid ? 'check-circle-2' : (a.icon || 'bell')}" class="w-4 h-4"></i>
+              <i data-lucide="${iconName}" class="w-4 h-4"></i>
             </div>
             <div class="min-w-0">
-              <p class="text-xs font-bold text-white truncate">${a.title}</p>
-              <p class="text-[10px] text-slate-400">Vence: ${a.dueDate} ${a.recurring ? '• Mensual' : ''}</p>
+              <p class="text-xs font-bold text-white truncate">${escapeHTML(a.title)}</p>
+              <p class="text-[10px] text-slate-400">Vence: ${escapeHTML(a.dueDate)} ${a.recurring ? '• Mensual' : ''}</p>
             </div>
           </div>
           <div class="flex items-center gap-1.5 shrink-0">
             <span class="font-mono font-bold text-xs ${a.paid ? 'text-emerald-300 line-through' : 'text-amber-300'}">${formatMoney(a.amountCOP)}</span>
-            <button onclick="openEditAlert(${a.id})" class="w-7 h-7 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center text-sky-300" title="Editar deuda">
+            <button onclick="openEditAlert(${safeId})" class="w-7 h-7 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center text-sky-300" title="Editar deuda">
               <i data-lucide="pencil" class="w-3.5 h-3.5"></i>
             </button>
-            <button onclick="toggleAlertPaid(${a.id})" class="px-2 h-7 rounded-lg ${a.paid ? 'bg-slate-700 text-slate-300' : 'bg-emerald-500 text-slate-950 font-bold'} text-[10px]">
+            <button onclick="toggleAlertPaid(${safeId})" class="px-2 h-7 rounded-lg ${a.paid ? 'bg-slate-700 text-slate-300' : 'bg-emerald-500 text-slate-950 font-bold'} text-[10px]">
               ${a.paid ? 'Revertir' : 'Pagar'}
             </button>
           </div>
         </div>`;
+      };
 
-      homeList.innerHTML = sorted.slice(0, 3).map(cardHTML).join('') || `<p class="text-xs text-slate-500">Sin deudas programadas.</p>`;
+      homeList.innerHTML = sorted.slice(0, 3).map(cardHTML).join('') || `<p class="text-xs text-slate-500">Sin deudas programadas. Importa tu JSON o crea una nueva.</p>`;
       allList.innerHTML = sorted.map(cardHTML).join('') || `<p class="text-xs text-slate-500">Sin alertas registradas.</p>`;
     }
 
     function renderTransactions() {
       const list = document.getElementById('transactionsList');
       const sorted = [...state.transactions].sort((a, b) => b.date.localeCompare(a.date) || b.id - a.id);
-      list.innerHTML = sorted.map(t => `
-        <div class="glass rounded-2xl p-3 flex items-center justify-between">
-          <div class="flex items-center gap-2.5">
-            <div class="w-9 h-9 rounded-xl ${t.type === 'income' ? 'bg-emerald-500/20 text-emerald-300' : 'bg-rose-500/20 text-rose-300'} flex items-center justify-center">
-              <i data-lucide="${t.type === 'income' ? 'arrow-down-left' : 'arrow-up-right'}" class="w-4 h-4"></i>
+      if (!sorted.length) {
+        list.innerHTML = `<div class="glass rounded-2xl p-4 text-center text-xs text-slate-400">Aún no hay movimientos. Usa el botón <b>+</b> o <b>Importar JSON</b> en la pestaña Más.</div>`;
+        return;
+      }
+      list.innerHTML = sorted.map(t => {
+        const safeId = Number(t.id);
+        const isProj = isFutureTransaction(t);
+        return `
+        <div class="glass rounded-2xl p-3 flex items-center justify-between ${isProj ? 'border border-indigo-400/30 bg-indigo-950/20' : ''}">
+          <div class="flex items-center gap-2.5 min-w-0">
+            <div class="w-9 h-9 rounded-xl ${isProj ? 'bg-indigo-500/20 text-indigo-300' : (t.type === 'income' ? 'bg-emerald-500/20 text-emerald-300' : 'bg-rose-500/20 text-rose-300')} flex items-center justify-center shrink-0">
+              <i data-lucide="${isProj ? 'clock' : (t.type === 'income' ? 'arrow-down-left' : 'arrow-up-right')}" class="w-4 h-4"></i>
             </div>
-            <div>
-              <p class="text-xs font-bold text-white">${t.title}</p>
-              <p class="text-[10px] text-slate-400 capitalize">${t.category} • ${t.date}</p>
+            <div class="min-w-0">
+              <div class="flex items-center gap-1.5">
+                <p class="text-xs font-bold text-white truncate">${escapeHTML(t.title)}</p>
+                ${isProj ? '<span class="text-[9px] px-1.5 py-0.5 rounded bg-indigo-500/25 text-indigo-200 font-bold shrink-0">Proyectado</span>' : ''}
+              </div>
+              <p class="text-[10px] text-slate-400 capitalize">${escapeHTML(t.category)} • ${escapeHTML(t.date)}</p>
             </div>
           </div>
-          <div class="flex items-center gap-2">
-            <span class="font-mono font-bold text-xs ${t.type === 'income' ? 'text-emerald-400' : 'text-rose-300'}">
+          <div class="flex items-center gap-1.5 shrink-0">
+            <span class="font-mono font-bold text-xs ${isProj ? 'text-indigo-300' : (t.type === 'income' ? 'text-emerald-400' : 'text-rose-300')}">
               ${t.type === 'income' ? '+' : '-'} ${formatMoney(t.amountCOP)}
             </span>
-            <button onclick="deleteTx(${t.id})" class="text-slate-500 hover:text-rose-400"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+            ${isProj ? `<button onclick="confirmProjectedTx(${safeId})" title="Marcar como ya recibido hoy" class="px-1.5 py-1 rounded-lg bg-emerald-500/20 text-emerald-300 text-[9px] font-bold">Recibir</button>` : ''}
+            <button onclick="deleteTx(${safeId})" class="text-slate-500 hover:text-rose-400"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
           </div>
-        </div>
-      `).join('');
+        </div>`;
+      }).join('');
+    }
+
+    function confirmProjectedTx(id) {
+      const tx = state.transactions.find(t => t.id === id);
+      if (!tx) return;
+      tx.date = getLocalTodayISO();
+      tx.projected = false;
+      haptic(25);
+      saveState();
+      renderAll();
+      showToast('Movimiento confirmado como dinero real hoy');
     }
 
     // ==================== CALENDAR ====================
@@ -990,7 +1161,7 @@
     }
 
     function selectCalDay(iso) {
-      selectedCalISO = iso;
+      selectedCalISO = sanitizeDateISO(iso);
       renderCalendar();
     }
     function changeCalMonth(delta) {
@@ -1004,21 +1175,21 @@
       const isPay = Number(selectedCalISO.split('-')[2]) === Number(state.payday);
       let html = '';
       if (isPay) html += `<div class="p-2 rounded-xl bg-emerald-500/15 text-emerald-300 font-semibold">Día de pago mensual (Día ${state.payday})</div>`;
-      dayAlerts.forEach(a => html += `<div class="p-2 rounded-xl bg-amber-500/15 text-amber-200 flex justify-between"><span>Alerta: ${a.title}</span><b class="font-mono">${formatMoney(a.amountCOP)}</b></div>`);
-      dayTxs.forEach(t => html += `<div class="p-2 rounded-xl bg-sky-500/15 text-sky-200 flex justify-between"><span>${t.title}</span><b class="font-mono">${formatMoney(t.amountCOP)}</b></div>`);
+      dayAlerts.forEach(a => html += `<div class="p-2 rounded-xl bg-amber-500/15 text-amber-200 flex justify-between"><span>Alerta: ${escapeHTML(a.title)}</span><b class="font-mono">${formatMoney(a.amountCOP)}</b></div>`);
+      dayTxs.forEach(t => html += `<div class="p-2 rounded-xl bg-sky-500/15 text-sky-200 flex justify-between"><span>${escapeHTML(t.title)} ${isFutureTransaction(t) ? '(Proyectado)' : ''}</span><b class="font-mono">${formatMoney(t.amountCOP)}</b></div>`);
       document.getElementById('selectedDayEvents').innerHTML = html || `<p class="text-slate-400">Sin eventos registrados este día.</p>`;
     }
 
     // ==================== ANALYTICS & SIMULATORS ====================
     function renderAnalytics(m) {
       const elapsedPct = Math.min(100, Math.round(((30 - m.daysLeft) / 30) * 100));
-      const spendRatio = m.income > 0 ? Math.min(100, Math.round(((m.expense + m.pendingDebts) / m.income) * 100)) : 0;
+      const spendRatio = m.realIncome > 0 ? Math.min(100, Math.round((m.realExpense / m.realIncome) * 100)) : 0;
       document.getElementById('cycleTimePct').textContent = `${elapsedPct}%`;
       document.getElementById('cycleTimeBar').style.width = `${elapsedPct}%`;
       document.getElementById('cycleSpendPct').textContent = `${spendRatio}%`;
       document.getElementById('cycleSpendBar').style.width = `${spendRatio}%`;
       document.getElementById('burnExplanation').textContent =
-        `Llevas el ${elapsedPct}% del ciclo mensual y has comprometido el ${spendRatio}% de tus ingresos entre gastos y deudas.`;
+        `Has consumido el ${spendRatio}% de tu ingreso real recibido hoy (${formatMoney(m.realIncome)}). Además esperas ${formatMoney(m.projectedIncome)} proyectados.`;
 
       const cats = {};
       state.transactions.filter(t => t.type === 'expense').forEach(t => cats[t.category] = (cats[t.category] || 0) + t.amountCOP);
@@ -1035,42 +1206,42 @@
       document.getElementById('donutChartBox').innerHTML = `<svg viewBox="0 0 42 42" class="w-28 h-28 -rotate-90">${circles || '<circle r="15.9" cx="21" cy="21" fill="transparent" stroke="#1e293b" stroke-width="5"/>'}</svg>`;
       document.getElementById('categoryLegend').innerHTML = entries.map(([cat, val], idx) => `
         <div class="flex items-center justify-between">
-          <span class="flex items-center gap-1.5 capitalize"><i class="w-2.5 h-2.5 rounded-full inline-block" style="background:${colors[idx % colors.length]}"></i>${cat}</span>
+          <span class="flex items-center gap-1.5 capitalize"><i class="w-2.5 h-2.5 rounded-full inline-block" style="background:${colors[idx % colors.length]}"></i>${escapeHTML(cat)}</span>
           <span class="font-mono font-bold text-white">${formatMoney(val)}</span>
         </div>`).join('') || `<p class="text-slate-400">Sin gastos registrados.</p>`;
 
-      const gmfPct = Math.min(100, Math.round((m.expense / state.gmfLimitCOP) * 100));
+      const gmfPct = Math.min(100, Math.round((m.realExpense / state.gmfLimitCOP) * 100));
       document.getElementById('gmfPctLabel').textContent = `${gmfPct}%`;
       document.getElementById('gmfBar').style.width = `${Math.max(4, gmfPct)}%`;
-      document.getElementById('gmfDetailText').textContent = `Salidas acumuladas: ${formatMoney(m.expense)} de ${formatMoney(state.gmfLimitCOP)} exentos (350 UVT).`;
+      document.getElementById('gmfDetailText').textContent = `Salidas reales acumuladas: ${formatMoney(m.realExpense)} de ${formatMoney(state.gmfLimitCOP)} exentos (350 UVT).`;
 
       calcInstallments();
 
       document.getElementById('smartAdviceBox').innerHTML = `
         <div class="glass rounded-2xl p-3.5 text-xs space-y-1">
-          <p class="font-bold text-emerald-300">Consejo Estratégico para tu Ciclo</p>
-          <p class="text-slate-300">Tus deudas reservadas representan el <b>${Math.round((m.pendingDebts / (m.totalBalance || 1)) * 100)}%</b> de tu saldo actual. Mantén tus gastos hormiga por debajo de <b>${formatMoney(m.dailyBudget)}</b> diarios hasta el ${state.payday}.</p>
+          <p class="font-bold text-emerald-300">Diagnóstico Real vs Proyección</p>
+          <p class="text-slate-300">Hoy cuentas con <b>${formatMoney(m.realAvailableToday)}</b> libres reales. Cuando ingrese tu proyección del día ${state.payday} (<b>${formatMoney(m.projectedIncome)}</b>) y cubras tus deudas (<b>${formatMoney(m.pendingDebts)}</b>), tu saldo neto proyectado será de <b>${formatMoney(m.projectedNetBalance)}</b>.</p>
         </div>`;
     }
 
     function simulatePurchase() {
-      const val = Number(document.getElementById('impulseAmountInput').value);
+      const val = sanitizeNumber(document.getElementById('impulseAmountInput').value, 0, 0, 1e12);
       const box = document.getElementById('impulseResultBox');
       if (!val || val <= 0) { box.classList.add('hidden'); return; }
       const m = getMetrics();
-      const newFree = m.freeBalance - val;
-      const newDaily = Math.max(0, Math.floor(newFree / m.daysLeft));
+      const newRealAvail = m.realAvailableToday - val;
+      const newDaily = Math.max(0, Math.floor(newRealAvail / m.daysLeft));
       const diff = m.dailyBudget - newDaily;
       box.classList.remove('hidden');
-      box.innerHTML = newFree < 0
-        ? `<span class="text-rose-400 font-bold">Alerta:</span> Esta compra supera tu saldo libre real por <b>${formatMoney(Math.abs(newFree))}</b> y compromete tus deudas.`
-        : `Tu cupo diario bajaría de <b class="text-white">${formatMoney(m.dailyBudget)}</b> a <b class="text-amber-300">${formatMoney(newDaily)}</b> (-${formatMoney(diff)}/día hasta el ${state.payday}).`;
+      box.innerHTML = newRealAvail < 0
+        ? `<span class="text-rose-400 font-bold">Sin liquidez hoy:</span> Esta compra excede tu efectivo libre real hoy por <b>${formatMoney(Math.abs(newRealAvail))}</b>.`
+        : `Tu cupo diario real bajaría de <b class="text-white">${formatMoney(m.dailyBudget)}</b> a <b class="text-amber-300">${formatMoney(newDaily)}</b> (-${formatMoney(diff)}/día hasta el ${state.payday}).`;
     }
 
     function calcInstallments() {
-      const P = Number(document.getElementById('ccAmount').value) || 0;
-      const n = Math.max(1, Number(document.getElementById('ccMonths').value) || 1);
-      const ea = (Number(document.getElementById('ccRateEA').value) || 0) / 100;
+      const P = sanitizeNumber(document.getElementById('ccAmount').value, 0, 0, 1e12);
+      const n = Math.max(1, sanitizeNumber(document.getElementById('ccMonths').value, 1, 1, 120));
+      const ea = sanitizeNumber(document.getElementById('ccRateEA').value, 0, 0, 200) / 100;
       const mv = Math.pow(1 + ea, 1 / 12) - 1;
       const quota = mv > 0 ? (P * mv) / (1 - Math.pow(1 + mv, -n)) : P / n;
       const total = quota * n;
@@ -1083,13 +1254,14 @@
     let isListening = false;
 
     function openVoiceAssistant() {
+      if (!isUnlocked) return;
       haptic(25);
       document.getElementById('voiceModal').classList.remove('hidden');
       startListeningLoop();
     }
 
     function closeVoiceAssistant() {
-      if (recognition) { try { recognition.stop(); } catch(e){} }
+      if (recognition) { try { recognition.stop(); } catch (e) {} }
       if (window.speechSynthesis) window.speechSynthesis.cancel();
       isListening = false;
       document.getElementById('voiceModal').classList.add('hidden');
@@ -1125,7 +1297,7 @@
         setOrbState('listening', 'Escuchando... habla ahora');
       };
       recognition.onresult = (e) => {
-        const text = e.results[0][0].transcript;
+        const text = sanitizeString(e.results[0][0].transcript, 140);
         document.getElementById('voiceTranscriptText').textContent = `"${text}"`;
         processVoiceCommand(text, true);
       };
@@ -1136,7 +1308,7 @@
       recognition.onend = () => {
         isListening = false;
       };
-      try { recognition.start(); } catch(e) {}
+      try { recognition.start(); } catch (e) {}
     }
 
     function speakReply(text, continueLoop = false) {
@@ -1165,7 +1337,7 @@
     }
 
     function processVoiceCommand(rawText, fromMic = false) {
-      const q = rawText.toLowerCase().trim();
+      const q = sanitizeString(rawText, 140).toLowerCase();
       const m = getMetrics();
       let reply = '';
       let keepLoop = fromMic;
@@ -1177,17 +1349,17 @@
         setTimeout(closeVoiceAssistant, 2200);
         return;
       } else if (q.includes('cuánto') && (q.includes('gastar') || q.includes('cupo') || q.includes('hoy'))) {
-        reply = `Hoy tienes un cupo diario sugerido de ${Math.round(m.dailyBudget).toLocaleString('es-CO')} pesos. Faltan ${m.daysLeft} días para tu pago del ${state.payday}, y tu saldo libre real es de ${Math.round(m.freeBalance).toLocaleString('es-CO')} pesos.`;
+        reply = `Con tu efectivo real de hoy, tienes ${Math.round(m.realAvailableToday).toLocaleString('es-CO')} pesos libres tras bolsillos, lo que da un cupo real de ${Math.round(m.dailyBudget).toLocaleString('es-CO')} pesos diarios durante los ${m.daysLeft} días que faltan para el ${state.payday}.`;
       } else if (q.includes('deuda') || q.includes('recibo') || q.includes('pagar')) {
         const pending = state.alerts.filter(a => !a.paid);
         if (!pending.length) {
-          reply = '¡Excelente! No tienes deudas ni recibos pendientes por pagar.';
+          reply = 'No tienes deudas ni recibos pendientes por pagar.';
         } else {
           const listStr = pending.slice(0, 3).map(a => `${a.title} por ${a.amountCOP.toLocaleString('es-CO')} pesos`).join(', ');
-          reply = `Tienes ${pending.length} deudas pendientes por un total de ${m.pendingDebts.toLocaleString('es-CO')} pesos. Las principales son: ${listStr}.`;
+          reply = `Tienes ${pending.length} deudas programadas por ${m.pendingDebts.toLocaleString('es-CO')} pesos. Las principales son: ${listStr}.`;
         }
-      } else if (q.includes('saldo') || q.includes('cómo voy') || q.includes('resumen')) {
-        reply = `Tu saldo total es de ${m.totalBalance.toLocaleString('es-CO')} pesos. Tienes ${m.pocketsSum.toLocaleString('es-CO')} en bolsillos y ${m.pendingDebts.toLocaleString('es-CO')} reservados para deudas, dejándote ${m.freeBalance.toLocaleString('es-CO')} pesos libres.`;
+      } else if (q.includes('saldo') || q.includes('cómo voy') || q.includes('resumen') || q.includes('proyección')) {
+        reply = `Hoy tienes ${m.realCash.toLocaleString('es-CO')} pesos en efectivo real y ${m.pocketsSum.toLocaleString('es-CO')} en bolsillos. Además tienes ${m.projectedIncome.toLocaleString('es-CO')} pesos proyectados por cobrar el día ${state.payday}.`;
       } else {
         const parsed = extractMovementFromText(rawText);
         if (parsed) {
@@ -1197,12 +1369,13 @@
             title: parsed.title,
             amountCOP: parsed.amountCOP,
             category: parsed.category,
-            date: new Date().toISOString().slice(0, 10)
+            date: getLocalTodayISO(),
+            projected: false
           });
           saveState();
           renderAll();
           const newM = getMetrics();
-          reply = `Listo, registré ${parsed.type === 'income' ? 'un ingreso' : 'un gasto'} de ${parsed.amountCOP.toLocaleString('es-CO')} pesos por ${parsed.title}. Tu nuevo cupo diario es de ${newM.dailyBudget.toLocaleString('es-CO')} pesos.`;
+          reply = `Listo, registré ${parsed.type === 'income' ? 'un ingreso' : 'un gasto'} de ${parsed.amountCOP.toLocaleString('es-CO')} pesos por ${parsed.title}. Tu nuevo cupo diario real es de ${newM.dailyBudget.toLocaleString('es-CO')} pesos.`;
         } else {
           reply = 'No detecté un monto claro. Puedes decirme por ejemplo: Gasto de 25 mil en almuerzo, o preguntarme cuánto puedes gastar hoy.';
         }
@@ -1211,7 +1384,8 @@
     }
 
     function extractMovementFromText(text) {
-      const lower = text.toLowerCase();
+      const clean = sanitizeString(text, 100);
+      const lower = clean.toLowerCase();
       const isIncome = /(ingreso|pago|nómina|recibí|abono|gané)/i.test(lower);
       const match = lower.match(/(\d+(?:[.,]\d+)?)\s*(mil|k|millon|millones)?/i);
       if (!match) return null;
@@ -1219,11 +1393,11 @@
       const unit = (match[2] || '').toLowerCase();
       if (unit === 'mil' || unit === 'k') num *= 1000;
       else if (unit.startsWith('millon')) num *= 1000000;
-      if (!num || num <= 0) return null;
+      if (!Number.isFinite(num) || num <= 0 || num > 1e12) return null;
 
-      let title = text.replace(match[0], '').replace(/(gasto|de|en|por|un|una|ingreso|agrega|anota|registra)/gi, ' ').trim();
+      let title = clean.replace(match[0], '').replace(/(gasto|de|en|por|un|una|ingreso|agrega|anota|registra)/gi, ' ').trim();
       if (!title) title = isIncome ? 'Ingreso rápido' : 'Gasto rápido';
-      title = title.charAt(0).toUpperCase() + title.slice(1);
+      title = sanitizeString(title.charAt(0).toUpperCase() + title.slice(1), 60);
 
       let category = isIncome ? 'ingreso' : 'comida';
       if (/uber|taxi|bus|gasolina|transporte|pasaje/i.test(lower)) category = 'transporte';
@@ -1240,7 +1414,8 @@
       state.transactions.unshift({
         id: Date.now(),
         ...parsed,
-        date: new Date().toISOString().slice(0, 10)
+        date: getLocalTodayISO(),
+        projected: false
       });
       inp.value = '';
       haptic(25);
@@ -1253,17 +1428,18 @@
     async function handleReceiptOCR(ev) {
       const file = ev.target.files[0];
       if (!file) return;
+      if (!file.type.startsWith('image/')) { showToast('Selecciona una imagen válida'); return; }
       showToast('Escaneando factura con OCR...');
       try {
         const res = await Tesseract.recognize(file, 'spa');
-        const lines = res.data.text.split('\n').map(l => l.trim()).filter(Boolean);
+        const lines = res.data.text.split(/\r?\n/).map(l => sanitizeString(l, 40)).filter(Boolean);
         let maxVal = 0;
         lines.forEach(line => {
           const nums = line.match(/\d{1,3}(?:[.,]\d{3})+/g);
           if (nums) {
             nums.forEach(n => {
               const clean = Number(n.replace(/[.,]/g, ''));
-              if (clean > maxVal && clean < 50000000) maxVal = clean;
+              if (Number.isFinite(clean) && clean > maxVal && clean < 50000000) maxVal = clean;
             });
           }
         });
@@ -1302,7 +1478,7 @@
       state.reserveDebtsInDaily = !state.reserveDebtsInDaily;
       saveState();
       renderAll();
-      showToast(state.reserveDebtsInDaily ? 'Deudas reservadas en saldo libre' : 'Deudas excluidas del cálculo');
+      showToast(state.reserveDebtsInDaily ? 'Deudas incluidas en proyección' : 'Deudas excluidas de proyección');
     }
 
     function toggleDailyExplain() {
@@ -1310,8 +1486,20 @@
     }
 
     function openTxModal() {
-      document.getElementById('txDate').value = new Date().toISOString().slice(0, 10);
+      document.getElementById('txDate').value = getLocalTodayISO();
+      updateTxDateHint();
       document.getElementById('txModal').classList.remove('hidden');
+    }
+    function updateTxDateHint() {
+      const d = document.getElementById('txDate').value;
+      const hint = document.getElementById('txDateModeHint');
+      if (d > getLocalTodayISO()) {
+        hint.textContent = 'Fecha futura: se guardará como Proyección (no suma al efectivo real de hoy).';
+        hint.className = 'text-[11px] text-indigo-300';
+      } else {
+        hint.textContent = 'Fecha de hoy o anterior: se cuenta como dinero real.';
+        hint.className = 'text-[11px] text-emerald-300';
+      }
     }
     function closeModal(id) {
       document.getElementById(id).classList.add('hidden');
@@ -1326,21 +1514,22 @@
         : 'py-2 rounded-xl bg-white/5 border border-white/10 text-slate-400 text-xs font-bold';
     }
     function saveTransaction() {
-      const title = document.getElementById('txTitle').value.trim();
-      const rawAmt = Number(document.getElementById('txAmount').value);
+      const title = sanitizeString(document.getElementById('txTitle').value, 80);
+      const rawAmt = sanitizeNumber(document.getElementById('txAmount').value, 0, 0, 1e12);
       const curr = document.getElementById('txCurrency').value;
       const category = document.getElementById('txCategory').value;
-      const date = document.getElementById('txDate').value || new Date().toISOString().slice(0, 10);
-      if (!title || !rawAmt) { showToast('Completa concepto y monto'); return; }
+      const date = sanitizeDateISO(document.getElementById('txDate').value);
+      if (!title || rawAmt <= 0) { showToast('Completa concepto y monto válido'); return; }
       const amountCOP = Math.round(rawAmt * (state.rates[curr] || 1));
-      state.transactions.unshift({ id: Date.now(), type: currentTxType, title, amountCOP, category, date });
+      const projected = date > getLocalTodayISO();
+      state.transactions.unshift({ id: Date.now(), type: currentTxType, title, amountCOP, category, date, projected });
       document.getElementById('txTitle').value = '';
       document.getElementById('txAmount').value = '';
       closeModal('txModal');
       haptic(25);
       saveState();
       renderAll();
-      showToast('Movimiento guardado');
+      showToast(projected ? 'Proyección futura guardada' : 'Movimiento real guardado');
     }
     function deleteTx(id) {
       state.transactions = state.transactions.filter(t => t.id !== id);
@@ -1354,7 +1543,7 @@
       document.getElementById('alertModalTitle').textContent = 'Nueva Deuda o Recibo';
       document.getElementById('alertTitleInput').value = '';
       document.getElementById('alertAmountInput').value = '';
-      document.getElementById('alertDateInput').value = new Date().toISOString().slice(0, 10);
+      document.getElementById('alertDateInput').value = getLocalTodayISO();
       document.getElementById('alertRecurringInput').checked = true;
       document.getElementById('alertPaidInput').checked = false;
       document.getElementById('alertModal').classList.remove('hidden');
@@ -1377,12 +1566,12 @@
     }
     function saveAlertItem() {
       const id = Number(document.getElementById('editAlertId').value);
-      const title = document.getElementById('alertTitleInput').value.trim();
-      const amountCOP = Number(document.getElementById('alertAmountInput').value);
-      const dueDate = document.getElementById('alertDateInput').value;
+      const title = sanitizeString(document.getElementById('alertTitleInput').value, 80);
+      const amountCOP = Math.round(sanitizeNumber(document.getElementById('alertAmountInput').value, 0, 0, 1e12));
+      const dueDate = sanitizeDateISO(document.getElementById('alertDateInput').value);
       const recurring = document.getElementById('alertRecurringInput').checked;
       const paid = document.getElementById('alertPaidInput').checked;
-      if (!title || !amountCOP || !dueDate) { showToast('Completa todos los campos'); return; }
+      if (!title || amountCOP <= 0 || !dueDate) { showToast('Completa todos los campos'); return; }
 
       if (id) {
         const idx = state.alerts.findIndex(x => x.id === id);
@@ -1394,7 +1583,7 @@
       haptic(25);
       saveState();
       renderAll();
-      showToast('Deuda actualizada y saldo recalculado');
+      showToast('Deuda actualizada');
     }
     function toggleAlertPaid(id) {
       const a = state.alerts.find(x => x.id === id);
@@ -1407,10 +1596,11 @@
           title: `Pago: ${a.title}`,
           amountCOP: a.amountCOP,
           category: 'servicios',
-          date: new Date().toISOString().slice(0, 10)
+          date: getLocalTodayISO(),
+          projected: false
         });
         if (state.alerts.every(x => x.paid)) triggerConfetti();
-        showToast('Pagado y descontado del saldo');
+        showToast('Pagado y descontado del efectivo hoy');
       } else {
         showToast('Marcado como pendiente');
       }
@@ -1421,9 +1611,9 @@
 
     function openPocketModal() { document.getElementById('pocketModal').classList.remove('hidden'); }
     function savePocket() {
-      const name = document.getElementById('pocketNameInput').value.trim();
-      const savedCOP = Number(document.getElementById('pocketSavedInput').value) || 0;
-      const targetCOP = Number(document.getElementById('pocketTargetInput').value) || 1000000;
+      const name = sanitizeString(document.getElementById('pocketNameInput').value, 40);
+      const savedCOP = Math.round(sanitizeNumber(document.getElementById('pocketSavedInput').value, 0, 0, 1e12));
+      const targetCOP = Math.round(sanitizeNumber(document.getElementById('pocketTargetInput').value, 1000000, 1, 1e12));
       if (!name) return;
       state.pockets.push({ id: Date.now(), name, savedCOP, targetCOP, icon: 'piggy-bank', color: 'from-cyan-500 to-emerald-500' });
       closeModal('pocketModal');
@@ -1443,10 +1633,12 @@
 
     // ==================== IMPORT / EXPORT JSON & ICS ====================
     function exportBackupJSON() {
-      const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+      const exportObj = { ...state };
+      delete exportObj.pinHash;
+      const blob = new Blob([JSON.stringify(exportObj, null, 2)], { type: 'application/json' });
       const a = document.createElement('a');
       a.href = URL.createObjectURL(blob);
-      a.download = `finflow_cop_${new Date().toISOString().slice(0, 10)}.json`;
+      a.download = `finflow_cop_${getLocalTodayISO()}.json`;
       a.click();
       showToast('Respaldo JSON descargado');
     }
@@ -1458,6 +1650,7 @@
     function handleJsonFileUpload(ev) {
       const file = ev.target.files[0];
       if (!file) return;
+      if (file.size > 2 * 1024 * 1024) { showToast('Archivo demasiado grande (máx 2MB)'); return; }
       const reader = new FileReader();
       reader.onload = (e) => {
         document.getElementById('jsonPasteArea').value = e.target.result;
@@ -1468,8 +1661,10 @@
     function previewJsonImport() {
       try {
         const obj = JSON.parse(document.getElementById('jsonPasteArea').value);
+        const clean = validateAndSanitizeState(obj);
+        const futCount = clean.transactions.filter(isFutureTransaction).length;
         document.getElementById('importPreviewLabel').textContent =
-          `Válido: ${(obj.transactions || []).length} movimientos, ${(obj.alerts || []).length} deudas, ${(obj.pockets || []).length} bolsillos.`;
+          `Válido: ${clean.transactions.length} movs (${futCount} proyectados), ${clean.alerts.length} deudas, ${clean.pockets.length} bolsillos.`;
       } catch (e) {
         document.getElementById('importPreviewLabel').textContent = 'JSON inválido, revisa el formato.';
       }
@@ -1478,25 +1673,45 @@
       try {
         const obj = JSON.parse(document.getElementById('jsonPasteArea').value);
         if (!Array.isArray(obj.transactions) || !Array.isArray(obj.alerts)) throw new Error();
-        state = { ...DEFAULT_STATE, ...obj };
+        const currentPinHash = state.pinHash;
+        state = validateAndSanitizeState(obj);
+        state.pinHash = currentPinHash;
         saveState();
         renderAll();
         closeModal('importModal');
         triggerConfetti();
-        showToast('Respaldo restaurado con éxito');
+        showToast('Respaldo restaurado (Real vs Proyección separado)');
       } catch (e) {
         showToast('Error al importar JSON');
       }
     }
 
+    function sanitizeICSField(str) {
+      return sanitizeString(str, 60).replace(/[\r\n;,\\]/g, ' ');
+    }
+
     function exportICS() {
-      let ics = 'BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//FinFlow COP//ES\n';
+      const lines = [
+        'BEGIN:VCALENDAR',
+        'VERSION:2.0',
+        'PRODID:-//FinFlow COP//ES'
+      ];
       state.alerts.filter(a => !a.paid).forEach(a => {
         const dt = a.dueDate.replace(/-/g, '');
-        ics += `BEGIN:VEVENT\nSUMMARY:Pago ${a.title} ($${a.amountCOP.toLocaleString('es-CO')})\nDTSTART;VALUE=DATE:${dt}\nBEGIN:VALARM\nTRIGGER:-PT12H\nACTION:DISPLAY\nDESCRIPTION:Recordatorio FinFlow\nEND:VALARM\nEND:VEVENT\n`;
+        lines.push(
+          'BEGIN:VEVENT',
+          `SUMMARY:Pago ${sanitizeICSField(a.title)} ($${a.amountCOP.toLocaleString('es-CO')})`,
+          `DTSTART;VALUE=DATE:${dt}`,
+          'BEGIN:VALARM',
+          'TRIGGER:-PT12H',
+          'ACTION:DISPLAY',
+          'DESCRIPTION:Recordatorio FinFlow',
+          'END:VALARM',
+          'END:VEVENT'
+        );
       });
-      ics += 'END:VCALENDAR';
-      const blob = new Blob([ics], { type: 'text/calendar' });
+      lines.push('END:VCALENDAR');
+      const blob = new Blob([lines.join('\r\n')], { type: 'text/calendar;charset=utf-8' });
       const a = document.createElement('a');
       a.href = URL.createObjectURL(blob);
       a.download = 'finflow_alertas.ics';
@@ -1517,28 +1732,79 @@
     function renderWrappedSlide() {
       const m = getMetrics();
       const slides = [
-        `<p class="text-xs uppercase tracking-widest text-emerald-300 font-bold">Tu Panorama Actual</p>
-         <h3 class="text-3xl font-extrabold font-mono text-white">${formatMoney(m.freeBalance)}</h3>
-         <p class="text-xs text-slate-300">Es tu saldo libre real después de proteger tus ahorros y reservar tus <b>${state.alerts.filter(a=>!a.paid).length}</b> deudas pendientes.</p>`,
-        `<p class="text-xs uppercase tracking-widest text-sky-300 font-bold">Meta al Día ${state.payday}</p>
+        `<p class="text-xs uppercase tracking-widest text-emerald-300 font-bold">Efectivo Real Hoy</p>
+         <h3 class="text-3xl font-extrabold font-mono text-white">${formatMoney(m.realAvailableToday)}</h3>
+         <p class="text-xs text-slate-300">Es tu liquidez real disponible hoy después de separar <b>${formatMoney(m.pocketsSum)}</b> en bolsillos.</p>`,
+        `<p class="text-xs uppercase tracking-widest text-sky-300 font-bold">Cupo Real al Día ${state.payday}</p>
          <h3 class="text-3xl font-extrabold font-mono text-sky-300">${formatMoney(m.dailyBudget)} / día</h3>
-         <p class="text-xs text-slate-300">Manteniendo este tope diario durante los próximos <b>${m.daysLeft}</b> días llegarás intacto a tu próximo pago.</p>`,
-        `<p class="text-xs uppercase tracking-widest text-amber-300 font-bold">Compromisos del Mes</p>
-         <h3 class="text-3xl font-extrabold font-mono text-amber-300">${formatMoney(m.pendingDebts)}</h3>
-         <p class="text-xs text-slate-300">Tienes <b>${formatMoney(m.pocketsSum)}</b> protegidos en bolsillos. ¡Sigue así!</p>`
+         <p class="text-xs text-slate-300">Con este tope diario durante los próximos <b>${m.daysLeft}</b> días no dependerás de adelantos.</p>`,
+        `<p class="text-xs uppercase tracking-widest text-indigo-300 font-bold">Proyección al Cobrar el ${state.payday}</p>
+         <h3 class="text-3xl font-extrabold font-mono text-indigo-300">${formatMoney(m.projectedNetBalance)}</h3>
+         <p class="text-xs text-slate-300">Saldo proyectado tras recibir <b>${formatMoney(m.projectedIncome)}</b> y pagar <b>${formatMoney(m.pendingDebts)}</b> en deudas.</p>`
       ];
       document.getElementById('wrappedCardContent').innerHTML = slides[wrappedIndex];
     }
 
-    // ==================== SETTINGS, LIVE TRM & PIN ====================
+    // ==================== GITHUB PAGES AUTO-UPDATE DETECTOR ====================
+    let initialRemoteSignature = null;
+
+    async function getPageSignature() {
+      const url = window.location.href.split('#')[0].split('?')[0];
+      const res = await fetch(`${url}?_chk=${Date.now()}`, { cache: 'no-store' });
+      if (!res.ok) return null;
+      const etag = res.headers.get('etag') || res.headers.get('last-modified');
+      if (etag) return etag;
+      const txt = await res.text();
+      return String(txt.length) + ':' + txt.slice(0, 120);
+    }
+
+    async function checkGitHubUpdates(manual = false) {
+      if (window.location.protocol === 'blob:' || window.location.protocol === 'file:') {
+        if (manual) showToast('En GitHub Pages se detectan cambios automáticamente');
+        return;
+      }
+      try {
+        const sig = await getPageSignature();
+        if (!sig) return;
+        if (!initialRemoteSignature) {
+          initialRemoteSignature = sig;
+          if (manual) showToast('App actualizada al último commit');
+        } else if (sig !== initialRemoteSignature) {
+          document.getElementById('updateBanner').classList.remove('hidden');
+          if (window.lucide) lucide.createIcons();
+        } else if (manual) {
+          showToast('Ya tienes la última versión');
+        }
+      } catch (e) {
+        if (manual) showToast('Sin conexión para verificar cambios');
+      }
+    }
+
+    async function applyAppUpdate() {
+      showToast('Actualizando a la nueva versión...');
+      if ('caches' in window) {
+        const keys = await caches.keys();
+        await Promise.all(keys.map(k => caches.delete(k)));
+      }
+      const base = window.location.href.split('#')[0].split('?')[0];
+      window.location.replace(`${base}?v=${Date.now()}`);
+    }
+
+    checkGitHubUpdates(false);
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') checkGitHubUpdates(false);
+    });
+    setInterval(() => checkGitHubUpdates(false), 45000);
+
+    // ==================== SETTINGS, LIVE TRM & HASHED PIN ====================
     async function fetchLiveTRM() {
       showToast('Consultando TRM en vivo...');
       try {
         const res = await fetch('https://open.er-api.com/v6/latest/USD');
         const data = await res.json();
-        if (data && data.rates && data.rates.COP) {
-          state.rates.USD = Math.round(data.rates.COP);
-          state.rates.EUR = Math.round(data.rates.COP / data.rates.EUR);
+        if (data && data.rates && Number.isFinite(data.rates.COP) && Number.isFinite(data.rates.EUR) && data.rates.EUR > 0) {
+          state.rates.USD = Math.round(sanitizeNumber(data.rates.COP, 4000, 100, 100000));
+          state.rates.EUR = Math.round(sanitizeNumber(data.rates.COP / data.rates.EUR, 4350, 100, 100000));
           saveState();
           renderAll();
           showToast(`TRM actualizada: $${state.rates.USD.toLocaleString('es-CO')}`);
@@ -1546,6 +1812,19 @@
       } catch (e) {
         showToast('Sin conexión, usando tasa guardada');
       }
+    }
+
+    function requestPushPermission() {
+      if (!('Notification' in window)) {
+        showToast('Tu navegador no soporta notificaciones push');
+        return;
+      }
+      Notification.requestPermission().then(perm => {
+        document.getElementById('notifPermStatus').textContent = perm === 'granted' ? 'Alertas activadas' : 'Permiso denegado';
+        if (perm === 'granted') {
+          new Notification('FinFlow COP', { body: 'Notificaciones de deudas y vencimientos activadas.' });
+        }
+      });
     }
 
     function syncSettingsInputs() {
@@ -1556,13 +1835,13 @@
       document.getElementById('voiceRateLabel').textContent = `${voiceSettings.rate || 1.05}x`;
     }
     function updateManualRates() {
-      state.rates.USD = Number(document.getElementById('usdRateInput').value) || 3317;
-      state.rates.EUR = Number(document.getElementById('eurRateInput').value) || 3659;
+      state.rates.USD = sanitizeNumber(document.getElementById('usdRateInput').value, 4000, 100, 100000);
+      state.rates.EUR = sanitizeNumber(document.getElementById('eurRateInput').value, 4350, 100, 100000);
       saveState();
       renderAll();
     }
     function updatePayday() {
-      state.payday = Math.min(31, Math.max(1, Number(document.getElementById('paydayInput').value) || 25));
+      state.payday = Math.round(sanitizeNumber(document.getElementById('paydayInput').value, 25, 1, 31));
       saveState();
       renderAll();
     }
@@ -1571,12 +1850,12 @@
       if (!window.speechSynthesis) return;
       const sel = document.getElementById('voiceSelect');
       const voices = window.speechSynthesis.getVoices().filter(v => v.lang.startsWith('es'));
-      sel.innerHTML = voices.map(v => `<option value="${v.voiceURI}" ${v.voiceURI === voiceSettings.voiceURI ? 'selected' : ''}>${v.name} (${v.lang})</option>`).join('')
+      sel.innerHTML = voices.map(v => `<option value="${escapeHTML(v.voiceURI)}" ${v.voiceURI === voiceSettings.voiceURI ? 'selected' : ''}>${escapeHTML(v.name)} (${escapeHTML(v.lang)})</option>`).join('')
         || `<option value="">Voz predeterminada del sistema</option>`;
     }
     function saveVoiceSettings() {
       voiceSettings.voiceURI = document.getElementById('voiceSelect').value;
-      voiceSettings.rate = Number(document.getElementById('voiceRateInput').value);
+      voiceSettings.rate = sanitizeNumber(document.getElementById('voiceRateInput').value, 1.05, 0.7, 1.5);
       document.getElementById('voiceRateLabel').textContent = `${voiceSettings.rate}x`;
       localStorage.setItem('finflow_voice_cfg', JSON.stringify(voiceSettings));
     }
@@ -1585,26 +1864,45 @@
     }
 
     let pinBuffer = '';
-    function savePinCode() {
+    let failedPinAttempts = 0;
+    let pinLockoutUntil = 0;
+
+    async function savePinCode() {
       const p = document.getElementById('setPinInput').value.trim();
-      if (p && p.length !== 4) { showToast('El PIN debe tener 4 dígitos'); return; }
-      state.pinCode = p;
+      if (p && !/^\d{4}$/.test(p)) { showToast('El PIN debe tener 4 dígitos numéricos'); return; }
+      state.pinHash = p ? await hashPinSHA256(p) : '';
+      document.getElementById('setPinInput').value = '';
       saveState();
-      showToast(p ? 'PIN activado' : 'PIN desactivado');
+      showToast(p ? 'PIN SHA-256 activado' : 'PIN desactivado');
     }
-    function pressPin(digit) {
+
+    async function pressPin(digit) {
+      if (Date.now() < pinLockoutUntil) {
+        showToast('Espera 15 segundos antes de reintentar');
+        return;
+      }
       haptic(15);
       if (pinBuffer.length >= 4) return;
       pinBuffer += digit;
       updatePinDots();
       if (pinBuffer.length === 4) {
-        if (pinBuffer === state.pinCode) {
+        const candidateHash = await hashPinSHA256(pinBuffer);
+        pinBuffer = '';
+        if (candidateHash === state.pinHash) {
+          failedPinAttempts = 0;
+          isUnlocked = true;
           document.getElementById('pinScreen').classList.add('hidden');
-          pinBuffer = '';
+          document.getElementById('appContentShell').classList.remove('hidden');
+          renderAll();
         } else {
-          showToast('PIN incorrecto');
-          pinBuffer = '';
+          failedPinAttempts++;
           updatePinDots();
+          if (failedPinAttempts >= 5) {
+            pinLockoutUntil = Date.now() + 15000;
+            showToast('Demasiados intentos. Bloqueado por 15s');
+          } else {
+            showToast('PIN incorrecto');
+          }
         }
       }
     }
@@ -1614,6 +1912,14 @@
       for (let i = 0; i < 4; i++) {
         dots[i].classList.toggle('bg-sky-400', i < pinBuffer.length);
       }
+    }
+
+    function wipeAllData() {
+      localStorage.removeItem(STORAGE_KEY);
+      state = structuredClone(DEFAULT_STATE);
+      isUnlocked = true;
+      renderAll();
+      showToast('Datos locales eliminados');
     }
 
     function triggerConfetti() {
@@ -1646,10 +1952,14 @@
       populateVoices();
       window.speechSynthesis.onvoiceschanged = populateVoices;
     }
-    if (state.pinCode) {
+
+    if (state.pinHash) {
+      document.getElementById('appContentShell').classList.add('hidden');
       document.getElementById('pinScreen').classList.remove('hidden');
+      if (window.lucide) lucide.createIcons();
+    } else {
+      renderAll();
     }
-    renderAll();
   </script>
 </body>
 </html>
