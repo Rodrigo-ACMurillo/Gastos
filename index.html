@@ -4,16 +4,18 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
   <meta http-equiv="Content-Security-Policy" content="default-src 'self' blob: data:; script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://unpkg.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://open.er-api.com https://cdn.jsdelivr.net; img-src 'self' data: blob:;" />
-  <meta name="theme-color" content="#060913" />
+  <meta name="theme-color" content="#09090B" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="FinFlow COP" />
-  <title>FinFlow COP • Gestor Financiero & Asistente de Voz</title>
+  <title>FinFlow COP • Banca Privada & Asistente de Voz</title>
 
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js" crossorigin="anonymous"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Syne:wght@600;700;800&family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600;700&display=swap" rel="stylesheet">
 
   <script>
     tailwind.config = {
@@ -21,16 +23,19 @@
       theme: {
         extend: {
           fontFamily: {
-            sans: ['Plus Jakarta Sans', 'sans-serif'],
-            mono: ['JetBrains Mono', 'monospace'],
+            sans: ['Space Grotesk', 'sans-serif'],
+            display: ['Syne', 'sans-serif'],
+            editorial: ['Instrument Serif', 'serif'],
+            mono: ['IBM Plex Mono', 'monospace'],
           },
           colors: {
-            void: '#060913',
-            card: '#0F1629',
-            surface: '#162038',
-            mint: '#10B981',
-            cyber: '#38BDF8',
-            indigoGlow: '#6366F1'
+            obsidian: '#09090B',
+            graphite: '#121216',
+            carbon: '#18181F',
+            limeVolt: '#D4FF59',
+            champagne: '#F3E5AB',
+            terracotta: '#FF6B4A',
+            jade: '#2CEAA3'
           }
         }
       }
@@ -40,30 +45,43 @@
   <style>
     * { -webkit-tap-highlight-color: transparent; box-sizing: border-box; }
     body {
-      background: radial-gradient(circle at 20% 10%, #111b36 0%, #050811 65%);
-      color: #F8FAFC;
-      font-family: 'Plus Jakarta Sans', sans-serif;
+      background:
+        radial-gradient(circle at 12% 14%, rgba(212, 255, 89, 0.08) 0%, transparent 42%),
+        radial-gradient(circle at 88% 85%, rgba(255, 107, 74, 0.07) 0%, transparent 45%),
+        #050507;
+      color: #F4F4F6;
+      font-family: 'Space Grotesk', sans-serif;
       margin: 0;
       min-height: 100dvh;
       overflow-x: hidden;
+      letter-spacing: -0.01em;
     }
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
+    .noise-overlay {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0.025;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      z-index: 90;
+    }
+
     @media (min-width: 768px) {
       .phone-shell {
-        width: 405px;
-        height: 830px;
-        border-radius: 48px;
-        border: 10px solid #1e293b;
-        box-shadow: 0 30px 90px rgba(0,0,0,0.85), 0 0 0 2px #334155, inset 0 0 25px rgba(56,189,248,0.08);
+        width: 408px;
+        height: 836px;
+        border-radius: 50px;
+        border: 9px solid #1c1c22;
+        box-shadow: 0 35px 100px rgba(0,0,0,0.9), 0 0 0 1px rgba(212,255,89,0.18), inset 0 0 30px rgba(255,255,255,0.02);
         position: relative;
         overflow: hidden;
-        background: #060913;
+        background: #09090B;
       }
       .dynamic-island {
-        width: 118px;
-        height: 30px;
+        width: 116px;
+        height: 29px;
         background: #000;
         border-radius: 20px;
         position: absolute;
@@ -81,23 +99,25 @@
       .phone-shell {
         width: 100vw;
         height: 100dvh;
-        background: #060913;
+        background: #09090B;
         position: relative;
         overflow: hidden;
       }
       .dynamic-island { display: none; }
     }
 
-    .glass {
-      background: rgba(18, 27, 49, 0.72);
-      backdrop-filter: blur(18px);
-      -webkit-backdrop-filter: blur(18px);
-      border: 1px solid rgba(255, 255, 255, 0.08);
+    .bento-card {
+      background: linear-gradient(180deg, rgba(24, 24, 31, 0.92) 0%, rgba(16, 16, 21, 0.96) 100%);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      box-shadow: 0 8px 24px -8px rgba(0, 0, 0, 0.6);
     }
-    .hero-card {
-      background: linear-gradient(135deg, rgba(16,185,129,0.22) 0%, rgba(56,189,248,0.16) 50%, rgba(99,102,241,0.22) 100%);
-      border: 1px solid rgba(56, 189, 248, 0.28);
-      box-shadow: 0 18px 40px -12px rgba(16, 185, 129, 0.22);
+    .obsidian-vault {
+      background:
+        radial-gradient(circle at 92% 8%, rgba(212, 255, 89, 0.24) 0%, transparent 48%),
+        radial-gradient(circle at 10% 95%, rgba(243, 229, 171, 0.12) 0%, transparent 50%),
+        linear-gradient(155deg, #16161D 0%, #0D0D11 100%);
+      border: 1px solid rgba(212, 255, 89, 0.25);
+      box-shadow: 0 22px 45px -15px rgba(0, 0, 0, 0.85);
     }
 
     @keyframes viewSpring {
@@ -117,15 +137,15 @@
     }
 
     @keyframes orbIdle {
-      0%, 100% { transform: scale(1) rotate(0deg); box-shadow: 0 0 45px rgba(56,189,248,0.45), inset 0 0 25px rgba(16,185,129,0.6); }
-      50% { transform: scale(1.06) rotate(180deg); box-shadow: 0 0 65px rgba(99,102,241,0.65), inset 0 0 35px rgba(56,189,248,0.8); }
+      0%, 100% { transform: scale(1) rotate(0deg); box-shadow: 0 0 45px rgba(212,255,89,0.4), inset 0 0 25px rgba(243,229,171,0.5); }
+      50% { transform: scale(1.06) rotate(180deg); box-shadow: 0 0 65px rgba(255,107,74,0.45), inset 0 0 35px rgba(212,255,89,0.7); }
     }
     @keyframes orbListening {
-      0%, 100% { transform: scale(1.05); box-shadow: 0 0 65px rgba(16,185,129,0.85), 0 0 110px rgba(16,185,129,0.35); }
-      50% { transform: scale(1.22); box-shadow: 0 0 95px rgba(52,211,153,0.95), 0 0 140px rgba(56,189,248,0.5); }
+      0%, 100% { transform: scale(1.05); box-shadow: 0 0 65px rgba(212,255,89,0.85), 0 0 110px rgba(212,255,89,0.35); }
+      50% { transform: scale(1.22); box-shadow: 0 0 95px rgba(44,234,163,0.9), 0 0 140px rgba(212,255,89,0.45); }
     }
     @keyframes orbSpeaking {
-      0%, 100% { transform: scale(1.02) scaleY(0.95); box-shadow: 0 0 70px rgba(56,189,248,0.85), 0 0 120px rgba(99,102,241,0.5); }
+      0%, 100% { transform: scale(1.02) scaleY(0.95); box-shadow: 0 0 70px rgba(243,229,171,0.8), 0 0 120px rgba(255,107,74,0.45); }
       25% { transform: scale(1.18) scaleY(1.08); }
       50% { transform: scale(0.96) scaleY(0.92); }
       75% { transform: scale(1.15) scaleY(1.06); }
@@ -134,7 +154,7 @@
       width: 150px;
       height: 150px;
       border-radius: 9999px;
-      background: radial-gradient(circle at 30% 30%, #67e8f9, #10b981 45%, #4f46e5 85%, #060913);
+      background: radial-gradient(circle at 30% 30%, #F3E5AB, #D4FF59 45%, #FF6B4A 85%, #09090B);
       transition: all 0.3s ease;
     }
     .orb-idle { animation: orbIdle 6s infinite ease-in-out; }
@@ -149,7 +169,7 @@
       position: absolute;
       inset: -12px;
       border-radius: 9999px;
-      border: 2px solid rgba(56,189,248,0.45);
+      border: 2px solid rgba(212,255,89,0.45);
       animation: pulseRing 2s infinite cubic-bezier(0.22, 1, 0.36, 1);
     }
 
@@ -169,30 +189,31 @@
   </style>
 </head>
 <body class="flex items-center justify-center md:p-6">
+  <div class="noise-overlay"></div>
 
   <!-- Desktop Studio Sidebar -->
-  <aside class="hidden lg:flex flex-col w-80 mr-8 glass rounded-3xl p-6 space-y-5">
+  <aside class="hidden lg:flex flex-col w-80 mr-8 bento-card rounded-3xl p-6 space-y-5">
     <div class="flex items-center gap-3">
-      <div class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-emerald-400 to-sky-400 flex items-center justify-center text-slate-950 font-extrabold text-xl shadow-lg">F</div>
+      <div class="w-11 h-11 rounded-2xl bg-limeVolt flex items-center justify-center text-obsidian font-display font-extrabold text-xl shadow-lg">F</div>
       <div>
-        <h1 class="font-bold text-lg text-white leading-tight">FinFlow COP</h1>
-        <p class="text-xs text-sky-300">PWA v2.1 • Real vs Proyección</p>
+        <h1 class="font-display font-bold text-lg text-white leading-tight tracking-tight">FinFlow <span class="font-editorial italic font-normal text-champagne text-xl">Privé</span></h1>
+        <p class="text-[11px] text-zinc-400">Bóveda Personal • Ciclo Día 25</p>
       </div>
     </div>
-    <p class="text-xs text-slate-300 leading-relaxed">
-      Separa automáticamente tu <b>Dinero Real Hoy</b> (fechas ≤ hoy) de los <b>Ingresos Proyectados</b> (ej. nómina del 25). Detecta actualizaciones en GitHub Pages automáticamente.
+    <p class="text-xs text-zinc-300 leading-relaxed">
+      Diseño editorial de alto contraste. Separa tu <b>Efectivo Real Hoy</b> de los <b>Ingresos Proyectados</b> al 25 y respalda automáticamente antes de cada actualización.
     </p>
     <div class="space-y-2 pt-2 border-t border-white/10">
-      <button onclick="openVoiceAssistant()" class="w-full py-2.5 px-3 rounded-xl bg-gradient-to-r from-emerald-500/20 to-sky-500/20 border border-emerald-400/30 text-emerald-300 text-xs font-semibold flex items-center justify-center gap-2 hover:brightness-110 transition">
+      <button onclick="openVoiceAssistant()" class="w-full py-2.5 px-3 rounded-xl bg-limeVolt text-obsidian text-xs font-bold flex items-center justify-center gap-2 hover:brightness-105 transition">
         <i data-lucide="mic" class="w-4 h-4"></i> Abrir Asistente de Voz
       </button>
-      <button onclick="openWrappedModal()" class="w-full py-2.5 px-3 rounded-xl bg-indigo-500/20 border border-indigo-400/30 text-indigo-300 text-xs font-semibold flex items-center justify-center gap-2 hover:brightness-110 transition">
-        <i data-lucide="sparkles" class="w-4 h-4"></i> Ver FinFlow Wrapped
+      <button onclick="openWrappedModal()" class="w-full py-2.5 px-3 rounded-xl bg-white/5 border border-champagne/25 text-champagne text-xs font-semibold flex items-center justify-center gap-2 hover:bg-white/10 transition">
+        <i data-lucide="sparkles" class="w-4 h-4"></i> Ver Resumen Editorial
       </button>
-      <button onclick="openImportModal()" class="w-full py-2.5 px-3 rounded-xl bg-white/5 border border-white/10 text-slate-200 text-xs font-semibold flex items-center justify-center gap-2 hover:bg-white/10 transition">
+      <button onclick="openImportModal()" class="w-full py-2.5 px-3 rounded-xl bg-white/5 border border-white/10 text-zinc-200 text-xs font-semibold flex items-center justify-center gap-2 hover:bg-white/10 transition">
         <i data-lucide="upload" class="w-4 h-4"></i> Importar Respaldo JSON
       </button>
-      <button onclick="exportBackupJSON()" class="w-full py-2.5 px-3 rounded-xl bg-white/5 border border-white/10 text-slate-200 text-xs font-semibold flex items-center justify-center gap-2 hover:bg-white/10 transition">
+      <button onclick="exportBackupJSON()" class="w-full py-2.5 px-3 rounded-xl bg-white/5 border border-white/10 text-zinc-200 text-xs font-semibold flex items-center justify-center gap-2 hover:bg-white/10 transition">
         <i data-lucide="download" class="w-4 h-4"></i> Exportar Respaldo JSON
       </button>
     </div>
@@ -200,186 +221,189 @@
 
   <!-- Mobile App Viewport -->
   <main class="phone-shell flex flex-col">
-    <div class="dynamic-island"><span class="w-2.5 h-2.5 rounded-full bg-emerald-400/70"></span></div>
+    <div class="dynamic-island"><span class="w-2 h-2 rounded-full bg-limeVolt"></span></div>
 
-    <!-- GitHub Pages Auto-Update Banner -->
-    <div id="updateBanner" class="hidden absolute top-3 inset-x-3 z-50 rounded-2xl bg-gradient-to-r from-emerald-500 to-sky-500 text-slate-950 p-3 shadow-2xl flex items-center justify-between gap-2 animate-view">
-      <div class="flex items-center gap-2 min-w-0">
-        <i data-lucide="sparkles" class="w-5 h-5 shrink-0"></i>
-        <div class="text-xs leading-tight">
-          <p class="font-extrabold">¡Nueva versión disponible!</p>
-          <p class="text-[11px] opacity-90">Se detectó un cambio en GitHub.</p>
+    <!-- Auto-Backup & Update Banner -->
+    <div id="updateBanner" class="hidden absolute top-3 inset-x-3 z-50 rounded-2xl bg-limeVolt text-obsidian p-3.5 shadow-2xl flex items-center justify-between gap-2.5 animate-view border border-black/15">
+      <div class="flex items-center gap-2.5 min-w-0">
+        <div class="w-9 h-9 rounded-xl bg-obsidian text-limeVolt flex items-center justify-center shrink-0">
+          <i data-lucide="shield-check" class="w-5 h-5"></i>
+        </div>
+        <div class="text-xs leading-snug">
+          <p class="font-display font-extrabold tracking-tight">¡Nueva versión disponible!</p>
+          <p class="text-[11px] font-medium text-zinc-800">Haz copia de seguridad y Actualiza Ya!</p>
         </div>
       </div>
-      <button onclick="applyAppUpdate()" class="px-3 py-1.5 rounded-xl bg-slate-950 text-emerald-300 text-xs font-extrabold shrink-0 active:scale-95 transition">
-        Actualizar
+      <button id="updateNowBtn" onclick="backupAndApplyUpdate()" class="px-3 py-2 rounded-xl bg-obsidian text-limeVolt text-[11px] font-display font-bold shrink-0 active:scale-95 transition shadow-md">
+        Actualizar Ya
       </button>
     </div>
 
     <!-- PIN Lock Screen -->
-    <div id="pinScreen" class="hidden absolute inset-0 z-50 bg-void flex flex-col items-center justify-center p-6">
-      <div class="w-16 h-16 rounded-3xl bg-gradient-to-tr from-emerald-400 to-sky-400 flex items-center justify-center text-slate-950 font-extrabold text-2xl mb-4 shadow-xl">
+    <div id="pinScreen" class="hidden absolute inset-0 z-50 bg-obsidian flex flex-col items-center justify-center p-6">
+      <div class="w-16 h-16 rounded-3xl bg-limeVolt flex items-center justify-center text-obsidian font-display font-extrabold text-2xl mb-4 shadow-xl">
         <i data-lucide="lock" class="w-8 h-8"></i>
       </div>
-      <h2 class="text-lg font-bold text-white">FinFlow Protegido</h2>
-      <p id="pinSubtitle" class="text-xs text-slate-400 mt-1 mb-6">Ingresa tu PIN de 4 dígitos</p>
+      <h2 class="text-lg font-display font-bold text-white">Bóveda Protegida</h2>
+      <p id="pinSubtitle" class="text-xs text-zinc-400 mt-1 mb-6">Ingresa tu PIN de 4 dígitos</p>
       <div id="pinDots" class="flex gap-3 mb-8">
-        <span class="w-3.5 h-3.5 rounded-full border border-sky-400"></span>
-        <span class="w-3.5 h-3.5 rounded-full border border-sky-400"></span>
-        <span class="w-3.5 h-3.5 rounded-full border border-sky-400"></span>
-        <span class="w-3.5 h-3.5 rounded-full border border-sky-400"></span>
+        <span class="w-3.5 h-3.5 rounded-full border border-limeVolt"></span>
+        <span class="w-3.5 h-3.5 rounded-full border border-limeVolt"></span>
+        <span class="w-3.5 h-3.5 rounded-full border border-limeVolt"></span>
+        <span class="w-3.5 h-3.5 rounded-full border border-limeVolt"></span>
       </div>
       <div class="grid grid-cols-3 gap-3 w-64">
-        <button onclick="pressPin('1')" class="h-14 rounded-2xl glass text-lg font-bold active:scale-90 transition">1</button>
-        <button onclick="pressPin('2')" class="h-14 rounded-2xl glass text-lg font-bold active:scale-90 transition">2</button>
-        <button onclick="pressPin('3')" class="h-14 rounded-2xl glass text-lg font-bold active:scale-90 transition">3</button>
-        <button onclick="pressPin('4')" class="h-14 rounded-2xl glass text-lg font-bold active:scale-90 transition">4</button>
-        <button onclick="pressPin('5')" class="h-14 rounded-2xl glass text-lg font-bold active:scale-90 transition">5</button>
-        <button onclick="pressPin('6')" class="h-14 rounded-2xl glass text-lg font-bold active:scale-90 transition">6</button>
-        <button onclick="pressPin('7')" class="h-14 rounded-2xl glass text-lg font-bold active:scale-90 transition">7</button>
-        <button onclick="pressPin('8')" class="h-14 rounded-2xl glass text-lg font-bold active:scale-90 transition">8</button>
-        <button onclick="pressPin('9')" class="h-14 rounded-2xl glass text-lg font-bold active:scale-90 transition">9</button>
+        <button onclick="pressPin('1')" class="h-14 rounded-2xl bento-card text-lg font-mono font-bold active:scale-90 transition">1</button>
+        <button onclick="pressPin('2')" class="h-14 rounded-2xl bento-card text-lg font-mono font-bold active:scale-90 transition">2</button>
+        <button onclick="pressPin('3')" class="h-14 rounded-2xl bento-card text-lg font-mono font-bold active:scale-90 transition">3</button>
+        <button onclick="pressPin('4')" class="h-14 rounded-2xl bento-card text-lg font-mono font-bold active:scale-90 transition">4</button>
+        <button onclick="pressPin('5')" class="h-14 rounded-2xl bento-card text-lg font-mono font-bold active:scale-90 transition">5</button>
+        <button onclick="pressPin('6')" class="h-14 rounded-2xl bento-card text-lg font-mono font-bold active:scale-90 transition">6</button>
+        <button onclick="pressPin('7')" class="h-14 rounded-2xl bento-card text-lg font-mono font-bold active:scale-90 transition">7</button>
+        <button onclick="pressPin('8')" class="h-14 rounded-2xl bento-card text-lg font-mono font-bold active:scale-90 transition">8</button>
+        <button onclick="pressPin('9')" class="h-14 rounded-2xl bento-card text-lg font-mono font-bold active:scale-90 transition">9</button>
         <div></div>
-        <button onclick="pressPin('0')" class="h-14 rounded-2xl glass text-lg font-bold active:scale-90 transition">0</button>
-        <button onclick="clearPinInput()" class="h-14 rounded-2xl glass text-xs font-semibold text-rose-300 active:scale-90 transition">Borrar</button>
+        <button onclick="pressPin('0')" class="h-14 rounded-2xl bento-card text-lg font-mono font-bold active:scale-90 transition">0</button>
+        <button onclick="clearPinInput()" class="h-14 rounded-2xl bento-card text-xs font-semibold text-terracotta active:scale-90 transition">Borrar</button>
       </div>
     </div>
 
     <!-- App Shell Container -->
     <div id="appContentShell" class="flex-1 flex flex-col overflow-hidden">
       <!-- Top Header -->
-      <header class="pt-4 md:pt-12 px-5 pb-3 flex items-center justify-between border-b border-white/5 bg-void/80 backdrop-blur-xl z-20">
+      <header class="pt-4 md:pt-12 px-5 pb-3 flex items-center justify-between border-b border-white/[0.06] bg-obsidian/90 backdrop-blur-xl z-20">
         <div class="flex items-center gap-2.5">
-          <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-emerald-400 to-sky-400 flex items-center justify-center text-slate-950 font-extrabold text-base shadow">F</div>
+          <div class="w-9 h-9 rounded-xl bg-limeVolt flex items-center justify-center text-obsidian font-display font-extrabold text-base shadow">F</div>
           <div>
             <div class="flex items-center gap-1.5">
-              <span class="font-bold text-sm text-white">FinFlow COP</span>
-              <span id="cycleBadge" class="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-300 font-semibold border border-emerald-400/20">Pago día 25</span>
+              <span class="font-display font-bold text-sm text-white tracking-tight">FinFlow</span>
+              <span class="font-editorial italic text-champagne text-base leading-none">COP</span>
+              <span id="cycleBadge" class="text-[10px] px-2 py-0.5 rounded-full bg-white/[0.06] text-limeVolt font-mono font-semibold border border-limeVolt/25">Día 25</span>
             </div>
-            <p id="trmHeaderLabel" class="text-[11px] text-slate-400">TRM: $4.000 • EUR: $4.350</p>
+            <p id="trmHeaderLabel" class="text-[10px] font-mono text-zinc-400">USD $4.000 • EUR $4.350</p>
           </div>
         </div>
 
         <div class="flex items-center gap-1.5">
-          <button onclick="openWrappedModal()" title="FinFlow Wrapped" class="w-8 h-8 rounded-xl glass flex items-center justify-center text-amber-300 active:scale-90 transition">
+          <button onclick="openWrappedModal()" title="Resumen Editorial" class="w-8 h-8 rounded-xl bento-card flex items-center justify-center text-champagne active:scale-90 transition">
             <i data-lucide="sparkles" class="w-4 h-4"></i>
           </button>
-          <button onclick="cycleDisplayCurrency()" id="currencyBtn" class="px-2.5 h-8 rounded-xl glass text-xs font-mono font-bold text-sky-300 active:scale-90 transition">
+          <button onclick="cycleDisplayCurrency()" id="currencyBtn" class="px-2.5 h-8 rounded-xl bento-card text-xs font-mono font-bold text-limeVolt active:scale-90 transition">
             COP
           </button>
-          <button onclick="openTxModal()" class="w-8 h-8 rounded-xl bg-emerald-500 text-slate-950 flex items-center justify-center font-bold shadow-lg shadow-emerald-500/25 active:scale-90 transition">
+          <button onclick="openTxModal()" class="w-8 h-8 rounded-xl bg-limeVolt text-obsidian flex items-center justify-center font-bold shadow-lg shadow-limeVolt/20 active:scale-90 transition">
             <i data-lucide="plus" class="w-4 h-4"></i>
           </button>
         </div>
       </header>
 
       <!-- Scrollable Main Content -->
-      <div id="mainScroll" class="flex-1 overflow-y-auto no-scrollbar px-4 pt-3 pb-28 space-y-4">
+      <div id="mainScroll" class="flex-1 overflow-y-auto no-scrollbar px-4 pt-3.5 pb-28 space-y-4">
 
         <!-- ==================== TAB 1: INICIO ==================== -->
         <section id="view-home" class="space-y-4 animate-view">
 
           <!-- Quick Natural Language + OCR + Voice Strip -->
-          <div class="glass rounded-2xl p-2 flex items-center gap-2">
-            <button onclick="openVoiceAssistant()" class="w-9 h-9 rounded-xl bg-gradient-to-tr from-emerald-400 to-sky-400 text-slate-950 flex items-center justify-center shrink-0 shadow active:scale-90 transition" title="Asistente de Voz">
+          <div class="bento-card rounded-2xl p-2 flex items-center gap-2">
+            <button onclick="openVoiceAssistant()" class="w-9 h-9 rounded-xl bg-limeVolt text-obsidian flex items-center justify-center shrink-0 shadow active:scale-90 transition" title="Asistente de Voz">
               <i data-lucide="mic" class="w-4 h-4"></i>
             </button>
-            <input id="quickNlInput" type="text" maxlength="100" placeholder='Ej: "Almuerzo 22 mil" o "Ingreso 150k"' class="bg-transparent text-xs text-white placeholder-slate-400 flex-1 focus:outline-none" onkeydown="if(event.key==='Enter') parseQuickInput()" />
-            <label class="w-8 h-8 rounded-xl bg-white/5 hover:bg-white/10 flex items-center justify-center text-sky-300 cursor-pointer shrink-0 transition" title="Escanear factura/recibo">
+            <input id="quickNlInput" type="text" maxlength="100" placeholder='Dicta o escribe: "Almuerzo 22 mil"' class="bg-transparent text-xs text-white placeholder-zinc-500 flex-1 focus:outline-none" onkeydown="if(event.key==='Enter') parseQuickInput()" />
+            <label class="w-8 h-8 rounded-xl bg-white/[0.04] hover:bg-white/10 flex items-center justify-center text-champagne cursor-pointer shrink-0 transition" title="Escanear factura/recibo">
               <i data-lucide="camera" class="w-4 h-4"></i>
               <input type="file" accept="image/*" capture="environment" class="hidden" onchange="handleReceiptOCR(event)" />
             </label>
-            <button onclick="parseQuickInput()" class="px-2.5 h-8 rounded-xl bg-sky-500/20 text-sky-300 text-xs font-semibold active:scale-90 transition">OK</button>
+            <button onclick="parseQuickInput()" class="px-2.5 h-8 rounded-xl bg-white/[0.07] text-limeVolt font-mono text-xs font-bold active:scale-90 transition">OK</button>
           </div>
 
           <!-- Hero Card: Liquidez Real Hoy vs Proyección al 25 -->
-          <div class="hero-card rounded-3xl p-5 relative overflow-hidden">
+          <div class="obsidian-vault rounded-3xl p-5 relative overflow-hidden">
             <div class="flex items-start justify-between">
               <div>
-                <p class="text-xs text-sky-200/90 font-semibold flex items-center gap-1.5">
+                <p class="text-[11px] uppercase tracking-widest text-zinc-400 font-semibold flex items-center gap-2">
                   Efectivo Real Hoy
-                  <span id="realDateBadge" class="text-[10px] px-2 py-0.5 rounded-full bg-white/10 text-emerald-300 font-mono">16 Nov</span>
+                  <span id="realDateBadge" class="text-[10px] px-2 py-0.5 rounded-full bg-limeVolt/15 text-limeVolt font-mono">16 Nov</span>
                 </p>
-                <h2 id="realCashDisplay" class="text-3xl font-extrabold font-mono text-white tracking-tight mt-1">$ 0</h2>
-                <p id="realAfterPocketsText" class="text-[11px] text-slate-300 mt-0.5">Disponible hoy tras bolsillos: $ 0</p>
+                <h2 id="realCashDisplay" class="text-[32px] font-mono font-bold text-white tracking-tight mt-1 leading-none">$ 0</h2>
+                <p id="realAfterPocketsText" class="text-xs text-champagne/90 mt-1.5 font-medium">Libre hoy tras bolsillos: $ 0</p>
               </div>
-              <button onclick="openVoiceAssistant()" class="px-3 py-1.5 rounded-full bg-slate-950/60 border border-sky-400/30 text-[11px] font-semibold text-sky-300 flex items-center gap-1.5 active:scale-95 transition">
-                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span> Voz IA
+              <button onclick="openVoiceAssistant()" class="px-3 py-1.5 rounded-full bg-black/60 border border-limeVolt/35 text-[11px] font-semibold text-limeVolt flex items-center gap-1.5 active:scale-95 transition">
+                <span class="w-2 h-2 rounded-full bg-limeVolt animate-ping"></span> Voz IA
               </button>
             </div>
 
-            <!-- Breakdown pills: Real vs Proyectado -->
-            <div class="grid grid-cols-3 gap-2 mt-4 pt-3 border-t border-white/10 text-[11px]">
-              <div class="bg-slate-950/45 rounded-xl p-2">
-                <span class="text-slate-400 block">Por cobrar (25)</span>
-                <span id="projectedIncomeDisplay" class="font-mono font-bold text-indigo-300">+ $ 0</span>
+            <!-- Breakdown Bento Strip -->
+            <div class="grid grid-cols-3 gap-2 mt-4 pt-3.5 border-t border-white/[0.08] text-[11px]">
+              <div class="bg-black/45 rounded-xl p-2.5 border border-white/[0.04]">
+                <span class="text-zinc-400 block text-[10px]">Por cobrar (25)</span>
+                <span id="projectedIncomeDisplay" class="font-mono font-bold text-champagne">+ $ 0</span>
               </div>
-              <div class="bg-slate-950/45 rounded-xl p-2">
-                <span class="text-slate-400 block">Bolsillos</span>
-                <span id="pocketsSumDisplay" class="font-mono font-bold text-cyan-300">- $ 0</span>
+              <div class="bg-black/45 rounded-xl p-2.5 border border-white/[0.04]">
+                <span class="text-zinc-400 block text-[10px]">Bolsillos</span>
+                <span id="pocketsSumDisplay" class="font-mono font-bold text-jade">- $ 0</span>
               </div>
-              <button onclick="toggleReserveDebts()" class="bg-slate-950/45 rounded-xl p-2 text-left hover:bg-slate-950/60 transition">
-                <span class="text-slate-400 flex items-center justify-between">Deudas <i data-lucide="sliders-horizontal" class="w-3 h-3 text-amber-300"></i></span>
-                <span id="debtsSumDisplay" class="font-mono font-bold text-amber-300">- $ 0</span>
+              <button onclick="toggleReserveDebts()" class="bg-black/45 rounded-xl p-2.5 text-left border border-white/[0.04] hover:border-terracotta/40 transition">
+                <span class="text-zinc-400 flex items-center justify-between text-[10px]">Deudas <i data-lucide="sliders-horizontal" class="w-3 h-3 text-terracotta"></i></span>
+                <span id="debtsSumDisplay" class="font-mono font-bold text-terracotta">- $ 0</span>
               </button>
             </div>
 
-            <!-- Cupo Diario Hoy (Basado SOLO en dinero real disponible hoy) -->
-            <div class="mt-3 bg-slate-950/55 rounded-2xl p-3.5 border border-white/10">
+            <!-- Cupo Diario Real -->
+            <div class="mt-3 bg-black/55 rounded-2xl p-3.5 border border-white/[0.07]">
               <div class="flex items-center justify-between">
                 <div>
                   <div class="flex items-center gap-1.5">
-                    <span class="text-xs font-semibold text-emerald-300">Cupo Diario Real (Hoy → 25)</span>
-                    <button onclick="toggleDailyExplain()" class="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-200 font-semibold hover:bg-emerald-500/30 transition">? Ver detalle</button>
+                    <span class="text-xs font-display font-bold text-white">Cupo Diario Real</span>
+                    <button onclick="toggleDailyExplain()" class="text-[10px] px-2 py-0.5 rounded-full bg-limeVolt/15 text-limeVolt font-semibold hover:bg-limeVolt/25 transition">? Ver cálculo</button>
                   </div>
-                  <p id="daysLeftText" class="text-[11px] text-slate-400 mt-0.5">Faltan 9 días para recibir tu pago del 25</p>
+                  <p id="daysLeftText" class="text-[11px] text-zinc-400 mt-0.5">Faltan 9 días para tu pago del 25</p>
                 </div>
                 <div class="text-right">
-                  <span id="dailyBudgetDisplay" class="text-xl font-extrabold font-mono text-emerald-400">$ 0</span>
-                  <span class="block text-[10px] text-slate-400">real por día</span>
+                  <span id="dailyBudgetDisplay" class="text-xl font-extrabold font-mono text-limeVolt">$ 0</span>
+                  <span class="block text-[10px] text-zinc-400">real por día</span>
                 </div>
               </div>
 
               <!-- Today progress bar -->
               <div class="mt-2.5">
-                <div class="flex justify-between text-[10px] text-slate-400 mb-1">
+                <div class="flex justify-between text-[10px] text-zinc-400 mb-1">
                   <span>Gastado hoy: <b id="spentTodayLabel" class="text-white font-mono">$ 0</b></span>
                   <span id="todayPctLabel">0% del cupo de hoy</span>
                 </div>
-                <div class="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden">
-                  <div id="todayProgressBar" class="h-full bg-gradient-to-r from-emerald-400 to-sky-400 rounded-full transition-all duration-500" style="width: 0%"></div>
+                <div class="w-full h-1.5 bg-zinc-800 rounded-full overflow-hidden">
+                  <div id="todayProgressBar" class="h-full bg-gradient-to-r from-limeVolt to-champagne rounded-full transition-all duration-500" style="width: 0%"></div>
                 </div>
               </div>
 
               <!-- Collapsible Projection vs Real Explanation -->
-              <div id="dailyExplainBox" class="hidden mt-3 pt-2.5 border-t border-white/10 text-[11px] text-slate-300 space-y-1.5">
+              <div id="dailyExplainBox" class="hidden mt-3 pt-2.5 border-t border-white/10 text-[11px] text-zinc-300 space-y-1.5">
                 <p><b>1. Cupo Real Hoy:</b> Divide solo el dinero que ya tienes hoy (descontando bolsillos) entre los días que faltan para el 25:</p>
-                <p id="dailyFormulaMath" class="font-mono text-emerald-300 bg-slate-900/80 p-2 rounded-lg text-[10px]"></p>
-                <p><b>2. Balance Proyectado al 25:</b> Al sumar tus ingresos futuros (<span id="projIncInline" class="font-mono text-indigo-300"></span>) y restar tus deudas (<span id="projDebtInline" class="font-mono text-amber-300"></span>), tu saldo proyectado tras pagar todo será: <b id="projectedNetDisplay" class="font-mono text-white"></b>.</p>
+                <p id="dailyFormulaMath" class="font-mono text-limeVolt bg-black/80 p-2 rounded-lg text-[10px]"></p>
+                <p><b>2. Balance Proyectado al 25:</b> Al sumar tus ingresos futuros (<span id="projIncInline" class="font-mono text-champagne"></span>) y restar tus deudas (<span id="projDebtInline" class="font-mono text-terracotta"></span>), tu saldo proyectado tras pagar todo será: <b id="projectedNetDisplay" class="font-mono text-white"></b>.</p>
               </div>
             </div>
           </div>
 
           <!-- Simulador "Antes de Comprar" -->
-          <div class="glass rounded-2xl p-3.5 space-y-2.5">
+          <div class="bento-card rounded-2xl p-3.5 space-y-2.5">
             <div class="flex items-center justify-between">
-              <h3 class="text-xs font-bold text-white flex items-center gap-1.5">
-                <i data-lucide="shield-question" class="w-4 h-4 text-sky-400"></i> Simulador "Antes de Comprar"
+              <h3 class="text-xs font-display font-bold text-white flex items-center gap-1.5">
+                <i data-lucide="shield-question" class="w-4 h-4 text-champagne"></i> Simulador "Antes de Comprar"
               </h3>
-              <span class="text-[10px] text-slate-400">Calcula el impacto en tu efectivo real</span>
+              <span class="text-[10px] text-zinc-400">Impacto en efectivo real</span>
             </div>
             <div class="flex gap-2">
-              <input id="impulseAmountInput" type="number" min="0" placeholder="Valor antojo en COP (ej: 180000)" oninput="simulatePurchase()" class="flex-1 bg-slate-900/90 border border-white/10 rounded-xl px-3 py-2 text-xs text-white font-mono focus:outline-none focus:border-sky-400" />
-              <button onclick="document.getElementById('impulseAmountInput').value='';simulatePurchase()" class="px-2.5 rounded-xl bg-white/5 text-slate-400 text-xs">Limpiar</button>
+              <input id="impulseAmountInput" type="number" min="0" placeholder="Valor antojo en COP (ej: 180000)" oninput="simulatePurchase()" class="flex-1 bg-black/60 border border-white/10 rounded-xl px-3 py-2 text-xs text-white font-mono focus:outline-none focus:border-limeVolt" />
+              <button onclick="document.getElementById('impulseAmountInput').value='';simulatePurchase()" class="px-2.5 rounded-xl bg-white/[0.05] text-zinc-400 text-xs">Limpiar</button>
             </div>
-            <div id="impulseResultBox" class="hidden rounded-xl p-2.5 text-xs bg-slate-900/90 border border-white/10"></div>
+            <div id="impulseResultBox" class="hidden rounded-xl p-2.5 text-xs bg-black/70 border border-white/10"></div>
           </div>
 
           <!-- Bolsillos / Metas -->
           <div class="space-y-2">
             <div class="flex items-center justify-between px-1">
-              <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400">Bolsillos (Modo Sin Culpa)</h3>
-              <button onclick="openPocketModal()" class="text-xs text-sky-400 font-semibold flex items-center gap-1">+ Nuevo bolsillo</button>
+              <h3 class="text-[11px] font-display font-bold uppercase tracking-wider text-zinc-400">Bolsillos (Reserva Intocable)</h3>
+              <button onclick="openPocketModal()" class="text-xs text-limeVolt font-semibold flex items-center gap-1">+ Nuevo bolsillo</button>
             </div>
             <div id="pocketsContainer" class="flex gap-2.5 overflow-x-auto no-scrollbar pb-1"></div>
           </div>
@@ -387,17 +411,17 @@
           <!-- Próximas Deudas y Recibos -->
           <div class="space-y-2">
             <div class="flex items-center justify-between px-1">
-              <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400">Deudas y Recibos Programados</h3>
-              <button onclick="switchTab('alerts')" class="text-xs text-amber-300 font-semibold">Ver todas</button>
+              <h3 class="text-[11px] font-display font-bold uppercase tracking-wider text-zinc-400">Deudas y Recibos Programados</h3>
+              <button onclick="switchTab('alerts')" class="text-xs text-champagne font-semibold">Ver todas</button>
             </div>
             <div id="homeAlertsList" class="space-y-2"></div>
           </div>
 
-          <!-- Últimos Movimientos (Distinguishes Real vs Proyectado) -->
+          <!-- Últimos Movimientos -->
           <div class="space-y-2">
             <div class="flex items-center justify-between px-1">
-              <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400">Movimientos y Proyecciones</h3>
-              <button onclick="openTxModal()" class="text-xs text-emerald-400 font-semibold">+ Registrar</button>
+              <h3 class="text-[11px] font-display font-bold uppercase tracking-wider text-zinc-400">Movimientos y Proyecciones</h3>
+              <button onclick="openTxModal()" class="text-xs text-limeVolt font-semibold">+ Registrar</button>
             </div>
             <div id="transactionsList" class="space-y-2"></div>
           </div>
@@ -405,33 +429,33 @@
 
         <!-- ==================== TAB 2: AGENDA / CALENDARIO ==================== -->
         <section id="view-calendar" class="hidden space-y-4 animate-view">
-          <div class="glass rounded-3xl p-4">
+          <div class="bento-card rounded-3xl p-4">
             <div class="flex items-center justify-between mb-3">
-              <button onclick="changeCalMonth(-1)" class="w-8 h-8 rounded-xl bg-white/5 flex items-center justify-center"><i data-lucide="chevron-left" class="w-4 h-4"></i></button>
-              <h3 id="calMonthTitle" class="font-bold text-sm text-white capitalize">Noviembre 2026</h3>
-              <button onclick="changeCalMonth(1)" class="w-8 h-8 rounded-xl bg-white/5 flex items-center justify-center"><i data-lucide="chevron-right" class="w-4 h-4"></i></button>
+              <button onclick="changeCalMonth(-1)" class="w-8 h-8 rounded-xl bg-white/[0.05] flex items-center justify-center"><i data-lucide="chevron-left" class="w-4 h-4"></i></button>
+              <h3 id="calMonthTitle" class="font-display font-bold text-sm text-white capitalize">Noviembre 2026</h3>
+              <button onclick="changeCalMonth(1)" class="w-8 h-8 rounded-xl bg-white/[0.05] flex items-center justify-center"><i data-lucide="chevron-right" class="w-4 h-4"></i></button>
             </div>
-            <div class="grid grid-cols-7 text-center text-[10px] font-semibold text-slate-400 mb-2">
+            <div class="grid grid-cols-7 text-center text-[10px] font-mono font-semibold text-zinc-400 mb-2">
               <span>Do</span><span>Lu</span><span>Ma</span><span>Mi</span><span>Ju</span><span>Vi</span><span>Sá</span>
             </div>
             <div id="calendarGrid" class="grid grid-cols-7 gap-1.5"></div>
-            <div class="flex items-center justify-center gap-4 mt-3 pt-2.5 border-t border-white/10 text-[10px] text-slate-400">
-              <span class="flex items-center gap-1"><i class="w-2 h-2 rounded-full bg-emerald-400 inline-block"></i> Pago 25</span>
-              <span class="flex items-center gap-1"><i class="w-2 h-2 rounded-full bg-amber-400 inline-block"></i> Deuda/Recibo</span>
-              <span class="flex items-center gap-1"><i class="w-2 h-2 rounded-full bg-sky-400 inline-block"></i> Movimiento</span>
+            <div class="flex items-center justify-center gap-4 mt-3 pt-2.5 border-t border-white/10 text-[10px] text-zinc-400">
+              <span class="flex items-center gap-1"><i class="w-2 h-2 rounded-full bg-limeVolt inline-block"></i> Pago 25</span>
+              <span class="flex items-center gap-1"><i class="w-2 h-2 rounded-full bg-terracotta inline-block"></i> Deuda/Recibo</span>
+              <span class="flex items-center gap-1"><i class="w-2 h-2 rounded-full bg-champagne inline-block"></i> Movimiento</span>
             </div>
           </div>
 
-          <div class="glass rounded-2xl p-4 space-y-2.5">
+          <div class="bento-card rounded-2xl p-4 space-y-2.5">
             <div class="flex items-center justify-between">
-              <h4 id="selectedDayTitle" class="text-xs font-bold text-white">Detalle del día seleccionado</h4>
-              <button onclick="openAlertModalForSelectedDate()" class="text-[11px] px-2.5 py-1 rounded-lg bg-amber-500/20 text-amber-300 font-semibold">+ Agendar Alerta</button>
+              <h4 id="selectedDayTitle" class="text-xs font-display font-bold text-white">Detalle del día seleccionado</h4>
+              <button onclick="openAlertModalForSelectedDate()" class="text-[11px] px-2.5 py-1 rounded-lg bg-limeVolt/15 text-limeVolt font-semibold">+ Agendar Alerta</button>
             </div>
-            <div id="selectedDayEvents" class="space-y-2 text-xs text-slate-300"></div>
+            <div id="selectedDayEvents" class="space-y-2 text-xs text-zinc-300"></div>
           </div>
 
-          <button onclick="exportICS()" class="w-full py-3 rounded-2xl bg-sky-500/20 border border-sky-400/30 text-sky-300 text-xs font-bold flex items-center justify-center gap-2 active:scale-95 transition">
-            <i data-lucide="calendar-plus" class="w-4 h-4"></i> Sincronizar Alertas con Google / Apple Calendar (.ics)
+          <button onclick="exportICS()" class="w-full py-3 rounded-2xl bg-white/[0.05] border border-champagne/30 text-champagne text-xs font-bold flex items-center justify-center gap-2 active:scale-95 transition">
+            <i data-lucide="calendar-plus" class="w-4 h-4"></i> Sincronizar Alertas con Calendario del Teléfono (.ics)
           </button>
         </section>
 
@@ -439,23 +463,23 @@
         <section id="view-alerts" class="hidden space-y-4 animate-view">
           <div class="flex items-center justify-between">
             <div>
-              <h3 class="text-base font-bold text-white">Alertas y Deudas</h3>
-              <p class="text-[11px] text-slate-400">Edita montos, marca pagados o activa notificaciones</p>
+              <h3 class="text-base font-display font-bold text-white">Alertas y Deudas</h3>
+              <p class="text-[11px] text-zinc-400">Edita montos, marca pagados o activa notificaciones</p>
             </div>
-            <button onclick="openAlertModal()" class="px-3 py-2 rounded-xl bg-amber-500 text-slate-950 text-xs font-bold flex items-center gap-1 shadow-lg shadow-amber-500/20">
+            <button onclick="openAlertModal()" class="px-3 py-2 rounded-xl bg-limeVolt text-obsidian text-xs font-display font-bold flex items-center gap-1 shadow-lg">
               <i data-lucide="plus" class="w-3.5 h-3.5"></i> Nueva
             </button>
           </div>
 
-          <div class="glass rounded-2xl p-3 flex items-center justify-between">
+          <div class="bento-card rounded-2xl p-3 flex items-center justify-between">
             <div class="flex items-center gap-2.5">
-              <div class="w-8 h-8 rounded-xl bg-sky-500/20 text-sky-300 flex items-center justify-center"><i data-lucide="bell-ring" class="w-4 h-4"></i></div>
+              <div class="w-8 h-8 rounded-xl bg-champagne/15 text-champagne flex items-center justify-center"><i data-lucide="bell-ring" class="w-4 h-4"></i></div>
               <div>
                 <p class="text-xs font-semibold text-white">Notificaciones Push Móviles</p>
-                <p id="notifPermStatus" class="text-[10px] text-slate-400">Activa alertas en tu celular</p>
+                <p id="notifPermStatus" class="text-[10px] text-zinc-400">Activa alertas en tu celular</p>
               </div>
             </div>
-            <button onclick="requestPushPermission()" class="px-3 py-1.5 rounded-xl bg-sky-500 text-slate-950 text-xs font-bold">Activar</button>
+            <button onclick="requestPushPermission()" class="px-3 py-1.5 rounded-xl bg-champagne text-obsidian text-xs font-bold">Activar</button>
           </div>
 
           <div id="allAlertsList" class="space-y-2.5"></div>
@@ -463,49 +487,49 @@
 
         <!-- ==================== TAB 4: ANALÍTICA & CONSEJOS ==================== -->
         <section id="view-analytics" class="hidden space-y-4 animate-view">
-          <div class="glass rounded-3xl p-4 space-y-2.5">
+          <div class="bento-card rounded-3xl p-4 space-y-2.5">
             <div class="flex items-center justify-between">
-              <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400">Semáforo Ritmo de Gasto (Burn Rate)</h3>
-              <span id="burnBadge" class="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 font-bold">Saludable</span>
+              <h3 class="text-[11px] font-display font-bold uppercase tracking-wider text-zinc-400">Semáforo Ritmo de Gasto</h3>
+              <span id="burnBadge" class="text-[10px] px-2 py-0.5 rounded-full bg-limeVolt/20 text-limeVolt font-bold">Controlado</span>
             </div>
-            <p id="burnExplanation" class="text-xs text-slate-300"></p>
+            <p id="burnExplanation" class="text-xs text-zinc-300"></p>
             <div class="space-y-1.5 text-[11px]">
-              <div class="flex justify-between"><span>Avance del ciclo (hasta el 25)</span><span id="cycleTimePct" class="font-mono text-sky-300">0%</span></div>
-              <div class="w-full h-2 bg-slate-800 rounded-full overflow-hidden"><div id="cycleTimeBar" class="h-full bg-sky-400 rounded-full"></div></div>
-              <div class="flex justify-between pt-1"><span>Efectivo real consumido</span><span id="cycleSpendPct" class="font-mono text-emerald-300">0%</span></div>
-              <div class="w-full h-2 bg-slate-800 rounded-full overflow-hidden"><div id="cycleSpendBar" class="h-full bg-emerald-400 rounded-full"></div></div>
+              <div class="flex justify-between"><span>Avance del ciclo (hasta el 25)</span><span id="cycleTimePct" class="font-mono text-champagne">0%</span></div>
+              <div class="w-full h-2 bg-zinc-800 rounded-full overflow-hidden"><div id="cycleTimeBar" class="h-full bg-champagne rounded-full"></div></div>
+              <div class="flex justify-between pt-1"><span>Efectivo real consumido</span><span id="cycleSpendPct" class="font-mono text-limeVolt">0%</span></div>
+              <div class="w-full h-2 bg-zinc-800 rounded-full overflow-hidden"><div id="cycleSpendBar" class="h-full bg-limeVolt rounded-full"></div></div>
             </div>
           </div>
 
-          <div class="glass rounded-3xl p-4">
-            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">Distribución de Gastos</h3>
+          <div class="bento-card rounded-3xl p-4">
+            <h3 class="text-[11px] font-display font-bold uppercase tracking-wider text-zinc-400 mb-3">Distribución de Gastos</h3>
             <div class="flex items-center gap-4">
               <div id="donutChartBox" class="w-32 h-32 shrink-0 flex items-center justify-center"></div>
               <div id="categoryLegend" class="flex-1 space-y-1.5 text-xs"></div>
             </div>
           </div>
 
-          <div class="glass rounded-3xl p-4 space-y-2">
+          <div class="bento-card rounded-3xl p-4 space-y-2">
             <div class="flex items-center justify-between">
-              <h3 class="text-xs font-bold text-white">Exención 4x1000 (Tope 350 UVT)</h3>
-              <span id="gmfPctLabel" class="font-mono text-xs text-emerald-300">0%</span>
+              <h3 class="text-xs font-display font-bold text-white">Exención 4x1000 (Tope 350 UVT)</h3>
+              <span id="gmfPctLabel" class="font-mono text-xs text-limeVolt">0%</span>
             </div>
-            <div class="w-full h-2 bg-slate-800 rounded-full overflow-hidden">
-              <div id="gmfBar" class="h-full bg-gradient-to-r from-emerald-400 to-amber-400 rounded-full" style="width: 5%"></div>
+            <div class="w-full h-2 bg-zinc-800 rounded-full overflow-hidden">
+              <div id="gmfBar" class="h-full bg-gradient-to-r from-limeVolt to-terracotta rounded-full" style="width: 5%"></div>
             </div>
-            <p id="gmfDetailText" class="text-[11px] text-slate-400"></p>
+            <p id="gmfDetailText" class="text-[11px] text-zinc-400"></p>
           </div>
 
-          <div class="glass rounded-3xl p-4 space-y-2.5">
-            <h3 class="text-xs font-bold text-white flex items-center gap-1.5">
-              <i data-lucide="credit-card" class="w-4 h-4 text-indigo-400"></i> Simulador Cuotas Tarjeta (E.A. → M.V.)
+          <div class="bento-card rounded-3xl p-4 space-y-2.5">
+            <h3 class="text-xs font-display font-bold text-white flex items-center gap-1.5">
+              <i data-lucide="credit-card" class="w-4 h-4 text-champagne"></i> Simulador Cuotas Tarjeta (E.A. → M.V.)
             </h3>
             <div class="grid grid-cols-3 gap-2">
-              <input id="ccAmount" type="number" value="1000000" oninput="calcInstallments()" placeholder="Monto" class="bg-slate-900 border border-white/10 rounded-xl px-2.5 py-2 text-xs font-mono text-white" />
-              <input id="ccMonths" type="number" value="12" oninput="calcInstallments()" placeholder="Cuotas" class="bg-slate-900 border border-white/10 rounded-xl px-2.5 py-2 text-xs font-mono text-white" />
-              <input id="ccRateEA" type="number" value="27.5" step="0.1" oninput="calcInstallments()" placeholder="% E.A." class="bg-slate-900 border border-white/10 rounded-xl px-2.5 py-2 text-xs font-mono text-white" />
+              <input id="ccAmount" type="number" value="1000000" oninput="calcInstallments()" placeholder="Monto" class="bg-black/60 border border-white/10 rounded-xl px-2.5 py-2 text-xs font-mono text-white" />
+              <input id="ccMonths" type="number" value="12" oninput="calcInstallments()" placeholder="Cuotas" class="bg-black/60 border border-white/10 rounded-xl px-2.5 py-2 text-xs font-mono text-white" />
+              <input id="ccRateEA" type="number" value="27.5" step="0.1" oninput="calcInstallments()" placeholder="% E.A." class="bg-black/60 border border-white/10 rounded-xl px-2.5 py-2 text-xs font-mono text-white" />
             </div>
-            <div id="ccResult" class="bg-slate-900/90 rounded-xl p-2.5 text-[11px] text-slate-300 font-mono"></div>
+            <div id="ccResult" class="bg-black/70 rounded-xl p-2.5 text-[11px] text-zinc-300 font-mono"></div>
           </div>
 
           <div id="smartAdviceBox" class="space-y-2"></div>
@@ -513,71 +537,71 @@
 
         <!-- ==================== TAB 5: MÁS / RESPALDOS & CONFIG ==================== -->
         <section id="view-more" class="hidden space-y-4 animate-view">
-          <div class="glass rounded-3xl p-4 space-y-3">
+          <div class="bento-card rounded-3xl p-4 space-y-3">
             <div class="flex items-center justify-between">
-              <h3 class="text-sm font-bold text-white">Respaldos JSON y Actualizaciones</h3>
-              <button onclick="checkGitHubUpdates(true)" class="text-[11px] text-sky-300 font-semibold flex items-center gap-1">
-                <i data-lucide="refresh-cw" class="w-3 h-3"></i> Buscar cambios
+              <h3 class="text-sm font-display font-bold text-white">Respaldos JSON y Actualizaciones</h3>
+              <button onclick="checkAppUpdates(true)" class="text-[11px] text-limeVolt font-semibold flex items-center gap-1">
+                <i data-lucide="refresh-cw" class="w-3 h-3"></i> Verificar versión
               </button>
             </div>
-            <p class="text-xs text-slate-400">Importa tu respaldo JSON o verifica si hay una nueva versión subida en GitHub Pages.</p>
+            <p class="text-xs text-zinc-400">Importa tu respaldo JSON o realiza copia de seguridad y actualización instantánea.</p>
             <div class="grid grid-cols-2 gap-2.5">
-              <button onclick="openImportModal()" class="py-2.5 px-3 rounded-xl bg-emerald-500/20 border border-emerald-400/30 text-emerald-300 text-xs font-bold flex items-center justify-center gap-1.5">
+              <button onclick="openImportModal()" class="py-2.5 px-3 rounded-xl bg-limeVolt/15 border border-limeVolt/30 text-limeVolt text-xs font-bold flex items-center justify-center gap-1.5">
                 <i data-lucide="upload" class="w-4 h-4"></i> Importar JSON
               </button>
-              <button onclick="exportBackupJSON()" class="py-2.5 px-3 rounded-xl bg-sky-500/20 border border-sky-400/30 text-sky-300 text-xs font-bold flex items-center justify-center gap-1.5">
+              <button onclick="exportBackupJSON()" class="py-2.5 px-3 rounded-xl bg-champagne/15 border border-champagne/30 text-champagne text-xs font-bold flex items-center justify-center gap-1.5">
                 <i data-lucide="download" class="w-4 h-4"></i> Exportar JSON
               </button>
             </div>
           </div>
 
-          <div class="glass rounded-3xl p-4 space-y-3">
+          <div class="bento-card rounded-3xl p-4 space-y-3">
             <div class="flex items-center justify-between">
-              <h3 class="text-sm font-bold text-white flex items-center gap-1.5"><i data-lucide="volume-2" class="w-4 h-4 text-sky-400"></i> Voz del Asistente IA</h3>
-              <button onclick="testVoiceSample()" class="text-xs text-emerald-400 font-semibold">Probar voz</button>
+              <h3 class="text-sm font-display font-bold text-white flex items-center gap-1.5"><i data-lucide="volume-2" class="w-4 h-4 text-champagne"></i> Voz del Asistente IA</h3>
+              <button onclick="testVoiceSample()" class="text-xs text-limeVolt font-semibold">Probar voz</button>
             </div>
-            <select id="voiceSelect" onchange="saveVoiceSettings()" class="w-full bg-slate-900 border border-white/10 rounded-xl px-3 py-2 text-xs text-white"></select>
-            <div class="flex items-center justify-between text-xs text-slate-300">
-              <span>Velocidad de habla: <b id="voiceRateLabel">1.05x</b></span>
-              <input id="voiceRateInput" type="range" min="0.8" max="1.35" step="0.05" value="1.05" oninput="saveVoiceSettings()" class="w-32 accent-emerald-400" />
+            <select id="voiceSelect" onchange="saveVoiceSettings()" class="w-full bg-black/60 border border-white/10 rounded-xl px-3 py-2 text-xs text-white"></select>
+            <div class="flex items-center justify-between text-xs text-zinc-300">
+              <span>Velocidad de habla: <b id="voiceRateLabel" class="font-mono">1.05x</b></span>
+              <input id="voiceRateInput" type="range" min="0.8" max="1.35" step="0.05" value="1.05" oninput="saveVoiceSettings()" class="w-32 accent-limeVolt" />
             </div>
           </div>
 
-          <div class="glass rounded-3xl p-4 space-y-3">
+          <div class="bento-card rounded-3xl p-4 space-y-3">
             <div class="flex items-center justify-between">
-              <h3 class="text-sm font-bold text-white">Divisas y TRM Colombia</h3>
-              <button onclick="fetchLiveTRM()" class="px-2.5 py-1 rounded-lg bg-emerald-500/20 text-emerald-300 text-xs font-semibold flex items-center gap-1">
+              <h3 class="text-sm font-display font-bold text-white">Divisas y TRM Colombia</h3>
+              <button onclick="fetchLiveTRM()" class="px-2.5 py-1 rounded-lg bg-limeVolt/15 text-limeVolt text-xs font-semibold flex items-center gap-1">
                 <i data-lucide="refresh-cw" class="w-3 h-3"></i> Actualizar TRM
               </button>
             </div>
             <div class="grid grid-cols-2 gap-2.5 text-xs">
               <div>
-                <label class="text-slate-400 block mb-1">1 USD en COP</label>
-                <input id="usdRateInput" type="number" min="1" onchange="updateManualRates()" class="w-full bg-slate-900 border border-white/10 rounded-xl px-3 py-2 font-mono text-white" />
+                <label class="text-zinc-400 block mb-1">1 USD en COP</label>
+                <input id="usdRateInput" type="number" min="1" onchange="updateManualRates()" class="w-full bg-black/60 border border-white/10 rounded-xl px-3 py-2 font-mono text-white" />
               </div>
               <div>
-                <label class="text-slate-400 block mb-1">1 EUR en COP</label>
-                <input id="eurRateInput" type="number" min="1" onchange="updateManualRates()" class="w-full bg-slate-900 border border-white/10 rounded-xl px-3 py-2 font-mono text-white" />
+                <label class="text-zinc-400 block mb-1">1 EUR en COP</label>
+                <input id="eurRateInput" type="number" min="1" onchange="updateManualRates()" class="w-full bg-black/60 border border-white/10 rounded-xl px-3 py-2 font-mono text-white" />
               </div>
             </div>
           </div>
 
-          <div class="glass rounded-3xl p-4 space-y-3">
-            <h3 class="text-sm font-bold text-white">Seguridad (PIN SHA-256) y Ciclo</h3>
+          <div class="bento-card rounded-3xl p-4 space-y-3">
+            <h3 class="text-sm font-display font-bold text-white">Seguridad (PIN SHA-256) y Ciclo</h3>
             <div class="flex items-center justify-between text-xs">
-              <span class="text-slate-300">Día de pago mensual</span>
-              <input id="paydayInput" type="number" min="1" max="31" onchange="updatePayday()" class="w-20 bg-slate-900 border border-white/10 rounded-xl px-3 py-1.5 font-mono text-center text-white" />
+              <span class="text-zinc-300">Día de pago mensual</span>
+              <input id="paydayInput" type="number" min="1" max="31" onchange="updatePayday()" class="w-20 bg-black/60 border border-white/10 rounded-xl px-3 py-1.5 font-mono text-center text-white" />
             </div>
             <div class="flex items-center justify-between text-xs pt-2 border-t border-white/10">
-              <span class="text-slate-300">PIN de acceso (4 dígitos)</span>
+              <span class="text-zinc-300">PIN de acceso (4 dígitos)</span>
               <div class="flex gap-2">
-                <input id="setPinInput" type="password" inputmode="numeric" maxlength="4" placeholder="****" class="w-20 bg-slate-900 border border-white/10 rounded-xl px-3 py-1.5 font-mono text-center text-white" />
-                <button onclick="savePinCode()" class="px-3 py-1.5 rounded-xl bg-indigo-500 text-white font-semibold">Guardar</button>
+                <input id="setPinInput" type="password" inputmode="numeric" maxlength="4" placeholder="****" class="w-20 bg-black/60 border border-white/10 rounded-xl px-3 py-1.5 font-mono text-center text-white" />
+                <button onclick="savePinCode()" class="px-3 py-1.5 rounded-xl bg-champagne text-obsidian font-bold">Guardar</button>
               </div>
             </div>
             <div class="pt-2 border-t border-white/10 flex justify-between items-center text-xs">
-              <span class="text-slate-400">Limpiar todos los datos locales</span>
-              <button onclick="wipeAllData()" class="px-3 py-1.5 rounded-xl bg-rose-500/20 border border-rose-400/30 text-rose-300 font-semibold">Borrar Todo</button>
+              <span class="text-zinc-400">Limpiar todos los datos locales</span>
+              <button onclick="wipeAllData()" class="px-3 py-1.5 rounded-xl bg-terracotta/20 border border-terracotta/30 text-terracotta font-semibold">Borrar Todo</button>
             </div>
           </div>
         </section>
@@ -585,29 +609,29 @@
       </div>
 
       <!-- Bottom Navigation Bar -->
-      <nav class="absolute bottom-0 inset-x-0 glass border-t border-white/10 px-2 py-2 flex items-center justify-around z-30">
-        <button onclick="switchTab('home')" data-tab="home" class="nav-btn flex flex-col items-center gap-0.5 text-emerald-400 px-2 py-1">
+      <nav class="absolute bottom-0 inset-x-0 bg-obsidian/95 backdrop-blur-xl border-t border-white/[0.07] px-2 py-2 flex items-center justify-around z-30">
+        <button onclick="switchTab('home')" data-tab="home" class="nav-btn flex flex-col items-center gap-0.5 text-limeVolt px-2 py-1">
           <i data-lucide="wallet" class="w-5 h-5"></i>
           <span class="text-[10px] font-semibold">Inicio</span>
         </button>
-        <button onclick="switchTab('calendar')" data-tab="calendar" class="nav-btn flex flex-col items-center gap-0.5 text-slate-400 px-2 py-1">
+        <button onclick="switchTab('calendar')" data-tab="calendar" class="nav-btn flex flex-col items-center gap-0.5 text-zinc-500 px-2 py-1">
           <i data-lucide="calendar" class="w-5 h-5"></i>
           <span class="text-[10px] font-semibold">Agenda</span>
         </button>
 
-        <button onclick="openVoiceAssistant()" class="-mt-7 w-14 h-14 rounded-full bg-gradient-to-tr from-emerald-400 via-sky-400 to-indigo-500 text-slate-950 flex items-center justify-center shadow-xl shadow-sky-500/30 border-4 border-void active:scale-90 transition" title="Hablar con FinFlow">
+        <button onclick="openVoiceAssistant()" class="-mt-7 w-14 h-14 rounded-full bg-limeVolt text-obsidian flex items-center justify-center shadow-xl shadow-limeVolt/25 border-4 border-obsidian active:scale-90 transition" title="Hablar con FinFlow">
           <i data-lucide="mic" class="w-6 h-6"></i>
         </button>
 
-        <button onclick="switchTab('alerts')" data-tab="alerts" class="nav-btn flex flex-col items-center gap-0.5 text-slate-400 px-2 py-1">
+        <button onclick="switchTab('alerts')" data-tab="alerts" class="nav-btn flex flex-col items-center gap-0.5 text-zinc-500 px-2 py-1">
           <i data-lucide="bell" class="w-5 h-5"></i>
           <span class="text-[10px] font-semibold">Deudas</span>
         </button>
-        <button onclick="switchTab('analytics')" data-tab="analytics" class="nav-btn flex flex-col items-center gap-0.5 text-slate-400 px-2 py-1">
+        <button onclick="switchTab('analytics')" data-tab="analytics" class="nav-btn flex flex-col items-center gap-0.5 text-zinc-500 px-2 py-1">
           <i data-lucide="pie-chart" class="w-5 h-5"></i>
           <span class="text-[10px] font-semibold">Análisis</span>
         </button>
-        <button onclick="switchTab('more')" data-tab="more" class="nav-btn flex flex-col items-center gap-0.5 text-slate-400 px-2 py-1">
+        <button onclick="switchTab('more')" data-tab="more" class="nav-btn flex flex-col items-center gap-0.5 text-zinc-500 px-2 py-1">
           <i data-lucide="sliders" class="w-5 h-5"></i>
           <span class="text-[10px] font-semibold">Más</span>
         </button>
@@ -615,12 +639,12 @@
     </div>
 
     <!-- ==================== MODAL: ASISTENTE DE VOZ ==================== -->
-    <div id="voiceModal" class="hidden absolute inset-0 z-50 bg-void/95 backdrop-blur-2xl flex flex-col justify-between p-6 animate-view">
+    <div id="voiceModal" class="hidden absolute inset-0 z-50 bg-obsidian/98 backdrop-blur-2xl flex flex-col justify-between p-6 animate-view">
       <div class="flex items-center justify-between pt-2 md:pt-8">
-        <span class="text-xs font-bold uppercase tracking-widest text-sky-400 flex items-center gap-1.5">
-          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span> FinFlow Voice AI
+        <span class="text-xs font-display font-bold uppercase tracking-widest text-limeVolt flex items-center gap-1.5">
+          <span class="w-2 h-2 rounded-full bg-limeVolt animate-ping"></span> FinFlow Voice AI
         </span>
-        <button onclick="closeVoiceAssistant()" class="w-9 h-9 rounded-full glass flex items-center justify-center text-slate-300">
+        <button onclick="closeVoiceAssistant()" class="w-9 h-9 rounded-full bento-card flex items-center justify-center text-zinc-300">
           <i data-lucide="x" class="w-5 h-5"></i>
         </button>
       </div>
@@ -632,47 +656,47 @@
         </div>
 
         <div class="space-y-2 max-w-xs">
-          <p id="voiceStateLabel" class="text-sm font-bold text-emerald-300">Toca el orbe o habla ahora...</p>
-          <p id="voiceTranscriptText" class="text-xs text-slate-400 italic min-h-[32px]">"¿Cuánto puedo gastar hoy?" • "Gasto de 25 mil en comida"</p>
+          <p id="voiceStateLabel" class="text-sm font-display font-bold text-limeVolt">Toca el orbe o habla ahora...</p>
+          <p id="voiceTranscriptText" class="text-xs text-zinc-400 italic min-h-[32px]">"¿Cuánto puedo gastar hoy?" • "Gasto de 25 mil en comida"</p>
         </div>
 
-        <div id="voiceReplyCard" class="glass rounded-2xl p-4 max-w-xs w-full text-xs text-slate-200 leading-relaxed">
+        <div id="voiceReplyCard" class="bento-card rounded-2xl p-4 max-w-xs w-full text-xs text-zinc-200 leading-relaxed">
           Hola, soy tu asistente financiero. Pregúntame por tu efectivo real hoy, tus ingresos proyectados o tus deudas pendientes.
         </div>
       </div>
 
       <div class="space-y-2 pb-4">
-        <p class="text-[10px] text-center text-slate-500 uppercase tracking-wider">Prueba preguntar:</p>
+        <p class="text-[10px] text-center text-zinc-500 uppercase tracking-wider">Prueba preguntar:</p>
         <div class="flex flex-wrap justify-center gap-1.5">
-          <button onclick="processVoiceCommand('¿Cuánto puedo gastar hoy?')" class="px-3 py-1.5 rounded-full glass text-[11px] text-sky-300">¿Cuánto gasto hoy?</button>
-          <button onclick="processVoiceCommand('¿Qué deudas tengo pendientes?')" class="px-3 py-1.5 rounded-full glass text-[11px] text-amber-300">Mis deudas</button>
-          <button onclick="processVoiceCommand('¿Cómo voy este mes?')" class="px-3 py-1.5 rounded-full glass text-[11px] text-emerald-300">Real vs Proyección</button>
+          <button onclick="processVoiceCommand('¿Cuánto puedo gastar hoy?')" class="px-3 py-1.5 rounded-full bento-card text-[11px] text-limeVolt">¿Cuánto gasto hoy?</button>
+          <button onclick="processVoiceCommand('¿Qué deudas tengo pendientes?')" class="px-3 py-1.5 rounded-full bento-card text-[11px] text-terracotta">Mis deudas</button>
+          <button onclick="processVoiceCommand('¿Cómo voy este mes?')" class="px-3 py-1.5 rounded-full bento-card text-[11px] text-champagne">Real vs Proyección</button>
         </div>
       </div>
     </div>
 
     <!-- ==================== MODAL: NUEVO MOVIMIENTO ==================== -->
-    <div id="txModal" class="hidden absolute inset-0 z-40 bg-black/70 backdrop-blur-sm flex items-end">
-      <div class="w-full glass rounded-t-3xl p-5 space-y-3.5 animate-sheet">
+    <div id="txModal" class="hidden absolute inset-0 z-40 bg-black/75 backdrop-blur-sm flex items-end">
+      <div class="w-full bento-card rounded-t-3xl p-5 space-y-3.5 animate-sheet">
         <div class="flex items-center justify-between">
-          <h3 class="font-bold text-base text-white">Registrar Movimiento o Proyección</h3>
-          <button onclick="closeModal('txModal')" class="text-slate-400"><i data-lucide="x" class="w-5 h-5"></i></button>
+          <h3 class="font-display font-bold text-base text-white">Registrar Movimiento o Proyección</h3>
+          <button onclick="closeModal('txModal')" class="text-zinc-400"><i data-lucide="x" class="w-5 h-5"></i></button>
         </div>
         <div class="grid grid-cols-2 gap-2">
-          <button type="button" id="btnTypeExpense" onclick="setTxType('expense')" class="py-2 rounded-xl bg-rose-500/20 border border-rose-400/40 text-rose-300 text-xs font-bold">Gasto (-)</button>
-          <button type="button" id="btnTypeIncome" onclick="setTxType('income')" class="py-2 rounded-xl bg-white/5 border border-white/10 text-slate-400 text-xs font-bold">Ingreso / Saldo (+)</button>
+          <button type="button" id="btnTypeExpense" onclick="setTxType('expense')" class="py-2 rounded-xl bg-terracotta/20 border border-terracotta/40 text-terracotta text-xs font-bold">Gasto (-)</button>
+          <button type="button" id="btnTypeIncome" onclick="setTxType('income')" class="py-2 rounded-xl bg-white/[0.04] border border-white/10 text-zinc-400 text-xs font-bold">Ingreso / Saldo (+)</button>
         </div>
-        <input id="txTitle" type="text" maxlength="80" placeholder="Concepto (ej: Almuerzo, Pago nómina 25)" class="w-full bg-slate-900 border border-white/10 rounded-xl px-3.5 py-2.5 text-xs text-white" />
+        <input id="txTitle" type="text" maxlength="80" placeholder="Concepto (ej: Almuerzo, Pago nómina 25)" class="w-full bg-black/60 border border-white/10 rounded-xl px-3.5 py-2.5 text-xs text-white" />
         <div class="grid grid-cols-3 gap-2">
-          <input id="txAmount" type="number" min="1" placeholder="Monto" class="col-span-2 bg-slate-900 border border-white/10 rounded-xl px-3.5 py-2.5 text-xs font-mono text-white" />
-          <select id="txCurrency" class="bg-slate-900 border border-white/10 rounded-xl px-2.5 py-2.5 text-xs font-mono text-sky-300">
+          <input id="txAmount" type="number" min="1" placeholder="Monto" class="col-span-2 bg-black/60 border border-white/10 rounded-xl px-3.5 py-2.5 text-xs font-mono text-white" />
+          <select id="txCurrency" class="bg-black/60 border border-white/10 rounded-xl px-2.5 py-2.5 text-xs font-mono text-limeVolt">
             <option value="COP">COP</option>
             <option value="USD">USD</option>
             <option value="EUR">EUR</option>
           </select>
         </div>
         <div class="grid grid-cols-2 gap-2">
-          <select id="txCategory" class="bg-slate-900 border border-white/10 rounded-xl px-3 py-2.5 text-xs text-white">
+          <select id="txCategory" class="bg-black/60 border border-white/10 rounded-xl px-3 py-2.5 text-xs text-white">
             <option value="comida">Comida y Café</option>
             <option value="transporte">Transporte / Uber</option>
             <option value="servicios">Servicios y Recibos</option>
@@ -680,87 +704,88 @@
             <option value="salud">Salud / Educación</option>
             <option value="ingreso">Ingreso / Nómina</option>
           </select>
-          <input id="txDate" type="date" onchange="updateTxDateHint()" class="bg-slate-900 border border-white/10 rounded-xl px-3 py-2.5 text-xs text-white" />
+          <input id="txDate" type="date" onchange="updateTxDateHint()" class="bg-black/60 border border-white/10 rounded-xl px-3 py-2.5 text-xs text-white" />
         </div>
-        <p id="txDateModeHint" class="text-[11px] text-emerald-300">Fecha de hoy o anterior: se cuenta como dinero real.</p>
-        <button onclick="saveTransaction()" class="w-full py-3 rounded-2xl bg-gradient-to-r from-emerald-400 to-sky-400 text-slate-950 font-extrabold text-xs shadow-lg">Guardar Movimiento</button>
+        <p id="txDateModeHint" class="text-[11px] text-limeVolt">Fecha de hoy o anterior: se cuenta como dinero real.</p>
+        <button onclick="saveTransaction()" class="w-full py-3 rounded-2xl bg-limeVolt text-obsidian font-display font-extrabold text-xs shadow-lg">Guardar Movimiento</button>
       </div>
     </div>
 
     <!-- ==================== MODAL: EDITAR / CREAR DEUDA O ALERTA ==================== -->
-    <div id="alertModal" class="hidden absolute inset-0 z-40 bg-black/70 backdrop-blur-sm flex items-end">
-      <div class="w-full glass rounded-t-3xl p-5 space-y-3 animate-sheet">
+    <div id="alertModal" class="hidden absolute inset-0 z-40 bg-black/75 backdrop-blur-sm flex items-end">
+      <div class="w-full bento-card rounded-t-3xl p-5 space-y-3 animate-sheet">
         <div class="flex items-center justify-between">
-          <h3 id="alertModalTitle" class="font-bold text-base text-white">Programar Deuda o Recibo</h3>
-          <button onclick="closeModal('alertModal')" class="text-slate-400"><i data-lucide="x" class="w-5 h-5"></i></button>
+          <h3 id="alertModalTitle" class="font-display font-bold text-base text-white">Programar Deuda o Recibo</h3>
+          <button onclick="closeModal('alertModal')" class="text-zinc-400"><i data-lucide="x" class="w-5 h-5"></i></button>
         </div>
         <input type="hidden" id="editAlertId" />
-        <input id="alertTitleInput" type="text" maxlength="80" placeholder="Ej: Tarjeta Nu, Plan Celular, Arriendo" class="w-full bg-slate-900 border border-white/10 rounded-xl px-3.5 py-2.5 text-xs text-white" />
+        <input id="alertTitleInput" type="text" maxlength="80" placeholder="Ej: Tarjeta Nu, Plan Celular, Arriendo" class="w-full bg-black/60 border border-white/10 rounded-xl px-3.5 py-2.5 text-xs text-white" />
         <div class="grid grid-cols-2 gap-2">
-          <input id="alertAmountInput" type="number" min="1" placeholder="Valor en COP" class="bg-slate-900 border border-white/10 rounded-xl px-3.5 py-2.5 text-xs font-mono text-white" />
-          <input id="alertDateInput" type="date" class="bg-slate-900 border border-white/10 rounded-xl px-3.5 py-2.5 text-xs text-white" />
+          <input id="alertAmountInput" type="number" min="1" placeholder="Valor en COP" class="bg-black/60 border border-white/10 rounded-xl px-3.5 py-2.5 text-xs font-mono text-white" />
+          <input id="alertDateInput" type="date" class="bg-black/60 border border-white/10 rounded-xl px-3.5 py-2.5 text-xs text-white" />
         </div>
-        <div class="flex items-center justify-between text-xs text-slate-300 bg-slate-900/70 p-2.5 rounded-xl">
-          <label class="flex items-center gap-2"><input id="alertRecurringInput" type="checkbox" checked class="accent-amber-400" /> Repetir cada mes</label>
-          <label class="flex items-center gap-2"><input id="alertPaidInput" type="checkbox" class="accent-emerald-400" /> Ya pagado</label>
+        <div class="flex items-center justify-between text-xs text-zinc-300 bg-black/50 p-2.5 rounded-xl">
+          <label class="flex items-center gap-2"><input id="alertRecurringInput" type="checkbox" checked class="accent-limeVolt" /> Repetir cada mes</label>
+          <label class="flex items-center gap-2"><input id="alertPaidInput" type="checkbox" class="accent-limeVolt" /> Ya pagado</label>
         </div>
-        <button onclick="saveAlertItem()" class="w-full py-3 rounded-2xl bg-amber-400 text-slate-950 font-extrabold text-xs shadow-lg">Guardar Alerta</button>
+        <button onclick="saveAlertItem()" class="w-full py-3 rounded-2xl bg-champagne text-obsidian font-display font-extrabold text-xs shadow-lg">Guardar Alerta</button>
       </div>
     </div>
 
     <!-- ==================== MODAL: BOLSILLO ==================== -->
-    <div id="pocketModal" class="hidden absolute inset-0 z-40 bg-black/70 backdrop-blur-sm flex items-end">
-      <div class="w-full glass rounded-t-3xl p-5 space-y-3 animate-sheet">
+    <div id="pocketModal" class="hidden absolute inset-0 z-40 bg-black/75 backdrop-blur-sm flex items-end">
+      <div class="w-full bento-card rounded-t-3xl p-5 space-y-3 animate-sheet">
         <div class="flex items-center justify-between">
-          <h3 class="font-bold text-base text-white">Nuevo Bolsillo de Ahorro</h3>
-          <button onclick="closeModal('pocketModal')" class="text-slate-400"><i data-lucide="x" class="w-5 h-5"></i></button>
+          <h3 class="font-display font-bold text-base text-white">Nuevo Bolsillo de Ahorro</h3>
+          <button onclick="closeModal('pocketModal')" class="text-zinc-400"><i data-lucide="x" class="w-5 h-5"></i></button>
         </div>
-        <input id="pocketNameInput" type="text" maxlength="40" placeholder="Nombre (ej: Vacaciones, Emergencia)" class="w-full bg-slate-900 border border-white/10 rounded-xl px-3.5 py-2.5 text-xs text-white" />
+        <input id="pocketNameInput" type="text" maxlength="40" placeholder="Nombre (ej: Vacaciones, Emergencia)" class="w-full bg-black/60 border border-white/10 rounded-xl px-3.5 py-2.5 text-xs text-white" />
         <div class="grid grid-cols-2 gap-2">
-          <input id="pocketSavedInput" type="number" min="0" placeholder="Saldo inicial COP" class="bg-slate-900 border border-white/10 rounded-xl px-3.5 py-2.5 text-xs font-mono text-white" />
-          <input id="pocketTargetInput" type="number" min="1" placeholder="Meta COP" class="bg-slate-900 border border-white/10 rounded-xl px-3.5 py-2.5 text-xs font-mono text-white" />
+          <input id="pocketSavedInput" type="number" min="0" placeholder="Saldo inicial COP" class="bg-black/60 border border-white/10 rounded-xl px-3.5 py-2.5 text-xs font-mono text-white" />
+          <input id="pocketTargetInput" type="number" min="1" placeholder="Meta COP" class="bg-black/60 border border-white/10 rounded-xl px-3.5 py-2.5 text-xs font-mono text-white" />
         </div>
-        <button onclick="savePocket()" class="w-full py-3 rounded-2xl bg-cyan-400 text-slate-950 font-extrabold text-xs">Crear Bolsillo</button>
+        <button onclick="savePocket()" class="w-full py-3 rounded-2xl bg-jade text-obsidian font-display font-extrabold text-xs">Crear Bolsillo</button>
       </div>
     </div>
 
     <!-- ==================== MODAL: IMPORTAR BACKUP JSON ==================== -->
-    <div id="importModal" class="hidden absolute inset-0 z-40 bg-black/75 backdrop-blur-sm flex items-end">
-      <div class="w-full glass rounded-t-3xl p-5 space-y-3 animate-sheet">
+    <div id="importModal" class="hidden absolute inset-0 z-40 bg-black/80 backdrop-blur-sm flex items-end">
+      <div class="w-full bento-card rounded-t-3xl p-5 space-y-3 animate-sheet">
         <div class="flex items-center justify-between">
-          <h3 class="font-bold text-base text-white">Importar Respaldo JSON</h3>
-          <button onclick="closeModal('importModal')" class="text-slate-400"><i data-lucide="x" class="w-5 h-5"></i></button>
+          <h3 class="font-display font-bold text-base text-white">Importar Respaldo JSON</h3>
+          <button onclick="closeModal('importModal')" class="text-zinc-400"><i data-lucide="x" class="w-5 h-5"></i></button>
         </div>
-        <label class="block w-full py-3 px-4 rounded-xl border border-dashed border-emerald-400/50 bg-emerald-500/10 text-center text-xs text-emerald-300 font-semibold cursor-pointer">
+        <label class="block w-full py-3 px-4 rounded-xl border border-dashed border-limeVolt/50 bg-limeVolt/10 text-center text-xs text-limeVolt font-semibold cursor-pointer">
           Seleccionar archivo .json desde el teléfono
           <input type="file" accept=".json,application/json" class="hidden" onchange="handleJsonFileUpload(event)" />
         </label>
-        <textarea id="jsonPasteArea" rows="4" oninput="previewJsonImport()" placeholder="O pega aquí el contenido JSON de tu respaldo..." class="w-full bg-slate-900 border border-white/10 rounded-xl p-3 text-[11px] font-mono text-slate-200"></textarea>
-        <div id="importPreviewLabel" class="text-[11px] text-sky-300"></div>
-        <button onclick="confirmJsonImport()" class="w-full py-3 rounded-2xl bg-emerald-400 text-slate-950 font-extrabold text-xs">Restaurar Datos Validados</button>
+        <textarea id="jsonPasteArea" rows="4" oninput="previewJsonImport()" placeholder="O pega aquí el contenido JSON de tu respaldo..." class="w-full bg-black/60 border border-white/10 rounded-xl p-3 text-[11px] font-mono text-zinc-200"></textarea>
+        <div id="importPreviewLabel" class="text-[11px] text-champagne"></div>
+        <button onclick="confirmJsonImport()" class="w-full py-3 rounded-2xl bg-limeVolt text-obsidian font-display font-extrabold text-xs">Restaurar Datos Validados</button>
       </div>
     </div>
 
     <!-- ==================== MODAL: FINFLOW WRAPPED ==================== -->
-    <div id="wrappedModal" class="hidden absolute inset-0 z-50 bg-void/95 backdrop-blur-2xl p-6 flex flex-col justify-between animate-view">
+    <div id="wrappedModal" class="hidden absolute inset-0 z-50 bg-obsidian/98 backdrop-blur-2xl p-6 flex flex-col justify-between animate-view">
       <div class="flex items-center justify-between pt-2 md:pt-8">
-        <span class="text-xs font-bold text-amber-300 flex items-center gap-1.5"><i data-lucide="sparkles" class="w-4 h-4"></i> FINFLOW WRAPPED</span>
-        <button onclick="closeModal('wrappedModal')" class="w-8 h-8 rounded-full glass flex items-center justify-center"><i data-lucide="x" class="w-4 h-4"></i></button>
+        <span class="text-xs font-display font-bold text-champagne flex items-center gap-1.5"><i data-lucide="sparkles" class="w-4 h-4"></i> FINFLOW EDITION</span>
+        <button onclick="closeModal('wrappedModal')" class="w-8 h-8 rounded-full bento-card flex items-center justify-center"><i data-lucide="x" class="w-4 h-4"></i></button>
       </div>
-      <div id="wrappedCardContent" class="my-auto hero-card rounded-3xl p-6 text-center space-y-4"></div>
+      <div id="wrappedCardContent" class="my-auto obsidian-vault rounded-3xl p-6 text-center space-y-4"></div>
       <div class="flex gap-2 pb-4">
-        <button onclick="nextWrappedSlide(-1)" class="flex-1 py-3 rounded-2xl glass text-xs font-bold">Anterior</button>
-        <button onclick="nextWrappedSlide(1)" class="flex-1 py-3 rounded-2xl bg-emerald-400 text-slate-950 text-xs font-extrabold">Siguiente</button>
+        <button onclick="nextWrappedSlide(-1)" class="flex-1 py-3 rounded-2xl bento-card text-xs font-bold">Anterior</button>
+        <button onclick="nextWrappedSlide(1)" class="flex-1 py-3 rounded-2xl bg-limeVolt text-obsidian text-xs font-display font-extrabold">Siguiente</button>
       </div>
     </div>
 
     <!-- Toast Banner -->
-    <div id="toastBanner" class="hidden fixed top-14 left-1/2 -translate-x-1/2 z-50 px-4 py-2 rounded-full bg-slate-900/95 border border-emerald-400/40 text-xs font-semibold text-emerald-300 shadow-2xl"></div>
+    <div id="toastBanner" class="hidden fixed top-14 left-1/2 -translate-x-1/2 z-50 px-4 py-2 rounded-full bg-graphite/95 border border-limeVolt/40 text-xs font-semibold text-limeVolt shadow-2xl"></div>
   </main>
 
   <script>
-    const APP_BUILD_ID = 'finflow-cop-v2.1-2026-11-16';
+    const APP_BUILD_ID = 'finflow-cop-v3.0-editorial-2026-11-16';
     const STORAGE_KEY = 'finflow_cop_state_secure_v5';
+    const AUTO_BACKUP_KEY = 'finflow_cop_auto_snapshot_v1';
 
     const DEFAULT_STATE = {
       payday: 25,
@@ -847,7 +872,7 @@
           savedCOP: Math.round(sanitizeNumber(p?.savedCOP, 0, 0, 1e12)),
           targetCOP: Math.round(sanitizeNumber(p?.targetCOP, 1000000, 1, 1e12)),
           icon: allowedIcons.has(p?.icon) ? p.icon : 'piggy-bank',
-          color: 'from-cyan-500 to-emerald-500'
+          color: 'from-limeVolt to-jade'
         })) : [],
         transactions: Array.isArray(raw.transactions) ? raw.transactions.slice(0, 2000).map(t => ({
           id: sanitizeNumber(t?.id, Date.now(), 1, 1e15),
@@ -873,7 +898,7 @@
 
     function loadInitialState() {
       try {
-        const stored = localStorage.getItem(STORAGE_KEY);
+        const stored = localStorage.getItem(STORAGE_KEY) || localStorage.getItem(AUTO_BACKUP_KEY);
         if (!stored) return structuredClone(DEFAULT_STATE);
         return validateAndSanitizeState(JSON.parse(stored));
       } catch (e) {
@@ -895,7 +920,9 @@
     } catch (e) {}
 
     function saveState() {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      const serialized = JSON.stringify(state);
+      localStorage.setItem(STORAGE_KEY, serialized);
+      localStorage.setItem(AUTO_BACKUP_KEY, serialized);
     }
 
     function haptic(ms = 18) {
@@ -990,9 +1017,9 @@
       const m = getMetrics();
       const todayLabel = new Date().toLocaleDateString('es-CO', { day: 'numeric', month: 'short' });
       document.getElementById('realDateBadge').textContent = todayLabel;
-      document.getElementById('cycleBadge').textContent = `Pago día ${state.payday}`;
+      document.getElementById('cycleBadge').textContent = `Día ${state.payday}`;
       document.getElementById('currencyBtn').textContent = state.displayCurrency;
-      document.getElementById('trmHeaderLabel').textContent = `TRM: $${state.rates.USD.toLocaleString('es-CO')} • EUR: $${state.rates.EUR.toLocaleString('es-CO')}`;
+      document.getElementById('trmHeaderLabel').textContent = `USD $${state.rates.USD.toLocaleString('es-CO')} • EUR $${state.rates.EUR.toLocaleString('es-CO')}`;
 
       animateValue(document.getElementById('realCashDisplay'), m.realCash);
       document.getElementById('realAfterPocketsText').textContent = `Libre hoy tras bolsillos: ${formatMoney(m.realAvailableToday)}`;
@@ -1000,7 +1027,7 @@
       document.getElementById('pocketsSumDisplay').textContent = '- ' + formatMoney(m.pocketsSum);
       document.getElementById('debtsSumDisplay').textContent = (state.reserveDebtsInDaily ? '- ' : '(Off) ') + formatMoney(m.pendingDebts);
 
-      document.getElementById('daysLeftText').textContent = `Faltan ${m.daysLeft} día${m.daysLeft === 1 ? '' : 's'} para recibir tu pago del ${state.payday}`;
+      document.getElementById('daysLeftText').textContent = `Faltan ${m.daysLeft} día${m.daysLeft === 1 ? '' : 's'} para tu pago del ${state.payday}`;
       animateValue(document.getElementById('dailyBudgetDisplay'), m.dailyBudget);
       document.getElementById('spentTodayLabel').textContent = formatMoney(m.spentToday);
       const todayPct = m.dailyBudget > 0 ? Math.min(100, Math.round((m.spentToday / m.dailyBudget) * 100)) : 0;
@@ -1025,25 +1052,25 @@
     function renderPockets() {
       const box = document.getElementById('pocketsContainer');
       if (!state.pockets.length) {
-        box.innerHTML = `<div class="glass rounded-2xl p-3 text-xs text-slate-400 w-full">Sin bolsillos aún. Crea uno para separar ahorro.</div>`;
+        box.innerHTML = `<div class="bento-card rounded-2xl p-3 text-xs text-zinc-400 w-full">Sin bolsillos aún. Crea uno para separar ahorro.</div>`;
         return;
       }
       box.innerHTML = state.pockets.map(p => {
         const pct = Math.min(100, Math.round((p.savedCOP / (p.targetCOP || 1)) * 100));
         const safeId = Number(p.id);
         return `
-          <div class="glass rounded-2xl p-3 min-w-[175px] shrink-0 space-y-2">
+          <div class="bento-card rounded-2xl p-3.5 min-w-[178px] shrink-0 space-y-2">
             <div class="flex items-center justify-between">
-              <span class="text-xs font-bold text-white truncate max-w-[115px]">${escapeHTML(p.name)}</span>
-              <span class="text-[10px] font-mono text-cyan-300">${pct}%</span>
+              <span class="text-xs font-display font-bold text-white truncate max-w-[115px]">${escapeHTML(p.name)}</span>
+              <span class="text-[10px] font-mono text-jade">${pct}%</span>
             </div>
-            <p class="font-mono font-extrabold text-sm text-emerald-300">${formatMoney(p.savedCOP)}</p>
-            <div class="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden">
-              <div class="h-full bg-gradient-to-r from-cyan-400 to-emerald-400" style="width:${pct}%"></div>
+            <p class="font-mono font-bold text-sm text-champagne">${formatMoney(p.savedCOP)}</p>
+            <div class="w-full h-1.5 bg-zinc-800 rounded-full overflow-hidden">
+              <div class="h-full bg-gradient-to-r from-limeVolt to-jade" style="width:${pct}%"></div>
             </div>
             <div class="flex gap-1.5 pt-1">
-              <button onclick="adjustPocket(${safeId}, 50000)" class="flex-1 py-1 rounded-lg bg-emerald-500/20 text-emerald-300 text-[10px] font-bold">+50k</button>
-              <button onclick="adjustPocket(${safeId}, -50000)" class="flex-1 py-1 rounded-lg bg-white/5 text-slate-300 text-[10px] font-bold">-50k</button>
+              <button onclick="adjustPocket(${safeId}, 50000)" class="flex-1 py-1 rounded-lg bg-limeVolt/15 text-limeVolt text-[10px] font-mono font-bold">+50k</button>
+              <button onclick="adjustPocket(${safeId}, -50000)" class="flex-1 py-1 rounded-lg bg-white/[0.05] text-zinc-300 text-[10px] font-mono font-bold">-50k</button>
             </div>
           </div>`;
       }).join('');
@@ -1058,62 +1085,62 @@
         const safeId = Number(a.id);
         const iconName = a.paid ? 'check-circle-2' : escapeHTML(a.icon || 'bell');
         return `
-        <div class="glass rounded-2xl p-3 flex items-center justify-between gap-2 ${a.paid ? 'opacity-55' : ''}">
+        <div class="bento-card rounded-2xl p-3 flex items-center justify-between gap-2 ${a.paid ? 'opacity-50' : ''}">
           <div class="flex items-center gap-2.5 min-w-0">
-            <div class="w-9 h-9 rounded-xl ${a.paid ? 'bg-emerald-500/20 text-emerald-300' : 'bg-amber-500/20 text-amber-300'} flex items-center justify-center shrink-0">
+            <div class="w-9 h-9 rounded-xl ${a.paid ? 'bg-jade/15 text-jade' : 'bg-terracotta/15 text-terracotta'} flex items-center justify-center shrink-0">
               <i data-lucide="${iconName}" class="w-4 h-4"></i>
             </div>
             <div class="min-w-0">
               <p class="text-xs font-bold text-white truncate">${escapeHTML(a.title)}</p>
-              <p class="text-[10px] text-slate-400">Vence: ${escapeHTML(a.dueDate)} ${a.recurring ? '• Mensual' : ''}</p>
+              <p class="text-[10px] font-mono text-zinc-400">Vence: ${escapeHTML(a.dueDate)} ${a.recurring ? '• Mensual' : ''}</p>
             </div>
           </div>
           <div class="flex items-center gap-1.5 shrink-0">
-            <span class="font-mono font-bold text-xs ${a.paid ? 'text-emerald-300 line-through' : 'text-amber-300'}">${formatMoney(a.amountCOP)}</span>
-            <button onclick="openEditAlert(${safeId})" class="w-7 h-7 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center text-sky-300" title="Editar deuda">
+            <span class="font-mono font-bold text-xs ${a.paid ? 'text-jade line-through' : 'text-terracotta'}">${formatMoney(a.amountCOP)}</span>
+            <button onclick="openEditAlert(${safeId})" class="w-7 h-7 rounded-lg bg-white/[0.05] hover:bg-white/10 flex items-center justify-center text-champagne" title="Editar deuda">
               <i data-lucide="pencil" class="w-3.5 h-3.5"></i>
             </button>
-            <button onclick="toggleAlertPaid(${safeId})" class="px-2 h-7 rounded-lg ${a.paid ? 'bg-slate-700 text-slate-300' : 'bg-emerald-500 text-slate-950 font-bold'} text-[10px]">
+            <button onclick="toggleAlertPaid(${safeId})" class="px-2.5 h-7 rounded-lg ${a.paid ? 'bg-zinc-800 text-zinc-300' : 'bg-limeVolt text-obsidian font-bold'} text-[10px]">
               ${a.paid ? 'Revertir' : 'Pagar'}
             </button>
           </div>
         </div>`;
       };
 
-      homeList.innerHTML = sorted.slice(0, 3).map(cardHTML).join('') || `<p class="text-xs text-slate-500">Sin deudas programadas. Importa tu JSON o crea una nueva.</p>`;
-      allList.innerHTML = sorted.map(cardHTML).join('') || `<p class="text-xs text-slate-500">Sin alertas registradas.</p>`;
+      homeList.innerHTML = sorted.slice(0, 3).map(cardHTML).join('') || `<p class="text-xs text-zinc-500">Sin deudas programadas. Importa tu JSON o crea una nueva.</p>`;
+      allList.innerHTML = sorted.map(cardHTML).join('') || `<p class="text-xs text-zinc-500">Sin alertas registradas.</p>`;
     }
 
     function renderTransactions() {
       const list = document.getElementById('transactionsList');
       const sorted = [...state.transactions].sort((a, b) => b.date.localeCompare(a.date) || b.id - a.id);
       if (!sorted.length) {
-        list.innerHTML = `<div class="glass rounded-2xl p-4 text-center text-xs text-slate-400">Aún no hay movimientos. Usa el botón <b>+</b> o <b>Importar JSON</b> en la pestaña Más.</div>`;
+        list.innerHTML = `<div class="bento-card rounded-2xl p-4 text-center text-xs text-zinc-400">Aún no hay movimientos. Usa el botón <b>+</b> o <b>Importar JSON</b> en la pestaña Más.</div>`;
         return;
       }
       list.innerHTML = sorted.map(t => {
         const safeId = Number(t.id);
         const isProj = isFutureTransaction(t);
         return `
-        <div class="glass rounded-2xl p-3 flex items-center justify-between ${isProj ? 'border border-indigo-400/30 bg-indigo-950/20' : ''}">
+        <div class="bento-card rounded-2xl p-3 flex items-center justify-between ${isProj ? 'border-champagne/30 bg-champagne/[0.03]' : ''}">
           <div class="flex items-center gap-2.5 min-w-0">
-            <div class="w-9 h-9 rounded-xl ${isProj ? 'bg-indigo-500/20 text-indigo-300' : (t.type === 'income' ? 'bg-emerald-500/20 text-emerald-300' : 'bg-rose-500/20 text-rose-300')} flex items-center justify-center shrink-0">
+            <div class="w-9 h-9 rounded-xl ${isProj ? 'bg-champagne/15 text-champagne' : (t.type === 'income' ? 'bg-limeVolt/15 text-limeVolt' : 'bg-terracotta/15 text-terracotta')} flex items-center justify-center shrink-0">
               <i data-lucide="${isProj ? 'clock' : (t.type === 'income' ? 'arrow-down-left' : 'arrow-up-right')}" class="w-4 h-4"></i>
             </div>
             <div class="min-w-0">
               <div class="flex items-center gap-1.5">
                 <p class="text-xs font-bold text-white truncate">${escapeHTML(t.title)}</p>
-                ${isProj ? '<span class="text-[9px] px-1.5 py-0.5 rounded bg-indigo-500/25 text-indigo-200 font-bold shrink-0">Proyectado</span>' : ''}
+                ${isProj ? '<span class="text-[9px] px-1.5 py-0.5 rounded bg-champagne/20 text-champagne font-mono font-bold shrink-0">Proyectado</span>' : ''}
               </div>
-              <p class="text-[10px] text-slate-400 capitalize">${escapeHTML(t.category)} • ${escapeHTML(t.date)}</p>
+              <p class="text-[10px] font-mono text-zinc-400 capitalize">${escapeHTML(t.category)} • ${escapeHTML(t.date)}</p>
             </div>
           </div>
           <div class="flex items-center gap-1.5 shrink-0">
-            <span class="font-mono font-bold text-xs ${isProj ? 'text-indigo-300' : (t.type === 'income' ? 'text-emerald-400' : 'text-rose-300')}">
+            <span class="font-mono font-bold text-xs ${isProj ? 'text-champagne' : (t.type === 'income' ? 'text-limeVolt' : 'text-terracotta')}">
               ${t.type === 'income' ? '+' : '-'} ${formatMoney(t.amountCOP)}
             </span>
-            ${isProj ? `<button onclick="confirmProjectedTx(${safeId})" title="Marcar como ya recibido hoy" class="px-1.5 py-1 rounded-lg bg-emerald-500/20 text-emerald-300 text-[9px] font-bold">Recibir</button>` : ''}
-            <button onclick="deleteTx(${safeId})" class="text-slate-500 hover:text-rose-400"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+            ${isProj ? `<button onclick="confirmProjectedTx(${safeId})" title="Marcar como ya recibido hoy" class="px-1.5 py-1 rounded-lg bg-limeVolt/20 text-limeVolt text-[9px] font-bold">Recibir</button>` : ''}
+            <button onclick="deleteTx(${safeId})" class="text-zinc-500 hover:text-terracotta"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
           </div>
         </div>`;
       }).join('');
@@ -1147,12 +1174,12 @@
         const isPayday = d === Number(state.payday);
         const isSelected = iso === selectedCalISO;
         cells += `
-          <button onclick="selectCalDay('${iso}')" class="h-10 rounded-xl flex flex-col items-center justify-center text-xs font-semibold transition ${isSelected ? 'bg-sky-500 text-slate-950 font-extrabold' : 'bg-white/5 text-slate-200 hover:bg-white/10'}">
+          <button onclick="selectCalDay('${iso}')" class="h-10 rounded-xl flex flex-col items-center justify-center text-xs font-mono font-semibold transition ${isSelected ? 'bg-limeVolt text-obsidian font-extrabold' : 'bg-white/[0.04] text-zinc-200 hover:bg-white/10'}">
             <span>${d}</span>
             <span class="flex gap-0.5 mt-0.5">
-              ${isPayday ? '<i class="w-1.5 h-1.5 rounded-full bg-emerald-400"></i>' : ''}
-              ${hasAlert ? '<i class="w-1.5 h-1.5 rounded-full bg-amber-400"></i>' : ''}
-              ${hasTx ? '<i class="w-1.5 h-1.5 rounded-full bg-sky-300"></i>' : ''}
+              ${isPayday ? '<i class="w-1.5 h-1.5 rounded-full bg-limeVolt"></i>' : ''}
+              ${hasAlert ? '<i class="w-1.5 h-1.5 rounded-full bg-terracotta"></i>' : ''}
+              ${hasTx ? '<i class="w-1.5 h-1.5 rounded-full bg-champagne"></i>' : ''}
             </span>
           </button>`;
       }
@@ -1174,10 +1201,10 @@
       const dayTxs = state.transactions.filter(t => t.date === selectedCalISO);
       const isPay = Number(selectedCalISO.split('-')[2]) === Number(state.payday);
       let html = '';
-      if (isPay) html += `<div class="p-2 rounded-xl bg-emerald-500/15 text-emerald-300 font-semibold">Día de pago mensual (Día ${state.payday})</div>`;
-      dayAlerts.forEach(a => html += `<div class="p-2 rounded-xl bg-amber-500/15 text-amber-200 flex justify-between"><span>Alerta: ${escapeHTML(a.title)}</span><b class="font-mono">${formatMoney(a.amountCOP)}</b></div>`);
-      dayTxs.forEach(t => html += `<div class="p-2 rounded-xl bg-sky-500/15 text-sky-200 flex justify-between"><span>${escapeHTML(t.title)} ${isFutureTransaction(t) ? '(Proyectado)' : ''}</span><b class="font-mono">${formatMoney(t.amountCOP)}</b></div>`);
-      document.getElementById('selectedDayEvents').innerHTML = html || `<p class="text-slate-400">Sin eventos registrados este día.</p>`;
+      if (isPay) html += `<div class="p-2 rounded-xl bg-limeVolt/15 text-limeVolt font-semibold">Día de pago mensual (Día ${state.payday})</div>`;
+      dayAlerts.forEach(a => html += `<div class="p-2 rounded-xl bg-terracotta/15 text-terracotta flex justify-between"><span>Alerta: ${escapeHTML(a.title)}</span><b class="font-mono">${formatMoney(a.amountCOP)}</b></div>`);
+      dayTxs.forEach(t => html += `<div class="p-2 rounded-xl bg-champagne/15 text-champagne flex justify-between"><span>${escapeHTML(t.title)} ${isFutureTransaction(t) ? '(Proyectado)' : ''}</span><b class="font-mono">${formatMoney(t.amountCOP)}</b></div>`);
+      document.getElementById('selectedDayEvents').innerHTML = html || `<p class="text-zinc-500">Sin eventos registrados este día.</p>`;
     }
 
     // ==================== ANALYTICS & SIMULATORS ====================
@@ -1195,7 +1222,7 @@
       state.transactions.filter(t => t.type === 'expense').forEach(t => cats[t.category] = (cats[t.category] || 0) + t.amountCOP);
       const entries = Object.entries(cats);
       const totalExp = entries.reduce((a, b) => a + b[1], 0) || 1;
-      const colors = ['#38BDF8', '#10B981', '#F59E0B', '#A855F7', '#F43F5E'];
+      const colors = ['#D4FF59', '#F3E5AB', '#FF6B4A', '#2CEAA3', '#A78BFA'];
       let offset = 0;
       const circles = entries.map(([cat, val], idx) => {
         const pct = (val / totalExp) * 100;
@@ -1203,12 +1230,12 @@
         offset += pct;
         return c;
       }).join('');
-      document.getElementById('donutChartBox').innerHTML = `<svg viewBox="0 0 42 42" class="w-28 h-28 -rotate-90">${circles || '<circle r="15.9" cx="21" cy="21" fill="transparent" stroke="#1e293b" stroke-width="5"/>'}</svg>`;
+      document.getElementById('donutChartBox').innerHTML = `<svg viewBox="0 0 42 42" class="w-28 h-28 -rotate-90">${circles || '<circle r="15.9" cx="21" cy="21" fill="transparent" stroke="#27272a" stroke-width="5"/>'}</svg>`;
       document.getElementById('categoryLegend').innerHTML = entries.map(([cat, val], idx) => `
         <div class="flex items-center justify-between">
           <span class="flex items-center gap-1.5 capitalize"><i class="w-2.5 h-2.5 rounded-full inline-block" style="background:${colors[idx % colors.length]}"></i>${escapeHTML(cat)}</span>
           <span class="font-mono font-bold text-white">${formatMoney(val)}</span>
-        </div>`).join('') || `<p class="text-slate-400">Sin gastos registrados.</p>`;
+        </div>`).join('') || `<p class="text-zinc-500">Sin gastos registrados.</p>`;
 
       const gmfPct = Math.min(100, Math.round((m.realExpense / state.gmfLimitCOP) * 100));
       document.getElementById('gmfPctLabel').textContent = `${gmfPct}%`;
@@ -1218,9 +1245,9 @@
       calcInstallments();
 
       document.getElementById('smartAdviceBox').innerHTML = `
-        <div class="glass rounded-2xl p-3.5 text-xs space-y-1">
-          <p class="font-bold text-emerald-300">Diagnóstico Real vs Proyección</p>
-          <p class="text-slate-300">Hoy cuentas con <b>${formatMoney(m.realAvailableToday)}</b> libres reales. Cuando ingrese tu proyección del día ${state.payday} (<b>${formatMoney(m.projectedIncome)}</b>) y cubras tus deudas (<b>${formatMoney(m.pendingDebts)}</b>), tu saldo neto proyectado será de <b>${formatMoney(m.projectedNetBalance)}</b>.</p>
+        <div class="bento-card rounded-2xl p-3.5 text-xs space-y-1">
+          <p class="font-display font-bold text-limeVolt">Diagnóstico Real vs Proyección</p>
+          <p class="text-zinc-300">Hoy cuentas con <b>${formatMoney(m.realAvailableToday)}</b> libres reales. Cuando ingrese tu proyección del día ${state.payday} (<b>${formatMoney(m.projectedIncome)}</b>) y cubras tus deudas (<b>${formatMoney(m.pendingDebts)}</b>), tu saldo neto proyectado será de <b>${formatMoney(m.projectedNetBalance)}</b>.</p>
         </div>`;
     }
 
@@ -1234,8 +1261,8 @@
       const diff = m.dailyBudget - newDaily;
       box.classList.remove('hidden');
       box.innerHTML = newRealAvail < 0
-        ? `<span class="text-rose-400 font-bold">Sin liquidez hoy:</span> Esta compra excede tu efectivo libre real hoy por <b>${formatMoney(Math.abs(newRealAvail))}</b>.`
-        : `Tu cupo diario real bajaría de <b class="text-white">${formatMoney(m.dailyBudget)}</b> a <b class="text-amber-300">${formatMoney(newDaily)}</b> (-${formatMoney(diff)}/día hasta el ${state.payday}).`;
+        ? `<span class="text-terracotta font-bold">Sin liquidez hoy:</span> Esta compra excede tu efectivo libre real hoy por <b>${formatMoney(Math.abs(newRealAvail))}</b>.`
+        : `Tu cupo diario real bajaría de <b class="text-white">${formatMoney(m.dailyBudget)}</b> a <b class="text-champagne">${formatMoney(newDaily)}</b> (-${formatMoney(diff)}/día hasta el ${state.payday}).`;
     }
 
     function calcInstallments() {
@@ -1246,7 +1273,7 @@
       const quota = mv > 0 ? (P * mv) / (1 - Math.pow(1 + mv, -n)) : P / n;
       const total = quota * n;
       document.getElementById('ccResult').innerHTML =
-        `Tasa M.V.: ${(mv * 100).toFixed(2)}% • Cuota: <b class="text-sky-300">${formatMoney(quota)}</b>/mes • Intereses totales: <b class="text-amber-300">${formatMoney(total - P)}</b>`;
+        `Tasa M.V.: ${(mv * 100).toFixed(2)}% • Cuota: <b class="text-limeVolt">${formatMoney(quota)}</b>/mes • Intereses: <b class="text-terracotta">${formatMoney(total - P)}</b>`;
     }
 
     // ==================== VOICE ASSISTANT ====================
@@ -1460,8 +1487,8 @@
       });
       document.querySelectorAll('.nav-btn').forEach(btn => {
         const active = btn.dataset.tab === tab;
-        btn.classList.toggle('text-emerald-400', active);
-        btn.classList.toggle('text-slate-400', !active);
+        btn.classList.toggle('text-limeVolt', active);
+        btn.classList.toggle('text-zinc-500', !active);
       });
     }
 
@@ -1495,10 +1522,10 @@
       const hint = document.getElementById('txDateModeHint');
       if (d > getLocalTodayISO()) {
         hint.textContent = 'Fecha futura: se guardará como Proyección (no suma al efectivo real de hoy).';
-        hint.className = 'text-[11px] text-indigo-300';
+        hint.className = 'text-[11px] text-champagne';
       } else {
         hint.textContent = 'Fecha de hoy o anterior: se cuenta como dinero real.';
-        hint.className = 'text-[11px] text-emerald-300';
+        hint.className = 'text-[11px] text-limeVolt';
       }
     }
     function closeModal(id) {
@@ -1507,11 +1534,11 @@
     function setTxType(type) {
       currentTxType = type;
       document.getElementById('btnTypeExpense').className = type === 'expense'
-        ? 'py-2 rounded-xl bg-rose-500/20 border border-rose-400/40 text-rose-300 text-xs font-bold'
-        : 'py-2 rounded-xl bg-white/5 border border-white/10 text-slate-400 text-xs font-bold';
+        ? 'py-2 rounded-xl bg-terracotta/20 border border-terracotta/40 text-terracotta text-xs font-bold'
+        : 'py-2 rounded-xl bg-white/[0.04] border border-white/10 text-zinc-400 text-xs font-bold';
       document.getElementById('btnTypeIncome').className = type === 'income'
-        ? 'py-2 rounded-xl bg-emerald-500/20 border border-emerald-400/40 text-emerald-300 text-xs font-bold'
-        : 'py-2 rounded-xl bg-white/5 border border-white/10 text-slate-400 text-xs font-bold';
+        ? 'py-2 rounded-xl bg-limeVolt/20 border border-limeVolt/40 text-limeVolt text-xs font-bold'
+        : 'py-2 rounded-xl bg-white/[0.04] border border-white/10 text-zinc-400 text-xs font-bold';
     }
     function saveTransaction() {
       const title = sanitizeString(document.getElementById('txTitle').value, 80);
@@ -1615,7 +1642,7 @@
       const savedCOP = Math.round(sanitizeNumber(document.getElementById('pocketSavedInput').value, 0, 0, 1e12));
       const targetCOP = Math.round(sanitizeNumber(document.getElementById('pocketTargetInput').value, 1000000, 1, 1e12));
       if (!name) return;
-      state.pockets.push({ id: Date.now(), name, savedCOP, targetCOP, icon: 'piggy-bank', color: 'from-cyan-500 to-emerald-500' });
+      state.pockets.push({ id: Date.now(), name, savedCOP, targetCOP, icon: 'piggy-bank', color: 'from-limeVolt to-jade' });
       closeModal('pocketModal');
       saveState();
       renderAll();
@@ -1632,15 +1659,17 @@
     }
 
     // ==================== IMPORT / EXPORT JSON & ICS ====================
-    function exportBackupJSON() {
+    function exportBackupJSON(silent = false) {
       const exportObj = { ...state };
       delete exportObj.pinHash;
       const blob = new Blob([JSON.stringify(exportObj, null, 2)], { type: 'application/json' });
       const a = document.createElement('a');
       a.href = URL.createObjectURL(blob);
-      a.download = `finflow_cop_${getLocalTodayISO()}.json`;
+      a.download = `finflow_cop_respaldo_${getLocalTodayISO()}.json`;
+      document.body.appendChild(a);
       a.click();
-      showToast('Respaldo JSON descargado');
+      a.remove();
+      if (!silent) showToast('Copia de seguridad JSON descargada');
     }
     function openImportModal() {
       document.getElementById('jsonPasteArea').value = '';
@@ -1680,7 +1709,7 @@
         renderAll();
         closeModal('importModal');
         triggerConfetti();
-        showToast('Respaldo restaurado (Real vs Proyección separado)');
+        showToast('Respaldo restaurado con éxito');
       } catch (e) {
         showToast('Error al importar JSON');
       }
@@ -1732,20 +1761,20 @@
     function renderWrappedSlide() {
       const m = getMetrics();
       const slides = [
-        `<p class="text-xs uppercase tracking-widest text-emerald-300 font-bold">Efectivo Real Hoy</p>
+        `<p class="text-[11px] uppercase tracking-widest text-limeVolt font-display font-bold">Efectivo Real Hoy</p>
          <h3 class="text-3xl font-extrabold font-mono text-white">${formatMoney(m.realAvailableToday)}</h3>
-         <p class="text-xs text-slate-300">Es tu liquidez real disponible hoy después de separar <b>${formatMoney(m.pocketsSum)}</b> en bolsillos.</p>`,
-        `<p class="text-xs uppercase tracking-widest text-sky-300 font-bold">Cupo Real al Día ${state.payday}</p>
-         <h3 class="text-3xl font-extrabold font-mono text-sky-300">${formatMoney(m.dailyBudget)} / día</h3>
-         <p class="text-xs text-slate-300">Con este tope diario durante los próximos <b>${m.daysLeft}</b> días no dependerás de adelantos.</p>`,
-        `<p class="text-xs uppercase tracking-widest text-indigo-300 font-bold">Proyección al Cobrar el ${state.payday}</p>
-         <h3 class="text-3xl font-extrabold font-mono text-indigo-300">${formatMoney(m.projectedNetBalance)}</h3>
-         <p class="text-xs text-slate-300">Saldo proyectado tras recibir <b>${formatMoney(m.projectedIncome)}</b> y pagar <b>${formatMoney(m.pendingDebts)}</b> en deudas.</p>`
+         <p class="text-xs text-zinc-300">Es tu liquidez real disponible hoy después de separar <b>${formatMoney(m.pocketsSum)}</b> en bolsillos.</p>`,
+        `<p class="text-[11px] uppercase tracking-widest text-champagne font-display font-bold">Cupo Real al Día ${state.payday}</p>
+         <h3 class="text-3xl font-extrabold font-mono text-champagne">${formatMoney(m.dailyBudget)} / día</h3>
+         <p class="text-xs text-zinc-300">Con este tope diario durante los próximos <b>${m.daysLeft}</b> días no dependerás de adelantos.</p>`,
+        `<p class="text-[11px] uppercase tracking-widest text-jade font-display font-bold">Proyección al Cobrar el ${state.payday}</p>
+         <h3 class="text-3xl font-extrabold font-mono text-jade">${formatMoney(m.projectedNetBalance)}</h3>
+         <p class="text-xs text-zinc-300">Saldo proyectado tras recibir <b>${formatMoney(m.projectedIncome)}</b> y pagar <b>${formatMoney(m.pendingDebts)}</b> en deudas.</p>`
       ];
       document.getElementById('wrappedCardContent').innerHTML = slides[wrappedIndex];
     }
 
-    // ==================== GITHUB PAGES AUTO-UPDATE DETECTOR ====================
+    // ==================== AUTO BACKUP & UPDATE ENGINE ====================
     let initialRemoteSignature = null;
 
     async function getPageSignature() {
@@ -1758,9 +1787,9 @@
       return String(txt.length) + ':' + txt.slice(0, 120);
     }
 
-    async function checkGitHubUpdates(manual = false) {
+    async function checkAppUpdates(manual = false) {
       if (window.location.protocol === 'blob:' || window.location.protocol === 'file:') {
-        if (manual) showToast('En GitHub Pages se detectan cambios automáticamente');
+        if (manual) showToast('En producción se detectan actualizaciones automáticamente');
         return;
       }
       try {
@@ -1768,33 +1797,49 @@
         if (!sig) return;
         if (!initialRemoteSignature) {
           initialRemoteSignature = sig;
-          if (manual) showToast('App actualizada al último commit');
+          if (manual) showToast('App al día con la última versión');
         } else if (sig !== initialRemoteSignature) {
+          // Silently save an automatic safety snapshot before notifying
+          saveState();
           document.getElementById('updateBanner').classList.remove('hidden');
           if (window.lucide) lucide.createIcons();
         } else if (manual) {
           showToast('Ya tienes la última versión');
         }
       } catch (e) {
-        if (manual) showToast('Sin conexión para verificar cambios');
+        if (manual) showToast('Sin conexión para verificar versión');
       }
     }
 
-    async function applyAppUpdate() {
-      showToast('Actualizando a la nueva versión...');
+    async function backupAndApplyUpdate() {
+      const btn = document.getElementById('updateNowBtn');
+      if (btn) btn.textContent = 'Respaldando...';
+      haptic(25);
+
+      // 1. Automatic local + downloadable JSON backup before reload
+      saveState();
+      if (state.transactions.length > 0 || state.alerts.length > 0 || state.pockets.length > 0) {
+        exportBackupJSON(true);
+      }
+
+      showToast('Copia de seguridad lista. Actualizando...');
+
+      // 2. Purge stale browser caches and reload fresh build
       if ('caches' in window) {
         const keys = await caches.keys();
         await Promise.all(keys.map(k => caches.delete(k)));
       }
-      const base = window.location.href.split('#')[0].split('?')[0];
-      window.location.replace(`${base}?v=${Date.now()}`);
+      setTimeout(() => {
+        const base = window.location.href.split('#')[0].split('?')[0];
+        window.location.replace(`${base}?v=${Date.now()}`);
+      }, 650);
     }
 
-    checkGitHubUpdates(false);
+    checkAppUpdates(false);
     document.addEventListener('visibilitychange', () => {
-      if (document.visibilityState === 'visible') checkGitHubUpdates(false);
+      if (document.visibilityState === 'visible') checkAppUpdates(false);
     });
-    setInterval(() => checkGitHubUpdates(false), 45000);
+    setInterval(() => checkAppUpdates(false), 45000);
 
     // ==================== SETTINGS, LIVE TRM & HASHED PIN ====================
     async function fetchLiveTRM() {
@@ -1910,12 +1955,13 @@
     function updatePinDots() {
       const dots = document.getElementById('pinDots').children;
       for (let i = 0; i < 4; i++) {
-        dots[i].classList.toggle('bg-sky-400', i < pinBuffer.length);
+        dots[i].classList.toggle('bg-limeVolt', i < pinBuffer.length);
       }
     }
 
     function wipeAllData() {
       localStorage.removeItem(STORAGE_KEY);
+      localStorage.removeItem(AUTO_BACKUP_KEY);
       state = structuredClone(DEFAULT_STATE);
       isUnlocked = true;
       renderAll();
@@ -1923,7 +1969,7 @@
     }
 
     function triggerConfetti() {
-      const cols = ['#10B981', '#38BDF8', '#F59E0B', '#A855F7'];
+      const cols = ['#D4FF59', '#F3E5AB', '#FF6B4A', '#2CEAA3'];
       for (let i = 0; i < 28; i++) {
         const d = document.createElement('div');
         d.className = 'confetti-piece';
@@ -1940,8 +1986,8 @@
       short_name: "FinFlow",
       start_url: "./",
       display: "standalone",
-      background_color: "#060913",
-      theme_color: "#060913"
+      background_color: "#09090B",
+      theme_color: "#09090B"
     };
     const mLink = document.createElement('link');
     mLink.rel = 'manifest';
