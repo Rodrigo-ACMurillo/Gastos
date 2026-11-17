@@ -1,4 +1,4 @@
-const CACHE_NAME = 'finflow-cop-v3.5';
+const CACHE_NAME = 'finflow-cop-v3.6';
 const CORE_ASSETS = [
   './',
   './index.html',
