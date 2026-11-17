@@ -8,8 +8,9 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="FinFlow COP" />
-  <link id="faviconLink" rel="icon" type="image/png" />
-  <link id="appleTouchIconLink" rel="apple-touch-icon" />
+  <link rel="manifest" href="./manifest.json" />
+  <link rel="icon" type="image/svg+xml" href="./icon.svg" />
+  <link rel="apple-touch-icon" href="./icon.svg" />
   <title>FinFlow COP • Gestor Financiero</title>
 
   <script src="https://cdn.tailwindcss.com"></script>
@@ -179,14 +180,14 @@
   <!-- Desktop Studio Sidebar -->
   <aside class="hidden lg:flex flex-col w-80 mr-8 card-panel rounded-3xl p-6 space-y-5">
     <div class="flex items-center gap-3.5">
-      <img id="sidebarAppIcon" alt="FinFlow" class="w-12 h-12 rounded-2xl shadow-lg border border-emerald-400/30" />
+      <img src="./icon.svg" alt="FinFlow" class="w-12 h-12 rounded-2xl shadow-lg border border-emerald-400/30" />
       <div>
         <h1 class="font-bold text-xl text-white leading-tight">FinFlow COP</h1>
         <p class="text-sm text-emerald-300 font-medium">Bóveda & Asistente IA</p>
       </div>
     </div>
     <p class="text-sm text-slate-300 leading-relaxed">
-      Tipografía ampliada de alta legibilidad, ícono PWA nativo generado dinámicamente y separación clara entre <b>Efectivo Real Hoy</b> y <b>Proyecciones al 25</b>.
+      PWA nativa con manifiesto estático, Service Worker (<span class="font-mono text-emerald-300">sw.js</span>) y separación clara entre <b>Efectivo Real Hoy</b> y <b>Proyecciones al 25</b>.
     </p>
     <div class="space-y-2.5 pt-2 border-t border-white/10">
       <button onclick="openVoiceAssistant()" class="w-full py-3 px-4 rounded-2xl bg-emerald-400 text-slate-950 text-sm font-bold flex items-center justify-center gap-2 hover:brightness-105 transition">
@@ -226,7 +227,7 @@
 
     <!-- PIN Lock Screen -->
     <div id="pinScreen" class="hidden absolute inset-0 z-50 bg-base flex flex-col items-center justify-center p-6">
-      <img id="pinAppIcon" alt="FinFlow" class="w-20 h-20 rounded-3xl mb-4 shadow-2xl border border-emerald-400/30" />
+      <img src="./icon.svg" alt="FinFlow" class="w-20 h-20 rounded-3xl mb-4 shadow-2xl border border-emerald-400/30" />
       <h2 class="text-xl font-extrabold text-white">Bóveda Protegida</h2>
       <p id="pinSubtitle" class="text-sm text-slate-400 mt-1 mb-6">Ingresa tu PIN de 4 dígitos</p>
       <div id="pinDots" class="flex gap-3.5 mb-8">
@@ -253,11 +254,11 @@
 
     <!-- App Shell Container -->
     <div id="appContentShell" class="flex-1 flex flex-col overflow-hidden">
-            <!-- Top Header (Spacious & Non-Wrapping) -->
+      <!-- Top Header (Spacious & Non-Wrapping) -->
       <header class="pt-4 md:pt-12 px-4 pb-3 border-b border-white/10 bg-base/95 backdrop-blur-xl z-20 space-y-2.5">
         <div class="flex items-center justify-between gap-2">
           <div class="flex items-center gap-2.5 min-w-0">
-            <img id="headerAppIcon" alt="FinFlow" class="w-10 h-10 rounded-2xl shadow border border-emerald-400/30 shrink-0" />
+            <img src="./icon.svg" alt="FinFlow" class="w-10 h-10 rounded-2xl shadow border border-emerald-400/30 shrink-0" />
             <div class="min-w-0">
               <div class="flex items-center gap-2">
                 <span class="font-extrabold text-base text-white tracking-tight whitespace-nowrap">FinFlow COP</span>
@@ -525,13 +526,18 @@
 
         <!-- ==================== TAB 5: MÁS / RESPALDOS & CONFIG ==================== -->
         <section id="view-more" class="hidden space-y-4 animate-view">
-          <!-- PWA Icon Preview & Install Guide -->
-          <div class="card-panel rounded-3xl p-4 flex items-center gap-3.5">
-            <img id="settingsAppIcon" alt="Icono App" class="w-14 h-14 rounded-2xl shadow-lg border border-emerald-400/30 shrink-0" />
-            <div class="min-w-0">
-              <h3 class="text-sm font-extrabold text-white">Ícono de App Actualizado</h3>
-              <p class="text-xs text-slate-300 mt-0.5 leading-snug">Si ya la tenías instalada en tu pantalla de inicio, elimínala y vuelve a darle <b>"Agregar a pantalla de inicio"</b> para ver el nuevo ícono.</p>
+          <!-- PWA Status & Install Button -->
+          <div class="card-panel rounded-3xl p-4 space-y-3">
+            <div class="flex items-center gap-3.5">
+              <img src="./icon.svg" alt="Icono App" class="w-14 h-14 rounded-2xl shadow-lg border border-emerald-400/30 shrink-0" />
+              <div class="min-w-0">
+                <h3 class="text-sm font-extrabold text-white">App Instalable (PWA Nativa)</h3>
+                <p id="swStatusText" class="text-xs text-emerald-300 mt-0.5 leading-snug">Service Worker activo • Lista para instalar</p>
+              </div>
             </div>
+            <button id="installPwaBtn" onclick="triggerInstallPrompt()" class="hidden w-full py-3 rounded-2xl bg-emerald-400 text-slate-950 text-sm font-extrabold flex items-center justify-center gap-2 shadow-lg">
+              <i data-lucide="smartphone" class="w-4 h-4"></i> Instalar FinFlow en el Celular
+            </button>
           </div>
 
           <div class="card-panel rounded-3xl p-4 space-y-3">
@@ -780,103 +786,46 @@
   </main>
 
   <script>
-    const APP_BUILD_ID = 'finflow-cop-v3.1-icon-legibility-2026-11-16';
+    const APP_BUILD_ID = 'finflow-cop-v3.2-static-pwa-2026-11-16';
     const STORAGE_KEY = 'finflow_cop_state_secure_v5';
     const AUTO_BACKUP_KEY = 'finflow_cop_auto_snapshot_v1';
 
-    // ==================== DYNAMIC HIGH-RESOLUTION PWA APP ICON GENERATOR ====================
-    function generateAppIconDataURL(size = 512) {
-      const canvas = document.createElement('canvas');
-      canvas.width = size;
-      canvas.height = size;
-      const ctx = canvas.getContext('2d');
+    // ==================== REGISTER REAL SERVICE WORKER & INSTALL PROMPT ====================
+    let deferredInstallPrompt = null;
 
-      const r = size * 0.22;
-      ctx.beginPath();
-      ctx.moveTo(r, 0);
-      ctx.lineTo(size - r, 0);
-      ctx.quadraticCurveTo(size, 0, size, r);
-      ctx.lineTo(size, size - r);
-      ctx.quadraticCurveTo(size, size, size - r, size);
-      ctx.lineTo(r, size);
-      ctx.quadraticCurveTo(0, size, 0, size - r);
-      ctx.lineTo(0, r);
-      ctx.quadraticCurveTo(0, 0, r, 0);
-      ctx.closePath();
-      ctx.clip();
-
-      const bg = ctx.createLinearGradient(0, 0, size, size);
-      bg.addColorStop(0, '#064E3B');
-      bg.addColorStop(0.5, '#0F172A');
-      bg.addColorStop(1, '#090D16');
-      ctx.fillStyle = bg;
-      ctx.fillRect(0, 0, size, size);
-
-      ctx.strokeStyle = '#34D399';
-      ctx.lineWidth = size * 0.032;
-      ctx.beginPath();
-      ctx.arc(size * 0.5, size * 0.5, size * 0.36, 0, Math.PI * 2);
-      ctx.stroke();
-
-      const barColors = ['#38BDF8', '#34D399', '#FBBF24'];
-      const heights = [0.18, 0.28, 0.38];
-      const barW = size * 0.075;
-      heights.forEach((h, i) => {
-        ctx.fillStyle = barColors[i];
-        const bx = size * (0.33 + i * 0.13);
-        const by = size * (0.66 - h);
-        ctx.beginPath();
-        ctx.roundRect(bx, by, barW, size * h, size * 0.02);
-        ctx.fill();
+    if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js', { scope: './' })
+          .then(() => {
+            const st = document.getElementById('swStatusText');
+            if (st) st.textContent = 'Service Worker registrado • Lista para instalar';
+          })
+          .catch(() => {
+            const st = document.getElementById('swStatusText');
+            if (st) st.textContent = 'Sube sw.js y manifest.json junto a index.html';
+          });
       });
-
-      ctx.fillStyle = '#34D399';
-      ctx.beginPath();
-      ctx.roundRect(size * 0.31, size * 0.71, size * 0.38, size * 0.12, size * 0.06);
-      ctx.fill();
-
-      ctx.fillStyle = '#06281E';
-      ctx.font = `800 ${Math.round(size * 0.075)}px sans-serif`;
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.fillText('COP', size * 0.5, size * 0.772);
-
-      return canvas.toDataURL('image/png');
     }
 
-    function applyGeneratedIcons() {
-      const icon192 = generateAppIconDataURL(192);
-      const icon512 = generateAppIconDataURL(512);
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredInstallPrompt = e;
+      const btn = document.getElementById('installPwaBtn');
+      if (btn) btn.classList.remove('hidden');
+    });
 
-      const fav = document.getElementById('faviconLink');
-      const apple = document.getElementById('appleTouchIconLink');
-      if (fav) fav.href = icon192;
-      if (apple) apple.href = icon512;
-
-      ['headerAppIcon', 'sidebarAppIcon', 'pinAppIcon', 'settingsAppIcon'].forEach(id => {
-        const el = document.getElementById(id);
-        if (el) el.src = icon192;
-      });
-
-      const manifestObj = {
-        id: "./?v=3.1",
-        name: "FinFlow COP",
-        short_name: "FinFlow",
-        start_url: "./?v=3.1",
-        display: "standalone",
-        background_color: "#0B0F17",
-        theme_color: "#0B0F17",
-        icons: [
-          { src: icon192, sizes: "192x192", type: "image/png", purpose: "any maskable" },
-          { src: icon512, sizes: "512x512", type: "image/png", purpose: "any maskable" }
-        ]
-      };
-      const oldManifest = document.querySelector('link[rel="manifest"]');
-      if (oldManifest) oldManifest.remove();
-      const mLink = document.createElement('link');
-      mLink.rel = 'manifest';
-      mLink.href = URL.createObjectURL(new Blob([JSON.stringify(manifestObj)], { type: 'application/manifest+json' }));
-      document.head.appendChild(mLink);
+    async function triggerInstallPrompt() {
+      if (!deferredInstallPrompt) {
+        showToast('Usa el menú ⋮ de Chrome → Instalar aplicación');
+        return;
+      }
+      deferredInstallPrompt.prompt();
+      const { outcome } = await deferredInstallPrompt.userChoice;
+      if (outcome === 'accepted') {
+        showToast('Instalando FinFlow COP en tu teléfono...');
+        document.getElementById('installPwaBtn').classList.add('hidden');
+      }
+      deferredInstallPrompt = null;
     }
 
     const DEFAULT_STATE = {
@@ -1918,6 +1867,10 @@
         const keys = await caches.keys();
         await Promise.all(keys.map(k => caches.delete(k)));
       }
+      if ('serviceWorker' in navigator) {
+        const regs = await navigator.serviceWorker.getRegistrations();
+        await Promise.all(regs.map(r => r.update()));
+      }
       setTimeout(() => {
         const base = window.location.href.split('#')[0].split('?')[0];
         window.location.replace(`${base}?v=${Date.now()}`);
@@ -2069,9 +2022,6 @@
         setTimeout(() => d.remove(), 1500);
       }
     }
-
-    // Initialize dynamic PNG app icons & manifest first
-    applyGeneratedIcons();
 
     if (window.speechSynthesis) {
       populateVoices();
