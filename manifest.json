@@ -1,16 +1,20 @@
 {
-  "name": "FinFlow COP - Control Ciclo 25",
-  "short_name": "FinFlow COP",
-  "start_url": ".",
+  "id": "./index.html",
+  "name": "FinFlow COP",
+  "short_name": "FinFlow",
+  "description": "Gestor financiero personal en pesos colombianos con ciclo día 25 y asistente de voz.",
+  "start_url": "./index.html",
+  "scope": "./",
   "display": "standalone",
-  "background_color": "#090d16",
-  "theme_color": "#090d16",
-  "description": "Control de gastos mensuales en Pesos Colombianos con ciclo del día 25, bolsillos, calendario y alertas.",
+  "orientation": "portrait",
+  "background_color": "#0B0F17",
+  "theme_color": "#0B0F17",
   "icons": [
     {
-      "src": "https://cdn-icons-png.flaticon.com/512/10149/10149458.png",
-      "sizes": "512x512",
-      "type": "image/png"
+      "src": "./icon.svg",
+      "sizes": "192x192 512x512 any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
     }
   ]
 }
