@@ -253,29 +253,35 @@
 
     <!-- App Shell Container -->
     <div id="appContentShell" class="flex-1 flex flex-col overflow-hidden">
-      <!-- Top Header -->
-      <header class="pt-4 md:pt-12 px-5 pb-3.5 flex items-center justify-between border-b border-white/10 bg-base/95 backdrop-blur-xl z-20">
-        <div class="flex items-center gap-3">
-          <img id="headerAppIcon" alt="FinFlow" class="w-10 h-10 rounded-2xl shadow border border-emerald-400/30 shrink-0" />
-          <div>
-            <div class="flex items-center gap-2">
-              <span class="font-extrabold text-base text-white tracking-tight">FinFlow COP</span>
-              <span id="cycleBadge" class="text-xs px-2.5 py-0.5 rounded-full bg-emerald-400/15 text-emerald-300 font-bold border border-emerald-400/25">Día 25</span>
+            <!-- Top Header (Spacious & Non-Wrapping) -->
+      <header class="pt-4 md:pt-12 px-4 pb-3 border-b border-white/10 bg-base/95 backdrop-blur-xl z-20 space-y-2.5">
+        <div class="flex items-center justify-between gap-2">
+          <div class="flex items-center gap-2.5 min-w-0">
+            <img id="headerAppIcon" alt="FinFlow" class="w-10 h-10 rounded-2xl shadow border border-emerald-400/30 shrink-0" />
+            <div class="min-w-0">
+              <div class="flex items-center gap-2">
+                <span class="font-extrabold text-base text-white tracking-tight whitespace-nowrap">FinFlow COP</span>
+                <span id="cycleBadge" class="text-xs px-2.5 py-0.5 rounded-full bg-emerald-400/15 text-emerald-300 font-bold border border-emerald-400/25 whitespace-nowrap shrink-0">Día 25</span>
+              </div>
             </div>
-            <p id="trmHeaderLabel" class="text-xs font-mono text-slate-400 mt-0.5">USD $4.000 • EUR $4.350</p>
+          </div>
+
+          <div class="flex items-center gap-1.5 shrink-0">
+            <button onclick="openWrappedModal()" title="Resumen" class="w-9 h-9 rounded-xl card-panel flex items-center justify-center text-amber-300 active:scale-90 transition">
+              <i data-lucide="sparkles" class="w-4 h-4"></i>
+            </button>
+            <button onclick="cycleDisplayCurrency()" id="currencyBtn" class="px-2.5 h-9 rounded-xl card-panel text-xs font-mono font-extrabold text-emerald-300 active:scale-90 transition">
+              COP
+            </button>
+            <button onclick="openTxModal()" class="w-9 h-9 rounded-xl bg-emerald-400 text-slate-950 flex items-center justify-center font-bold shadow-lg active:scale-90 transition">
+              <i data-lucide="plus" class="w-5 h-5"></i>
+            </button>
           </div>
         </div>
 
-        <div class="flex items-center gap-2">
-          <button onclick="openWrappedModal()" title="Resumen" class="w-9 h-9 rounded-xl card-panel flex items-center justify-center text-amber-300 active:scale-90 transition">
-            <i data-lucide="sparkles" class="w-4 h-4"></i>
-          </button>
-          <button onclick="cycleDisplayCurrency()" id="currencyBtn" class="px-3 h-9 rounded-xl card-panel text-xs font-mono font-extrabold text-emerald-300 active:scale-90 transition">
-            COP
-          </button>
-          <button onclick="openTxModal()" class="w-9 h-9 rounded-xl bg-emerald-400 text-slate-950 flex items-center justify-center font-bold shadow-lg active:scale-90 transition">
-            <i data-lucide="plus" class="w-5 h-5"></i>
-          </button>
+        <div class="flex items-center justify-between px-3 py-1.5 rounded-xl bg-white/[0.04] border border-white/[0.06] text-xs font-mono text-slate-300">
+          <span id="trmHeaderLabel" class="truncate">USD $4.000 • EUR $4.350</span>
+          <span class="text-[11px] text-emerald-300 font-sans font-semibold shrink-0 ml-2">Ciclo activo</span>
         </div>
       </header>
 
